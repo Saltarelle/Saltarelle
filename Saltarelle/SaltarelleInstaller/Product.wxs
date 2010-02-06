@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<Product Id="7341942A-29B9-45AA-BF92-E29139900E7D" Name="Saltarelle" Language="1033" Version="0.5.0" Manufacturer="Saltarelle" UpgradeCode="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
+		<Package InstallerVersion="200" Compressed="yes" Id="*" />
+
+		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Component Id="NewtonsoftJsonComponentGAC" Guid="DBA2322E-EAE1-4f0e-A5BB-630FB7A04652">
+				<File Id="NewtonsoftJsonDllGAC" Name="Newtonsoft.Json.dll" Assembly=".net" Source="..\..\References\Newtonsoft.Json.dll" KeyPath="yes" DiskId="1" />
+			</Component>
+
+			<Component Id="LibComponentGAC" Guid="0834CF8C-2277-419B-AFD3-33129C0F6803">
+				<File Id="LibDllGAC" Name="SaltarelleLib.dll" Assembly=".net" Source="..\Core\SaltarelleLib\SaltarelleLib.Server\bin\Release\SaltarelleLib.dll" KeyPath="yes" DiskId="1" />
+			</Component>
+
+			<Component Id="ParserComponentGAC" Guid="181B2420-DE35-486f-9987-0A2D0C80407F">
+				<File Id="ParserDllGAC" Name="SaltarelleParser.dll" Assembly=".net" Source="..\Core\SaltarelleParser\SaltarelleParser.Server\bin\Release\SaltarelleParser.dll" KeyPath="yes" DiskId="1" />
+			</Component>
+
+			<Component Id="VSCustomToolComponentGAC" Guid="627A2006-9753-481E-9DA8-24FAE0781517">
+				<File Id="VSCustomToolDllGAC" Name="Saltarelle.VSCustomTool.dll" Assembly=".net" Source="..\Core\Executables\VSCustomTool\bin\Release\Saltarelle.VSCustomTool.dll" KeyPath="yes" DiskId="1" />
+                <Class Id="{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}" Context="InprocServer32" Description="Saltarelle.SalgenCustomTool" ThreadingModel="both" ForeignServer="mscoree.dll">
+                    <ProgId Id="Saltarelle.SalgenCustomTool" Description="Saltarelle.SalgenCustomTool" />
+                </Class>
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Value="" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.5.0.0" Name="Class" Value="Saltarelle.SalgenCustomTool" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.5.0.0" Name="Assembly" Value="Saltarelle.VSCustomTool, Version=0.5.0.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.5.0.0" Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.5.0.0" Name="CodeBase" Value="file:///[#VSCustomToolDllGAC]" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="Class" Value="Saltarelle.SalgenCustomTool" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="Assembly" Value="Saltarelle.VSCustomTool, Version=0.5.0.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, Version=0.5.0.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="CodeBase" Value="file:///[#VSCustomToolDllGAC]" Type="string" Action="write" />
+                <RegistryValue Root="HKCR" Key="Component Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Name="0" Value=".NET Category" Type="string" Action="write" />
+			</Component>
+
+			<Component Id="SalgenTaskComponentGAC" Guid="0EE6125B-CCD0-4EBC-8EAF-E52A278ACF6A">
+				<File Id="SalgenTaskDllGAC" Name="Saltarelle.SalgenTask.dll" Assembly=".net" Source="..\Core\Executables\SalgenTask\bin\Release\Saltarelle.SalgenTask.dll" KeyPath="yes" DiskId="1" />
+			</Component>
+
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLLOCATION" Name="Saltarelle">
+					<Component Id="NewtonsoftJsonComponent" Guid="DCB5798F-BE21-45c9-B81A-5637555D6AD1">
+						<File Id="NewtonsoftJsonDll" Name="Newtonsoft.Json.dll" Source="..\..\References\Newtonsoft.Json.dll" KeyPath="yes" DiskId="1" />
+					</Component>
+
+					<Component Id="LibComponent" Guid="59A868A8-BB89-4E0B-8D49-D9EE51EF3441">
+						<File Id="LibDll" Name="SaltarelleLib.dll" Source="..\Core\SaltarelleLib\SaltarelleLib.Server\bin\Release\SaltarelleLib.dll" KeyPath="yes" DiskId="1" />
+					</Component>
+					<Component Id="ClientLibComponent" Guid="5443082E-95AE-483b-98AC-EC959A01EDCE">
+						<File Id="ClientLibDll" Name="SaltarelleLib.Client.dll" Source="..\Core\SaltarelleLib\SaltarelleLib.Client\bin\Release\SaltarelleLib.Client.dll" KeyPath="yes" DiskId="1" />
+					</Component>
+
+					<Component Id="ParserComponent" Guid="262446F3-5553-4161-9095-DC483070A5C0">
+						<File Id="ParserDll" Name="SaltarelleParser.dll" Source="..\Core\SaltarelleParser\SaltarelleParser.Server\bin\Release\SaltarelleParser.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+					<Component Id="ClientParserComponent" Guid="56491C20-4426-4d79-9CCF-49D7F28FCD60">
+						<File Id="ClientParserDll" Name="SaltarelleParser.Client.dll" Source="..\Core\SaltarelleParser\SaltarelleParser.Client\bin\Release\SaltarelleParser.Client.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+
+					<Component Id="UIComponent" Guid="B2F6E426-B482-4699-90A3-0DB21279F9EC">
+						<File Id="UIDll" Name="Saltarelle.UI.dll" Source="..\Saltarelle.UI\Saltarelle.UI.Server\bin\Release\Saltarelle.UI.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+					<Component Id="ClientUIComponent" Guid="654F3AF2-994E-4B69-BF9D-06EE0D22FDEE">
+						<File Id="ClientUIDll" Name="Saltarelle.UI.Client.dll" Source="..\Saltarelle.UI\Saltarelle.UI.Client\bin\Release\Saltarelle.UI.Client.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+					
+					<Component Id="VSCustomToolComponent" Guid="2ECB28DC-0679-4E23-B3B1-F16E22656232">
+						<File Id="VsCustomToolDll" Name="Saltarelle.VSCustomTool.dll" Source="..\Core\Executables\VSCustomTool\bin\Release\Saltarelle.VSCustomTool.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+
+					<Component Id="SalgenTaskComponent" Guid="B8E2A408-9171-47AE-A735-92C8B8573987">
+						<File Id="SalgenTaskDll" Name="Saltarelle.SalgenTask.dll" Source="..\Core\Executables\SalgenTask\bin\Release\Saltarelle.SalgenTask.dll" KeyPath="yes" DiskId="1" />
+					</Component>
+
+					<Component Id="SalgenExeComponent" Guid="BB39365F-8B0C-49D9-825E-DA7BDA2436D3">
+						<File Id="SalgenExe" Name="salgen.exe" Source="..\Core\Executables\Salgen.exe\bin\Release\salgen.exe" KeyPath="yes" DiskId="1"/>
+					</Component>
+					
+					<Component Id="VSCustomToolRegistryEntries" Guid="8A93DA05-85CA-467A-B031-5E1103FB504D">
+						<RegistryKey Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Generators\{FAE04EC1-301F-11D3-BF4B-00C04F79EFBC}\Salgen">
+							<RegistryValue Type="string" Value="Saltarelle code generator that transforms a .tpl file to code." KeyPath="yes"/>
+							<RegistryValue Name="CLSID" Type="string" Value="{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}"/>
+							<RegistryValue Name="GeneratesDesignTimeSource" Type="integer" Value="1"/>
+						</RegistryKey>
+					</Component>
+				</Directory>
+			</Directory>
+		</Directory>
+
+		<Feature Id="MainFeature" Title="Saltarelle" Level="1">
+			<Feature Id="SaltarelleCore" Title="Core Components" Level="1">
+				<ComponentRef Id="NewtonsoftJsonComponent"/>
+				<ComponentRef Id="NewtonsoftJsonComponentGAC"/>
+				<ComponentRef Id="LibComponent"/>
+				<ComponentRef Id="LibComponentGAC"/>
+				<ComponentRef Id="ClientLibComponent"/>
+				<ComponentRef Id="ParserComponent"/>
+				<ComponentRef Id="ParserComponentGAC"/>
+				<ComponentRef Id="ClientParserComponent"/>
+				<ComponentRef Id="UIComponent"/>
+				<ComponentRef Id="ClientUIComponent"/>
+				<ComponentRef Id="VSCustomToolComponent"/>
+				<ComponentRef Id="VSCustomToolComponentGAC"/>
+				<ComponentRef Id="SalgenTaskComponent"/>
+				<ComponentRef Id="SalgenTaskComponentGAC"/>
+				<ComponentRef Id="SalgenExeComponent"/>
+				<ComponentRef Id="VSCustomToolRegistryEntries"/>
+			</Feature>
+			<Feature Id="SaltarelleSample" Title="Sample Web Site" Level="1">
+			</Feature>
+		</Feature>
+		
+<!--		<UIRef Id="WixUI_Mondo"/>-->
+		
+		<Upgrade Id="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
+			<UpgradeVersion OnlyDetect="yes" Property="SELFFOUND" Minimum="0.5.0" IncludeMinimum="yes" Maximum="0.5.0" IncludeMaximum="yes"/>
+			<UpgradeVersion OnlyDetect="yes" Property="NEWERFOUND" Minimum="0.5.0" IncludeMinimum="no" />
+		</Upgrade>
+
+		<CustomAction Id='AlreadyUpdated' Error='Saltarelle 0.5.0 is alreaday installed.' />
+		<CustomAction Id='NoDowngrade' Error='A later version of [ProductName] is already installed.' />
+
+		<InstallExecuteSequence>
+			<Custom Action='AlreadyUpdated' After='FindRelatedProducts'>SELFFOUND</Custom>
+			<Custom Action='NoDowngrade' After='FindRelatedProducts'>NEWERFOUND</Custom>
+		</InstallExecuteSequence>
+	</Product>
+</Wix>

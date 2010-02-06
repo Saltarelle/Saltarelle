@@ -1,0 +1,52 @@
+﻿<#@ template Language="C#v3.5" hostspecific="true" debug="true" #>
+<#@ output extension=".Autogen.cs" #>
+<#@ import namespace="System.Globalization" #>
+using System;
+using System.Web.Mvc;
+using System.Linq.Expressions;
+
+namespace Saltarelle.Mvc {
+	public static partial class UrlServiceExtensions {
+<#
+PushIndent("\t\t");
+for (int i = 0; i <= 4; i++)
+	WriteMethods(i);
+PopIndent();
+#>
+	}
+}
+<#+
+private string FormatInvariant(string format, params object[] values) {
+	return string.Format(NumberFormatInfo.InvariantInfo, format, values);
+}
+
+private void WriteMethod(int numParams, int mask) {
+	Write("public static string GetTypedActionUrl<TController");
+	for (int i = 0; i < numParams; i++)
+		Write(FormatInvariant(", T{0}", i + 1));
+	Write(">(this IUrlService svc, Expression<Func<TController, Func<");
+	for (int i = 0; i < numParams; i++)
+		Write(FormatInvariant("T{0}, ", i + 1));
+	Write("ActionResult>>> f");
+	for (int i = 0; i < numParams; i++) {
+		if ((mask & (1 << i)) == 0)
+			Write(FormatInvariant(", T{0} p{0}", i + 1));
+		else
+			Write(FormatInvariant(", Unspecified<T{0}>.ValueClass p{0}", i + 1));
+	}
+	WriteLine(") where TController : IController {");
+	PushIndent("\t");
+	Write("return GetActionUrlImpl(svc, f");
+	for (int i = 0; i < numParams; i++)
+		Write((mask & (1 << i)) == 0 ? FormatInvariant(", p{0}", i + 1) : ", (object)null");
+	WriteLine(");");
+	PopIndent();
+	WriteLine("}");
+	WriteLine("");
+}
+
+private void WriteMethods(int numParams) {
+	for (int i = 0; i < 1 << numParams; i++)
+		WriteMethod(numParams, i);
+}
+#>
