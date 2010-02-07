@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Saltarelle.snk" />
+    <None Include="Saltarelle.targets" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">

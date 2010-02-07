@@ -20,9 +20,6 @@ namespace Saltarelle.Mvc {
 			foreach (var s in sm.GetStartupScripts())
 				writer.WriteLine("\t" + s);
 
-			// this prevents the bsckspace key from navigating back (unfortunately IE only)
-			writer.WriteLine("\tif ($.browser.msie) $(document).keydown(function(e) { if (e.keyCode == 8) window.event.keyCode = 0;});");
-
 			writer.WriteLine("\tif (typeof(init) == 'function') init();");
 			writer.WriteLine("});");
 			writer.WriteLine("</script>");

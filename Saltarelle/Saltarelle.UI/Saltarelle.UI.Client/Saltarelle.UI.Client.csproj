@@ -82,6 +82,9 @@
     <Compile Include="..\Saltarelle.UI.Shared\TabControl.Shared.cs">
       <Link>TabControl.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\Saltarelle.UI.Shared\TextInput.Shared.cs">
+      <Link>TextInput.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\Saltarelle.UI.Shared\Tree.Shared.cs">
       <Link>Tree.Shared.cs</Link>
     </Compile>
@@ -95,7 +98,6 @@
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).debug.js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.min.js" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
   </Target>
 </Project>

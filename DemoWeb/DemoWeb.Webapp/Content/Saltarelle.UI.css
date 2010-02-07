@@ -1,0 +1,294 @@
+﻿/*
+ * RESET
+ */
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,input,textarea,p,blockquote,th,td {
+	margin: 0;
+	padding: 0;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+img {  
+	border: 0;
+}
+fieldset {
+	margin: 0;
+	padding: 2px;
+}
+address,caption,cite,code,dfn,em,strong,th,var {
+	font-style: normal;
+	font-weight: normal;
+}
+ol,ul {
+	list-style: none;
+}
+caption,th {
+	text-align: left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+q:before,q:after {
+	content: '';
+}
+abbr,acronym {
+	border: 0;
+}
+
+table {
+	font: 13px tahoma, arial, helvetica, sans-serif;
+}
+
+.ui-widget {
+	font: 13px tahoma, arial, helvetica, sans-serif;
+	font-size: 1em;
+}
+
+.ui-widget button, .ui-widget input {
+	font: inherit;
+}
+
+.ui-widget-content .ui-state-highlight {
+	background: #c4c9f4;
+}
+
+/* Prevent a scrollbar from appearing when showing a modal dialog in IE: http://dev.jqueryui.com/ticket/3623*/
+.ui-widget-overlay {
+	position: fixed;
+	_position: absolute; /* IE6 only*/
+}
+
+.ui-resizable-handle {
+	background-image: url(/Content/blank.gif);
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	padding-bottom: 0px;
+	padding-top: 0px;
+}
+
+/*
+ * GRID
+ */
+
+.Grid {
+	font: 13px tahoma, arial, helvetica, sans-serif;
+	overflow: hidden;
+}
+
+.Grid div.GridValues {
+	overflow: auto;
+	position: relative;
+}
+
+.Grid div.GridHeader {
+	overflow: hidden;
+}
+
+.Grid table.GridValues td div div {
+	padding: 0px 5px 0px 5px;
+}
+.Grid table.GridHeader th div div {
+	padding: 0px 4px 0px 5px;
+	border-right: solid 1px black;
+}
+
+.Grid th.spacer div {
+	width: 50px;
+}
+
+.Grid th {
+	text-align: left;
+}
+
+.Grid th div, .Grid td div {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.Grid tr {
+	cursor: default;
+}
+
+.Grid tr.DropHover td {
+	padding-top: 16px;
+}
+
+.Grid tr.CurrentDraggingRow {
+	display: none;
+}
+
+.Grid td.LinkCell {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.DisabledGrid {
+	color: Gray;
+}
+
+.DisabledGrid table.GridHeader th div div {
+	border-right-color: gray;
+}
+.DisabledGrid table.GridHeader th div div.ui-resizable-handle {
+	cursor: inherit;
+}
+
+.Grid .DeleteImageCell {
+	background: url(/Content/delete.gif) no-repeat 0px 7px;
+	cursor: pointer;
+}
+
+.Grid .DeleteCell {
+	font-weight: bold;
+	color: Red;
+	cursor: pointer;
+}
+
+.Grid .EditCell {
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.Grid .ui-state-highlight {
+	border: 0px;
+}
+
+.DisabledGrid .DeleteCell,
+.DisabledGrid .EditCell {
+	font-size: 0px;
+	cursor: default;
+}
+
+.DisabledGrid .ui-state-highlight {
+	color: Gray;
+	background-color: inherit;
+	border: 0px;
+}
+
+/*
+ * TREE
+ */
+.Tree {
+	overflow: auto;
+	position: relative; /* required for scrolling in drag-drop */
+	white-space: nowrap;
+	font-size: 13px;
+}
+.Tree .tree-node {
+	margin: 0px;
+	padding:0px;
+}
+.Tree .tree-spacer {
+	height: 2px;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+}
+.Tree .tree-spacer-drophover {
+	background-color: blue
+}
+.Tree {
+	margin: 0px;
+	padding: 0px 0px 0px 0px;
+}
+.Tree .tree-nested-list {
+	margin: 0px;
+	padding: 0px 0px 0px 30px;
+}
+.tree-node-indent {
+	width: 16px;
+	height: 1px;
+}
+.Tree .expand-collapse-icon {
+	display: inline-block;
+	width: 9px;
+	height: 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	margin: 0px 2px 0px 2px;
+}
+.Tree .tree-node-icon {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+	margin: 0px 2px 0px 2px;
+}
+
+.Tree .expand-collapse-icon-collapsed {
+	background-image: url(/Content/plus.gif);
+}
+
+.Tree .expand-collapse-icon-expanded {
+	background-image: url(/Content/minus.gif);
+}
+
+.Tree .tree-node-icon-collapsed {
+	background: url(/Content/folder_closed.gif);
+}
+
+.Tree .tree-node-icon-expanded {
+	background: url(/Content/folder_open.gif);
+}
+
+.Tree .tree-node-icon-leaf {
+	background: url(/Content/item.gif);
+}
+.Tree .tree-node .tree-node-text {
+	border: 0px;
+	cursor: pointer;
+	background-image: none;
+}
+
+.Tree li.tree-node .drop-before {
+	margin-top: 0px;
+	border-top: solid 1px black;
+}
+
+.Tree .tree-node-drop-above {
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	height: 2px;
+	background-color: blue;
+}
+
+.Tree .tree-node-drop-above,
+.Tree .tree-node-drop-below {
+	position: absolute;
+	width: 100%;
+	top: 0px;
+	height: 4px;
+	background-color: Transparent;
+	z-index: 10000;
+}
+.Tree .tree-node-drop-abovebelow-hover {
+	background-color: blue;
+}
+
+.Tree .ui-draggable-dragging {
+	cursor: pointer;
+}
+
+.Tree input.checkbox {
+	padding: 0px 2px 0px 0px;
+}
+
+/*
+ * DIALOG
+ */
+.NoTitlebarDialog .ui-dialog-titlebar {
+	display: none;
+}
+
+.NoPaddingDialog {
+	padding: 0px;
+	border: 0px;
+}
+.NoPaddingDialog .ui-dialog-content {
+	padding: 0px;
+}

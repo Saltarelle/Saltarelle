@@ -5,22 +5,20 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{29A07A34-45DB-4271-A144-9AEE9CE933CA}</ProjectGuid>
+    <ProjectGuid>{1F661CBA-49A3-4A3B-BB67-088C2ED20FF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Saltarelle.UI</RootNamespace>
-    <AssemblyName>Saltarelle.UI</AssemblyName>
+    <RootNamespace>DemoWeb.Plugins</RootNamespace>
+    <AssemblyName>DemoWeb.Plugins</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SERVER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -28,20 +26,45 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SERVER</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SaltarelleLib, Version=0.5.0.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Core\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SaltarelleParser, Version=0.5.0.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleParser.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -52,56 +75,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\ControlListControl.Shared.cs">
-      <Link>ControlListControl.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\Dialog.Shared.cs">
-      <Link>Dialog.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\Grid.Shared.cs">
-      <Link>Grid.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\GroupBox.Shared.cs">
-      <Link>GroupBox.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\Label.Shared.cs">
-      <Link>Label.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\SupportClasses.Shared.cs">
-      <Link>SupportClasses.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\TabControl.Shared.cs">
-      <Link>TabControl.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\TextInput.Shared.cs">
-      <Link>TextInput.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\Tree.Shared.cs">
-      <Link>Tree.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\Saltarelle.UI.Shared\UIUtils.Shared.cs">
-      <Link>UIUtils.Shared.cs</Link>
-    </Compile>
+    <Compile Include="CopyrightUntypedMarkupParser.cs" />
+    <Compile Include="CopyrightFragment.cs" />
+    <Compile Include="CopyrightMember.cs" />
+    <Compile Include="CopyrightNodeProcessor.cs" />
+    <Compile Include="PersonMarkupParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Script.js">
-      <Link>Script.js</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Script.min.js">
-      <Link>Script.min.js</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Client.dll">
-      <Link>Client.dll</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Saltarelle.snk">
-      <Link>Saltarelle.snk</Link>
-    </None>
+    <ProjectReference Include="..\DemoWeb.Server\DemoWeb.Server.csproj">
+      <Project>{98625DA7-6346-49AF-85A4-BD4B7EF147E4}</Project>
+      <Name>DemoWeb.Server</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

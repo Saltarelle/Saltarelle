@@ -73,6 +73,9 @@
 					<Component Id="SalgenTaskComponent" Guid="B8E2A408-9171-47AE-A735-92C8B8573987">
 						<File Id="SalgenTaskDll" Name="Saltarelle.SalgenTask.dll" Source="..\Core\Executables\SalgenTask\bin\Release\Saltarelle.SalgenTask.dll" KeyPath="yes" DiskId="1" />
 					</Component>
+					<Component Id="SaltarelleTargetsComponent" Guid="006E9107-F3AF-4D0D-80F0-53BF066DE0C3">
+						<File Id="SaltarelleTargets" Name="Saltarelle.targets" Source="..\Core\Executables\SalgenTask\Saltarelle.targets" KeyPath="yes" DiskId="1" />
+					</Component>
 
 					<Component Id="SalgenExeComponent" Guid="BB39365F-8B0C-49D9-825E-DA7BDA2436D3">
 						<File Id="SalgenExe" Name="salgen.exe" Source="..\Core\Executables\Salgen.exe\bin\Release\salgen.exe" KeyPath="yes" DiskId="1"/>
@@ -105,6 +108,7 @@
 				<ComponentRef Id="VSCustomToolComponentGAC"/>
 				<ComponentRef Id="SalgenTaskComponent"/>
 				<ComponentRef Id="SalgenTaskComponentGAC"/>
+				<ComponentRef Id="SaltarelleTargetsComponent"/>
 				<ComponentRef Id="SalgenExeComponent"/>
 				<ComponentRef Id="VSCustomToolRegistryEntries"/>
 			</Feature>
