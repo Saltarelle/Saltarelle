@@ -22,7 +22,7 @@ namespace Saltarelle {
 
 		public void Render(ITemplate tpl, IInstantiatedTemplateControl ctl, StringBuilder sb) {
 			#if CLIENT
-			IClientCreateControl me = (IClientCreateControl)((IContainerControl)ctl).Controls[Id];
+			IClientCreateControl me = (IClientCreateControl)ctl.Controls[Id];
 			#else
 			IControl me = ctl.Controls[Id];
 			#endif

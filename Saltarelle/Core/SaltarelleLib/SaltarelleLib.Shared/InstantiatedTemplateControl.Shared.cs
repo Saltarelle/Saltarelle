@@ -12,10 +12,11 @@ using StringList        = System.Collections.Generic.List<string>;
 namespace Saltarelle {
 	public interface IInstantiatedTemplateControl
 	#if SERVER
-		: IContainerControl
+		: IControl
 	#endif
 	{
 		StringList NamedElementNames { get; }
+		ControlDictionary Controls { get; }
 
 		void AddControl(string name, IControl control);
 		void AddNamedElement(string name);
@@ -26,7 +27,7 @@ namespace Saltarelle {
 
 	public delegate string InstantiatedTemplateControlGetHtmlDelegate(IInstantiatedTemplateControl ctl);
 
-	public sealed class InstantiatedTemplateControl : IInstantiatedTemplateControl, IContainerControl, IControl
+	public sealed class InstantiatedTemplateControl : IInstantiatedTemplateControl, IControl
 	#if CLIENT
 		, IClientCreateControl
 	#endif

@@ -47,7 +47,7 @@ namespace SaltarelleParser.Tests {
 			                +  "	GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
-			                +  "	Init();" + Environment.NewLine
+			                +  "	Constructed();" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
 			Template.WriteServerConstructor(cb, tpl, new List<IMember>() { m1, m2 });
@@ -83,16 +83,18 @@ namespace SaltarelleParser.Tests {
 			                +  "		Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr(\"__cfg\"));" + Environment.NewLine
 			                +  "		m1 = f2();" + Environment.NewLine
 			                +  "		m2 = g2();" + Environment.NewLine
+			                +  "		Constructed();" + Environment.NewLine
+			                +  "		AttachSelf();" + Environment.NewLine
 			                +  "	}" + Environment.NewLine
 			                +  "	else {" + Environment.NewLine
 			                + (enableClientCreate
 			                ?  "		this.position = PositionHelper.NotPositioned;" + Environment.NewLine
 			                +  "		m1 = f1();" + Environment.NewLine
-			                +  "		m2 = g1();"
-			                :  "		throw new Exception(\"This control must be created server-side\");")
-			                + Environment.NewLine
+			                +  "		m2 = g1();" + Environment.NewLine
+			                +  "		Constructed();" + Environment.NewLine
+			                :  "		throw new Exception(\"This control must be created server-side\");" + Environment.NewLine
+			                )
 			                +  "	}" + Environment.NewLine
-			                +  "	Init();" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
 			Template.WriteClientConstructor(cb, tpl, new List<IMember>() { m1, m2 });
@@ -110,6 +112,61 @@ namespace SaltarelleParser.Tests {
 		[TestMethod]
 		public void TestWriteClientConstructor_WorksDisableClientCreate() {
 			TestWriteClientConstructor_Works(false);
+		}
+		
+		[TestMethod]
+		public void TestWriteAttach_Works() {
+			CodeBuilder cb = new CodeBuilder();
+
+			var tpl = new Template();
+
+			var m1 = mocks.StrictMock<IMember>();
+			var m2 = mocks.StrictMock<IMember>();
+			
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.Attach, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.Attach, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
+
+			mocks.ReplayAll();
+
+			string expected =  "public void Attach() {" + Environment.NewLine
+			                +  "	if (Script.IsNullOrEmpty(id) || element != null) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
+			                +  "	[a]" + Environment.NewLine
+			                +  "	[b]" + Environment.NewLine
+			                +  "	AttachSelf();" + Environment.NewLine
+			                +  "}" + Environment.NewLine;
+
+			Template.WriteAttach(cb, tpl, new List<IMember>() { m1, m2 });
+			Assert.AreEqual(expected, cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteAttachSelf_Works() {
+			CodeBuilder cb = new CodeBuilder();
+
+			var tpl = new Template();
+
+			var m1 = mocks.StrictMock<IMember>();
+			var m2 = mocks.StrictMock<IMember>();
+			
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.AttachSelf, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.AttachSelf, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
+
+			mocks.ReplayAll();
+
+			string expected =  "private void AttachSelf() {" + Environment.NewLine
+			                +  "	[a]" + Environment.NewLine
+			                +  "	[b]" + Environment.NewLine
+			                +  "	Attached();" + Environment.NewLine
+			                +  "}" + Environment.NewLine;
+
+			Template.WriteAttachSelf(cb, tpl, new List<IMember>() { m1, m2 });
+			Assert.AreEqual(expected, cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			
+			mocks.VerifyAll();
 		}
 
 		[TestMethod]
@@ -178,11 +235,12 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		private void TestWriteServerCode_Works(bool withNamespace) {
+		private void TestWriteServerCode_Works(bool withNamespace, bool enableClientCreate) {
 			CodeBuilder cb = new CodeBuilder();
 			var tpl = new Template();
 			tpl.ClassName = "TestClass";
 			tpl.Nmspace   = withNamespace ? "TestNamespace" : null;
+			tpl.EnableClientCreate = enableClientCreate;
 
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
@@ -210,7 +268,7 @@ namespace SaltarelleParser.Tests {
 			                 +     "using Saltarelle;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
-			                 + p + "public partial class TestClass : IControl, IContainerControl {" + Environment.NewLine
+			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
 			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
 			                 + p + "	public Dictionary<string, IControl> Controls { get { return controls; } }" + Environment.NewLine
 			                 +     Environment.NewLine
@@ -249,7 +307,7 @@ namespace SaltarelleParser.Tests {
 			                 + Environment.NewLine
 			                 + p + "	public TestClass() {" + Environment.NewLine
 			                 + p + "		GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());" + Environment.NewLine
-			                 + p + "		Init();" + Environment.NewLine
+			                 + p + "		Constructed();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + p + "}" + Environment.NewLine
 			                 + (withNamespace ? "}" + Environment.NewLine : "");
@@ -265,12 +323,17 @@ namespace SaltarelleParser.Tests {
 
 		[TestMethod]
 		public void TestWriteServerCode_WorksWithNamespace() {
-			TestWriteServerCode_Works(true);
+			TestWriteServerCode_Works(true, false);
 		}
 
 		[TestMethod]
 		public void TestWriteServerCode_WorksWithoutNamespace() {
-			TestWriteServerCode_Works(false);
+			TestWriteServerCode_Works(false, false);
+		}
+
+		[TestMethod]
+		public void TestWriteServerCode_WorksWithClientCreate() {
+			TestWriteServerCode_Works(true, true);
 		}
 
 		private void TestWriteClientCode_Works(bool withNamespace, bool enableClientCreate) {
@@ -292,11 +355,15 @@ namespace SaltarelleParser.Tests {
 			if (enableClientCreate) {
 				Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ClientConstructor, cb));
 				Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ClientConstructor, cb));
+				Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.Attach, cb));
+				Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.Attach, cb));
 			}
 			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.TransferConstructor, cb));
 			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.TransferConstructor, cb));
 			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb));
 			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb));
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.AttachSelf, cb));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.AttachSelf, cb));
 
 			mocks.ReplayAll();
 			
@@ -307,7 +374,7 @@ namespace SaltarelleParser.Tests {
 			                 +     "using Saltarelle;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
-			                 + p + "public partial class TestClass : IControl, IContainerControl {" + Environment.NewLine
+			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
 			                 + p + "	private Dictionary controls = new Dictionary();" + Environment.NewLine
 			                 + p + "	public Dictionary Controls { get { return controls; } }" + Environment.NewLine
 			                 +     Environment.NewLine
@@ -343,8 +410,25 @@ namespace SaltarelleParser.Tests {
 			                 : "")
 			                 + p + "	[a]" + Environment.NewLine
 			                 + p + "	[b]" + Environment.NewLine
+			                 + p + "	private void AttachSelf() {" + Environment.NewLine
+			                 + p + "		Attached();" + Environment.NewLine
+			                 + p + "	}" + Environment.NewLine
+			                 + Environment.NewLine
 			                 + (enableClientCreate
-			                 ? p + "	[AlternateSignature]" + Environment.NewLine
+			                 ? p + "	public void Attach() {" + Environment.NewLine
+			                 + p + "		if (Script.IsNullOrEmpty(id) || element != null) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
+			                 + p + "		AttachSelf();" + Environment.NewLine
+			                 + p + "	}" + Environment.NewLine
+			                 + Environment.NewLine
+			                 + p + "	public string Html {" + Environment.NewLine
+			                 + p + "		get {" + Environment.NewLine
+			                 + p + "			if (string.IsNullOrEmpty(id))" + Environment.NewLine
+			                 + p + "				throw new InvalidOperationException(\"Must assign Id before rendering.\");" + Environment.NewLine
+			                 + p + "			return GetHtml();" + Environment.NewLine
+			                 + p + "		}" + Environment.NewLine
+			                 + p + "	}" + Environment.NewLine
+			                 + Environment.NewLine
+			                 + p + "	[AlternateSignature]" + Environment.NewLine
 			                 + p + "	public extern TestClass();" + Environment.NewLine
 			                 : "")
 			                 + p + "	public TestClass(string id) {" + Environment.NewLine
@@ -352,16 +436,16 @@ namespace SaltarelleParser.Tests {
 			                 + p + "			this.id = id;" + Environment.NewLine
 			                 + p + "			this.element = JQueryProxy.jQuery(\"#\" + id);" + Environment.NewLine
 			                 + p + "			Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr(\"__cfg\"));" + Environment.NewLine
+			                 + p + "			Constructed();" + Environment.NewLine
+			                 + p + "			AttachSelf();" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "		else {" + Environment.NewLine
-			                 + p +
-			                 (enableClientCreate
-			                     ? "			this.position = PositionHelper.NotPositioned;"
-			                     : "			throw new Exception(\"This control must be created server-side\");"
+			                 + (enableClientCreate
+			                 ? p + "			this.position = PositionHelper.NotPositioned;" + Environment.NewLine
+			                 + p + "			Constructed();" + Environment.NewLine
+			                 : p + "			throw new Exception(\"This control must be created server-side\");" + Environment.NewLine
 			                 )
-			                 + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
-			                 + p + "		Init();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + p + "}" + Environment.NewLine
 			                 + (withNamespace ? "}" + Environment.NewLine : "");

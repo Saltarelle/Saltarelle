@@ -206,6 +206,43 @@ namespace SaltarelleParser.Tests {
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
 		}
+		
+		[TestMethod]
+		public void TestWriteAttachCode_WorksForCustomInstantiate() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			var cb = new CodeBuilder();
+			string expected = "if (this.CtlName == null) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");" + Environment.NewLine + "this.CtlName.Attach();" + Environment.NewLine;
+			new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, false, new IMember[0]).WriteCode(tpl, MemberCodePoint.Attach, cb);
+			Assert.AreEqual(expected, cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+		
+		[TestMethod]
+		public void TestWriteAttachCode_WorksForNonCustomInstantiate() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			var cb = new CodeBuilder();
+			string expected = "this.CtlName.Attach();" + Environment.NewLine;
+			new InstantiatedControlMember("CtlName", "Namespace.Type", false, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, false, new IMember[0]).WriteCode(tpl, MemberCodePoint.Attach, cb);
+			Assert.AreEqual(expected, cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+		
+		[TestMethod]
+		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			foreach (var cp in new[] { MemberCodePoint.AttachSelf }) {
+				var cb = new CodeBuilder();
+				new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]).WriteCode(tpl, cp, cb);
+				Assert.AreEqual("", cb.ToString());
+				Assert.AreEqual(0, cb.IndentLevel);
+			}
+			mocks.VerifyAll();
+		}
 
 		[TestMethod]
 		public void TestInstantiate_Works() {

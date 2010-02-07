@@ -5,7 +5,7 @@ using System.Text;
 using Saltarelle;
 
 namespace DemoWeb {
-	public partial class Lesson1Control : IControl, IContainerControl {
+	public partial class Lesson1Control : IControl {
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 		public Dictionary<string, IControl> Controls { get { return controls; } }
 
@@ -61,7 +61,7 @@ namespace DemoWeb {
 			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
 			this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput();
 
-			Init();
+			Constructed();
 		}
 	}
 }
@@ -71,7 +71,7 @@ using System;
 using Saltarelle;
 
 namespace DemoWeb {
-	public partial class Lesson1Control : IControl, IContainerControl {
+	public partial class Lesson1Control : IControl {
 		private Dictionary controls = new Dictionary();
 		public Dictionary Controls { get { return controls; } }
 
@@ -109,22 +109,26 @@ namespace DemoWeb {
 
 		private jQuery MessageLogDiv;
 
+		private void AttachSelf() {
+			this.AddMessageButton = JQueryProxy.jQuery("#" + id + "_AddMessageButton");
+			this.CurrentMessageDiv = JQueryProxy.jQuery("#" + id + "_CurrentMessageDiv");
+			this.MessageLogDiv = JQueryProxy.jQuery("#" + id + "_MessageLogDiv");
+			Attached();
+		}
+
 		public Lesson1Control(string id) {
 			if (!Script.IsUndefined(id)) {
 				this.id = id;
 				this.element = JQueryProxy.jQuery("#" + id);
 				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr("__cfg"));
 				this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput(id + "_TheText");
-				this.AddMessageButton = JQueryProxy.jQuery("#" + id + "_AddMessageButton");
-				this.CurrentMessageDiv = JQueryProxy.jQuery("#" + id + "_CurrentMessageDiv");
-				this.MessageLogDiv = JQueryProxy.jQuery("#" + id + "_MessageLogDiv");
+				Constructed();
+				AttachSelf();
 			}
 			else {
 				throw new Exception("This control must be created server-side");
 			}
-			Init();
 		}
 	}
 }
 #endif
-

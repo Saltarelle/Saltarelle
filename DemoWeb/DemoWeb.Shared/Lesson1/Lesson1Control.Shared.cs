@@ -3,20 +3,23 @@ using Saltarelle;
 using Saltarelle.UI;
 
 namespace DemoWeb {
-	public partial class Lesson1Control : IControl, IContainerControl {
+	public partial class Lesson1Control : IControl {
 		public string Message {
 			get { return TheText.Value; }
 			set { TheText.Value = value; }
 		}
 	
 #if SERVER
-		private void Init() {
+		private void Constructed() {
 		}
 #endif
 
 #if CLIENT
-		private void Init() {
+		private void Constructed() {
 			TheText.ValueChanged += TheText_ValueChanged;
+		}
+		
+		private void Attached() {
 			AddMessageButton.click(AddMessageButton_Click);
 			TheText_ValueChanged(TheText, EventArgs.Empty);	// Since the current message text is not set by the server, we need to set it during initialization.
 		}

@@ -40,7 +40,7 @@ namespace Saltarelle.Members {
 				case MemberCodePoint.ClientIdChanged:
 					cb.AppendLine(Name + ".attr(\"id\", value + \"_" + Name + "\");");
 					break;
-				case MemberCodePoint.TransferConstructor:
+				case MemberCodePoint.AttachSelf:
 					cb.AppendLine("this." + name + " = JQueryProxy.jQuery(\"#\" + id + \"_" + name + "\");");
 					break;
 			}

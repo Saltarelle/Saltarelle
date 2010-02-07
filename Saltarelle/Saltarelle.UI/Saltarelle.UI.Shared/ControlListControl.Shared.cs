@@ -2,7 +2,6 @@ using System;
 using Saltarelle;
 #if CLIENT
 using StringList = System.ArrayList;
-using ControlDictionary = System.Dictionary;
 using ControlList = System.ArrayList;
 using ObjectList = System.ArrayList;
 #endif
@@ -10,14 +9,13 @@ using ObjectList = System.ArrayList;
 using StringList  = System.Collections.Generic.List<string>;
 using ControlList = System.Collections.Generic.List<Saltarelle.IControl>;
 using ObjectList = System.Collections.Generic.List<object>;
-using ControlDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.IControl>;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 #endif
 
 namespace Framework {
-	public class ControlListControl : IControl, IContainerControl, IClientCreateControl {
+	public class ControlListControl : IControl, IClientCreateControl {
 		private string id;
 		private string className;
 		private Position position;
@@ -96,16 +94,6 @@ namespace Framework {
 		}
 		
 		public int NumControls { get { return Utils.ArrayLength(controlIds); } }
-
-		public ControlDictionary Controls {
-			get {
-				ControlDictionary d = new ControlDictionary();
-				for (int i = 0; i < Utils.ArrayLength(controlIds); i++) {
-					d[(string)controlIds[i]] = controls[i];
-				}
-				return d;
-			}
-		}
 
 		public string Html {
 			get {

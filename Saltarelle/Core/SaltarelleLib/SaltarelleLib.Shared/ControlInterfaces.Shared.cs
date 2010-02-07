@@ -32,14 +32,6 @@ namespace Saltarelle
 		#endif
 	}
 	
-	public interface IContainerControl
-	#if SERVER
-		: IControl
-	#endif
-	{
-		ControlDictionary Controls { get; }
-	}
-	
 	public interface IControlHost
 	#if SERVER
 		: IControl

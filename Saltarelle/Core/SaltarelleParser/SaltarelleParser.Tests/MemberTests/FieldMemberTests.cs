@@ -48,50 +48,6 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestWriteServerIdChangedCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteClientIdChangedCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-		
-		[TestMethod]
-		public void TestWriteServerConstructorCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteClientConstructorCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ClientConstructor, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
 		public void TestWriteTransferConstructorCode_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -110,6 +66,19 @@ namespace SaltarelleParser.Tests {
 			new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
 			Assert.AreEqual("__cfg[\"TestId\"] = this.TestId;" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			foreach (var cp in new[] { MemberCodePoint.ServerIdChanged, MemberCodePoint.ClientIdChanged, MemberCodePoint.ServerConstructor, MemberCodePoint.ClientConstructor, MemberCodePoint.Attach, MemberCodePoint.AttachSelf }) {
+				var cb = new CodeBuilder();
+				new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, cp, cb);
+				Assert.AreEqual("", cb.ToString());
+				Assert.AreEqual(0, cb.IndentLevel);
+			}
 			mocks.VerifyAll();
 		}
 

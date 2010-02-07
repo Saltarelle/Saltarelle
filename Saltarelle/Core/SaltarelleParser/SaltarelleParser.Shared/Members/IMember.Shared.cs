@@ -11,6 +11,8 @@ namespace Saltarelle {
 		ClientConstructor   = 5,
 		TransferConstructor = 6,
 		ConfigObjectInit    = 7,
+		Attach              = 8,
+		AttachSelf          = 9
 	}
 #endif
 

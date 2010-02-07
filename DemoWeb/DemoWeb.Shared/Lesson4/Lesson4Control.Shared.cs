@@ -31,7 +31,7 @@ namespace DemoWeb {
 		}
 	}
 
-	public partial class Lesson4Control : IControl, IContainerControl {
+	public partial class Lesson4Control : IControl {
 #if SERVER
 		#region Data
 		private Department[] data = new[] { new Department("Executive General and Administration",
@@ -132,17 +132,20 @@ namespace DemoWeb {
 			}
 		}
 
-		private void Init() {
+		private void Constructed() {
 			foreach (var d in data)
 				AddDepartmentToTree(d, 0);
 		}
 #endif
 
 #if CLIENT
-		private void Init() {
+		private void Constructed() {
 			DepartmentsTree.SelectionChanged += new EventHandler(DepartmentsTree_SelectionChanged);
 			DepartmentsTree.SelectedId = DepartmentsTree.RootNodeIds[0];
 			EmployeesGrid.CellClicked += EmployeesGrid_CellClicked;
+		}
+		
+		private void Attached() {
 			EditEmployeeOKButton.click(EditEmployeeOKButton_Click);
 			EditEmployeeCancelButton.click(delegate { EditEmployeeDialog.Close(); });
 		}

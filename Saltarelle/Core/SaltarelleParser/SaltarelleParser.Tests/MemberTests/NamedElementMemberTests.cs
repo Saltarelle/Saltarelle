@@ -48,17 +48,6 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestWriteServerIdChangedCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
 		public void TestWriteClientIdChangedCode_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -70,45 +59,25 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestWriteServerConstructorCode_NothingWritten() {
+		public void TestWriteAttachSelfCode_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
-			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteClientConstructorCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.ClientConstructor, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteTransferConstructorCode_Works() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
+			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.AttachSelf, cb);
 			Assert.AreEqual("this.TestId = JQueryProxy.jQuery(\"#\" + id + \"_TestId\");" + Environment.NewLine, cb.ToString());
 			mocks.VerifyAll();
 		}
 
 		[TestMethod]
-		public void TestWriteConfigObjectInitCode_NothingWritten() {
+		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
+			foreach (var cp in new[] { MemberCodePoint.ServerIdChanged, MemberCodePoint.ServerConstructor, MemberCodePoint.ClientConstructor, MemberCodePoint.TransferConstructor, MemberCodePoint.ConfigObjectInit, MemberCodePoint.Attach }) {
+				var cb = new CodeBuilder();
+				new NamedElementMember("TestId").WriteCode(tpl, cp, cb);
+				Assert.AreEqual("", cb.ToString());
+				Assert.AreEqual(0, cb.IndentLevel);
+			}
 			mocks.VerifyAll();
 		}
 

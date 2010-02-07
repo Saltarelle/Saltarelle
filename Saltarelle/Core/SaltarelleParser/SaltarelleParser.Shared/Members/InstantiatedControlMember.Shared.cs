@@ -105,6 +105,9 @@ namespace Saltarelle.Members {
 				case MemberCodePoint.TransferConstructor:
 					WriteTransferConstructorCode(cb);
 					break;
+				case MemberCodePoint.Attach:
+					WriteAttachCode(cb);
+					break;
 				case MemberCodePoint.ConfigObjectInit:
 					WriteConfigObjectInitCode(cb);
 					break;
@@ -151,6 +154,12 @@ namespace Saltarelle.Members {
 			if (customInstantiate) {
 				cb.AppendLine(ParserUtils.ConfigObjectName + "[\"" + name + "\"] = this." + name + ".GetType().FullName;");
 			}
+		}
+		
+		private void WriteAttachCode(CodeBuilder cb) {
+			if (customInstantiate)
+				cb.AppendLine("if (this." + name + " == null) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");");
+			cb.AppendLine("this." + name + ".Attach();");
 		}
 #endif
 	}

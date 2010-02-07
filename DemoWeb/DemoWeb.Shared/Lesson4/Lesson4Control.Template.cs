@@ -5,7 +5,7 @@ using System.Text;
 using Saltarelle;
 
 namespace DemoWeb {
-	public partial class Lesson4Control : IControl, IContainerControl {
+	public partial class Lesson4Control : IControl {
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 		public Dictionary<string, IControl> Controls { get { return controls; } }
 
@@ -95,7 +95,7 @@ namespace DemoWeb {
 			this.EditEmployeeDialog.ModalityInt = 1;
 			this.EditEmployeeDialog.Title = @"Employee Details";
 
-			Init();
+			Constructed();
 		}
 	}
 }
@@ -105,7 +105,7 @@ using System;
 using Saltarelle;
 
 namespace DemoWeb {
-	public partial class Lesson4Control : IControl, IContainerControl {
+	public partial class Lesson4Control : IControl {
 		private Dictionary controls = new Dictionary();
 		public Dictionary Controls { get { return controls; } }
 
@@ -156,6 +156,16 @@ namespace DemoWeb {
 
 		private readonly Saltarelle.UI.DialogFrame EditEmployeeDialog;
 
+		private void AttachSelf() {
+			this.FirstNameInput = JQueryProxy.jQuery("#" + id + "_FirstNameInput");
+			this.LastNameInput = JQueryProxy.jQuery("#" + id + "_LastNameInput");
+			this.TitleInput = JQueryProxy.jQuery("#" + id + "_TitleInput");
+			this.EmailInput = JQueryProxy.jQuery("#" + id + "_EmailInput");
+			this.EditEmployeeOKButton = JQueryProxy.jQuery("#" + id + "_EditEmployeeOKButton");
+			this.EditEmployeeCancelButton = JQueryProxy.jQuery("#" + id + "_EditEmployeeCancelButton");
+			Attached();
+		}
+
 		public Lesson4Control(string id) {
 			if (!Script.IsUndefined(id)) {
 				this.id = id;
@@ -163,18 +173,13 @@ namespace DemoWeb {
 				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr("__cfg"));
 				this.controls["DepartmentsTree"] = this.DepartmentsTree = new Saltarelle.UI.Tree(id + "_DepartmentsTree");
 				this.controls["EmployeesGrid"] = this.EmployeesGrid = new Saltarelle.UI.Grid(id + "_EmployeesGrid");
-				this.FirstNameInput = JQueryProxy.jQuery("#" + id + "_FirstNameInput");
-				this.LastNameInput = JQueryProxy.jQuery("#" + id + "_LastNameInput");
-				this.TitleInput = JQueryProxy.jQuery("#" + id + "_TitleInput");
-				this.EmailInput = JQueryProxy.jQuery("#" + id + "_EmailInput");
-				this.EditEmployeeOKButton = JQueryProxy.jQuery("#" + id + "_EditEmployeeOKButton");
-				this.EditEmployeeCancelButton = JQueryProxy.jQuery("#" + id + "_EditEmployeeCancelButton");
 				this.controls["EditEmployeeDialog"] = this.EditEmployeeDialog = new Saltarelle.UI.DialogFrame(id + "_EditEmployeeDialog");
+				Constructed();
+				AttachSelf();
 			}
 			else {
 				throw new Exception("This control must be created server-side");
 			}
-			Init();
 		}
 	}
 }

@@ -18,7 +18,6 @@ using TopSortWorkingSet      = System.Collections.Generic.Dictionary<string, Sys
 using TopSortWorkingSetEntry = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<string>>;
 using System.Linq;
 using System.Text;
-#warning TODO: Must change the extension points and support Attach, and must implement IClientCreateControl when the control should be created client side, etc, etc...
 #endif
 namespace Saltarelle {
 	public interface ITemplate {
@@ -195,7 +194,7 @@ namespace Saltarelle {
 			  .AppendLine("GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());");
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
-			cb.AppendLine("Init();").Outdent()
+			cb.AppendLine("Constructed();").Outdent()
 			  .AppendLine("}");
 		}
 		
@@ -209,20 +208,22 @@ namespace Saltarelle {
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 
-			cb.Outdent().AppendLine("}")
+			cb.AppendLine("Constructed();")
+			  .AppendLine("AttachSelf();")
+			  .Outdent().AppendLine("}")
 			  .AppendLine("else {").Indent();
 
 			if (tpl.EnableClientCreate) {
 				cb.AppendLine("this.position = PositionHelper.NotPositioned;");
 				foreach (var m in orderedMembers)
 					m.WriteCode(tpl, MemberCodePoint.ClientConstructor, cb);
+				cb.AppendLine("Constructed();");
 			}
 			else {
 				cb.AppendLine("throw new Exception(\"This control must be created server-side\");");
 			}
 
 			cb.Outdent().AppendLine("}")
-			  .AppendLine("Init();")
 			  .Outdent().AppendLine("}");
 		}
 		
@@ -261,12 +262,29 @@ namespace Saltarelle {
 		internal static void WriteClientIdProperty(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
 			WriteIdProperty(cb, false, tpl, orderedMembers);
 		}
-		
-		internal static string GetInheritanceList(string inherits, StringList interfaces) {
+
+		internal static void WriteAttach(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+			cb.AppendLine("public void Attach() {").Indent()
+			  .AppendLine("if (Script.IsNullOrEmpty(id) || element != null) throw new Exception(\"Must set id before attach and can only attach once.\");");
+			foreach (var m in orderedMembers)
+				m.WriteCode(tpl, MemberCodePoint.Attach, cb);
+			cb.AppendLine("AttachSelf();").Outdent()
+			  .AppendLine("}");
+		}
+
+		internal static void WriteAttachSelf(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+			cb.AppendLine("private void AttachSelf() {").Indent();
+			foreach (var m in orderedMembers)
+				m.WriteCode(tpl, MemberCodePoint.AttachSelf, cb);
+			cb.AppendLine("Attached();").Outdent()
+			  .AppendLine("}");
+		}
+
+		internal static string GetInheritanceList(string inherits, bool enableClientCreate, StringList interfaces) {
 			StringBuilder sb = new StringBuilder();
 			if (!string.IsNullOrEmpty(inherits))
 				sb.Append(inherits);
-			sb.Append((Utils.IsStringBuilderEmpty(sb) ? "" : ", ") + "IControl, IContainerControl");
+			sb.Append((Utils.IsStringBuilderEmpty(sb) ? "" : ", ") + "IControl" + (enableClientCreate ? ", IClientCreateControl" : ""));
 			if (interfaces != null) {
 				for (int i = 0; i < interfaces.Count; i++) {
 					sb.Append(", " + interfaces[i]);
@@ -351,8 +369,21 @@ namespace Saltarelle {
 			foreach (var m in orderedMembers)
 				m.WriteCode(this, MemberCodePoint.ClientDefinition, cb);
 
+			WriteAttachSelf(cb, this, orderedMembers);
+			cb.AppendLine();
+
 			if (enableClientCreate) {
-				cb.AppendLine("[AlternateSignature]")
+				WriteAttach(cb, this, orderedMembers);
+
+				cb.AppendLine()
+				  .AppendLine("public string Html {").Indent()
+				  .AppendLine("get {").Indent()
+				  .AppendLine("if (string.IsNullOrEmpty(id))").Indent()
+				  .AppendLine("throw new InvalidOperationException(\"Must assign Id before rendering.\");").Outdent()
+				  .AppendLine("return " + MainRenderFunctionName + "();").Outdent()
+				  .AppendLine("}").Outdent()
+				  .AppendLine("}").AppendLine()
+				  .AppendLine("[AlternateSignature]")
 				  .AppendLine("public extern " + className + "();");
 			}
 			WriteClientConstructor(cb, this, orderedMembers);
@@ -363,11 +394,11 @@ namespace Saltarelle {
 		}
 		
 		public string ServerInheritanceList {
-			get { return GetInheritanceList(serverInherits, serverInterfaces.Keys.ToList()); }
+			get { return GetInheritanceList(serverInherits, enableClientCreate, serverInterfaces.Keys.ToList()); }
 		}
 
 		public string ClientInheritanceList {
-			get { return GetInheritanceList(clientInherits, clientInterfaces.Keys.ToList()); }
+			get { return GetInheritanceList(clientInherits, enableClientCreate, clientInterfaces.Keys.ToList()); }
 		}
 #endif
 	}

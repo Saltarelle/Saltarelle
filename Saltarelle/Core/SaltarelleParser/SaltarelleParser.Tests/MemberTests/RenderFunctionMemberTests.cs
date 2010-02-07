@@ -87,82 +87,20 @@ namespace SaltarelleParser.Tests {
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
 		}
-
-		[TestMethod]
-		public void TestWriteServerIdChangedCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new RenderFunctionMember("Test", "").WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteClientIdChangedCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new RenderFunctionMember("Test", "").WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteServerConstructorCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new RenderFunctionMember("Test", "").WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteClientConstructorCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new RenderFunctionMember("Test", "").WriteCode(tpl, MemberCodePoint.ClientConstructor, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteTransferConstructorCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new RenderFunctionMember("Test", "").WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteConfigObjectInitCode_NothingWritten() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new RenderFunctionMember("Test", "").WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
-			Assert.AreEqual("", cb.ToString());
-			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestInstantiate_DoesNothing() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
-			mocks.ReplayAll();
-			new RenderFunctionMember("Test", "").Instantiate(tpl, ctl);
-			mocks.VerifyAll();
-		}
 		
+		[TestMethod]
+		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			foreach (var cp in new[] { MemberCodePoint.ServerIdChanged, MemberCodePoint.ClientIdChanged, MemberCodePoint.ServerConstructor, MemberCodePoint.ClientConstructor, MemberCodePoint.TransferConstructor, MemberCodePoint.ConfigObjectInit, MemberCodePoint.Attach, MemberCodePoint.AttachSelf }) {
+				var cb = new CodeBuilder();
+				new RenderFunctionMember("Test", "").WriteCode(tpl, cp, cb);
+				Assert.AreEqual("", cb.ToString());
+				Assert.AreEqual(0, cb.IndentLevel);
+			}
+			mocks.VerifyAll();
+		}
+
 		[TestMethod]
 		public void TestRender_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();

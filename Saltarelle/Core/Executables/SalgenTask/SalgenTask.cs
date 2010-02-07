@@ -19,7 +19,7 @@ namespace Saltarelle {
 			string s = item.GetMetadata("CustomToolNamespace");
 			if (!string.IsNullOrEmpty(s))
 				return s;	// Easy - the namespace was set explicitly
-			s = item.GetMetadata("Link");
+			s = item.GetMetadata("Link");	// If the Link metadata is set, it defines the file as the project sees it.
 			string dir = Path.GetDirectoryName(!string.IsNullOrEmpty(s) ? s : item.ItemSpec);
 
 			string rootNamespaceWithDot = RootNamespace;
@@ -59,7 +59,6 @@ namespace Saltarelle {
 				string infile     = Path.GetFullPath(infileLocal);
 				string outfile    = Path.ChangeExtension(infile, ExecutablesCommon.GeneratedFileExtension);
 				string configFile = ExecutablesCommon.FindConfigFilePath(infile) ?? "";
-				InputFiles[i].SetMetadata("LastGenOutput", Path.GetFileName(outfile));
 				List<DataItem> l;
 				if (!inputsGroupedByConfigFile.TryGetValue(configFile, out l))
 					inputsGroupedByConfigFile[configFile] = l = new List<DataItem>();
