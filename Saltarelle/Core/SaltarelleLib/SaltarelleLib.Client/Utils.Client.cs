@@ -169,8 +169,8 @@ namespace Saltarelle {
 			return n.Xml;
 		}
 
-		public static XMLNode ParseXml(string xml) {
-			return XMLDocumentParser.Parse(xml).DocumentElement;
+		public static XMLDocument ParseXml(string xml) {
+			return XMLDocumentParser.Parse(xml);
 		}
 
 		public static void ClearStringBuilder(StringBuilder sb) {

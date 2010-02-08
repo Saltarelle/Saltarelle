@@ -308,8 +308,7 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ServerInheritanceList)
 			  .Append(" {").AppendLine().Indent()
-			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();")
-			  .AppendLine("public Dictionary<string, IControl> Controls { get { return controls; } }").AppendLine()
+			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();").AppendLine()
 			  .AppendLine("private Position position = PositionHelper.NotPositioned;")
 			  .AppendLine("public Position Position { get { return position; } set { position = value; } }").AppendLine();
 
@@ -349,8 +348,7 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ClientInheritanceList)
 			  .Append(" {").AppendLine().Indent()
-			  .AppendLine("private Dictionary controls = new Dictionary();")
-			  .AppendLine("public Dictionary Controls { get { return controls; } }").AppendLine()
+			  .AppendLine("private Dictionary controls = new Dictionary();").AppendLine()
 			  .AppendLine("private Position position;")
 			  .AppendLine("public Position Position {").Indent()
 			  .AppendLine("get { return element != null ? PositionHelper.GetPosition(element) : position; }")

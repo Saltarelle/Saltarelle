@@ -270,7 +270,6 @@ namespace SaltarelleParser.Tests {
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
 			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
-			                 + p + "	public Dictionary<string, IControl> Controls { get { return controls; } }" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position = PositionHelper.NotPositioned;" + Environment.NewLine
 			                 + p + "	public Position Position { get { return position; } set { position = value; } }" + Environment.NewLine
@@ -376,7 +375,6 @@ namespace SaltarelleParser.Tests {
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
 			                 + p + "	private Dictionary controls = new Dictionary();" + Environment.NewLine
-			                 + p + "	public Dictionary Controls { get { return controls; } }" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position;" + Environment.NewLine
 			                 + p + "	public Position Position {" + Environment.NewLine

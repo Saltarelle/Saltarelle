@@ -13,18 +13,24 @@ using System.Xml;
 namespace Saltarelle.NodeProcessors {
 	class ImplementsOrInheritsNodeProcessor : INodeProcessor {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (node.NodeType != XmlNodeType.Element || (Utils.NodeName(node) != "inherits" && Utils.NodeName(node) != "implements"))
+			if (node.NodeType != XmlNodeType.ProcessingInstruction || (Utils.NodeName(node) != "inherits" && Utils.NodeName(node) != "implements"))
 				return false;
+
+			if (!isRoot)
+				throw ParserUtils.TemplateErrorException(string.Format("The {0} directive can only appear outside of the template.", Utils.NodeName(node)));
+				
+			string[] sideArr2 = Utils.RegexExec(Utils.NodeValue(node), "side=\"([^\"]*)\"", "");
+			string[] typeArr2 = Utils.RegexExec(Utils.NodeValue(node), "type=\"([^\"]*)\"", "");
 	
-			XmlAttribute typeAttr = (XmlAttribute)node.Attributes.GetNamedItem("type"),
-			             sideAttr = (XmlAttribute)node.Attributes.GetNamedItem("side");
-			if (typeAttr == null || string.IsNullOrEmpty(typeAttr.Value))
+			if (typeArr2 == null)
 				throw ParserUtils.TemplateErrorException(Utils.NodeName(node) + " elements must have the type specified.");
-			if (sideAttr == null)
+			if (sideArr2 == null)
 				throw ParserUtils.TemplateErrorException(Utils.NodeName(node) + " elements must have the side specified.");
 
+			string side = sideArr2[1].Trim(), type = typeArr2[1].Trim();
+
 			bool serverSide, clientSide;
-			switch (sideAttr.Value) {
+			switch (side) {
 				case "client":
 					serverSide = false;
 					clientSide = true;
@@ -40,31 +46,29 @@ namespace Saltarelle.NodeProcessors {
 				default:
 					throw ParserUtils.TemplateErrorException("The side attribute of the " + Utils.NodeName(node) + " element must be 'client', 'server', or 'both'.");
 			}
-			if (Utils.GetNumChildNodes(node) > 0)
-				throw ParserUtils.TemplateErrorException(Utils.NodeName(node) + " elements must be empty.");
 
 			if (Utils.NodeName(node) == "implements") {
 				if (serverSide) {
-					if (template.ImplementsServerInterface(typeAttr.Value))
-						throw ParserUtils.TemplateErrorException("The interface " + typeAttr.Value + " is implemented more than once on the server side.");
-					template.AddServerInterface(typeAttr.Value);
+					if (template.ImplementsServerInterface(type))
+						throw ParserUtils.TemplateErrorException("The interface " + type + " is implemented more than once on the server side.");
+					template.AddServerInterface(type);
 				}
 				if (clientSide) {
-					if (template.ImplementsClientInterface(typeAttr.Value))
-						throw ParserUtils.TemplateErrorException("The interface " + typeAttr.Value + " is implemented more than once on the client side.");
-					template.AddClientInterface(typeAttr.Value);
+					if (template.ImplementsClientInterface(type))
+						throw ParserUtils.TemplateErrorException("The interface " + type + " is implemented more than once on the client side.");
+					template.AddClientInterface(type);
 				}
 			}
 			else {
 				if (serverSide) {
 					if (template.ServerInherits != null)
 						throw ParserUtils.TemplateErrorException("Cannot inherit from more than one class on the server side.");
-					template.ServerInherits = typeAttr.Value;
+					template.ServerInherits = type;
 				}
 				if (clientSide) {
 					if (template.ClientInherits != null)
 						throw ParserUtils.TemplateErrorException("Cannot inherit from more than one class on the client side.");
-					template.ClientInherits = typeAttr.Value;
+					template.ClientInherits = type;
 				}
 			}
 

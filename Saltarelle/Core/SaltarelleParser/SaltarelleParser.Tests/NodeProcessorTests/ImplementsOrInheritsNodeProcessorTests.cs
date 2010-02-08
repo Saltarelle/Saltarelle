@@ -15,7 +15,7 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestTryProcess_DoesNotParseOtherNode() {
+		public void TestTryProcess_DoesNotParseElement() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<element></element>"), true, template, renderFunction));
 			mocks.VerifyAll();
@@ -23,22 +23,24 @@ namespace SaltarelleParser.Tests {
 
 		[TestMethod]
 		public void TestTryProcess_ErrorIfNoType() {
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements side=\"both\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements side=\"both\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 		}
 
 		[TestMethod]
 		public void TestTryProcess_ErrorIfNoSide() {
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 		}
 
 		[TestMethod]
 		public void TestTryProcess_ErrorIfBadSide() {
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\" side=\"x\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\" side=\"x\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 		}
 
 		[TestMethod]
-		public void TestTryProcess_ErrorIfNotEmpty() {
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\" side=\"both\">x</implements>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+		public void TestTryProcess_ErrorIfNotRoot() {
+			mocks.ReplayAll();
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\" side=\"both\"?>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			mocks.VerifyAll();
 		}
 
 		[TestMethod]
@@ -46,7 +48,7 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(template.ImplementsClientInterface("TestType")).Return(false);
 			Expect.Call(() => template.AddClientInterface("TestType"));
 			mocks.ReplayAll();
-			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\" side=\"client\"/>"), false, template, renderFunction));
+			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\" side=\"client\"?>"), true, template, renderFunction));
 			Assert.AreEqual(0, fragments.Count);
 			mocks.VerifyAll();
 		}
@@ -56,7 +58,7 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(template.ImplementsServerInterface("TestType")).Return(false);
 			Expect.Call(() => template.AddServerInterface("TestType"));
 			mocks.ReplayAll();
-			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\" side=\"server\"/>"), false, template, renderFunction));
+			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\" side=\"server\"?>"), true, template, renderFunction));
 			Assert.AreEqual(0, fragments.Count);
 			mocks.VerifyAll();
 		}
@@ -68,7 +70,7 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(() => template.AddClientInterface("TestType"));
 			Expect.Call(() => template.AddServerInterface("TestType"));
 			mocks.ReplayAll();
-			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\" side=\"both\"/>"), false, template, renderFunction));
+			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\" side=\"both\"?>"), true, template, renderFunction));
 			Assert.AreEqual(0, fragments.Count);
 			mocks.VerifyAll();
 		}
@@ -78,7 +80,7 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(template.ClientInherits).Return(null);
 			Expect.Call(() => template.ClientInherits = "TestType");
 			mocks.ReplayAll();
-			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<inherits type=\"TestType\" side=\"client\"/>"), false, template, renderFunction));
+			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?inherits type=\"TestType\" side=\"client\"?>"), true, template, renderFunction));
 			Assert.AreEqual(0, fragments.Count);
 			mocks.VerifyAll();
 		}
@@ -88,7 +90,7 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(template.ServerInherits).Return(null);
 			Expect.Call(() => template.ServerInherits = "TestType");
 			mocks.ReplayAll();
-			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<inherits type=\"TestType\" side=\"server\"/>"), false, template, renderFunction));
+			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?inherits type=\"TestType\" side=\"server\"?>"), true, template, renderFunction));
 			Assert.AreEqual(0, fragments.Count);
 			mocks.VerifyAll();
 		}
@@ -100,7 +102,7 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(() => template.ClientInherits = "TestType");
 			Expect.Call(() => template.ServerInherits = "TestType");
 			mocks.ReplayAll();
-			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<inherits type=\"TestType\" side=\"both\"/>"), false, template, renderFunction));
+			Assert.IsTrue(new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?inherits type=\"TestType\" side=\"both\"?>"), true, template, renderFunction));
 			Assert.AreEqual(0, fragments.Count);
 			mocks.VerifyAll();
 		}
@@ -109,7 +111,7 @@ namespace SaltarelleParser.Tests {
 		public void TestTryProcess_ErrorIfInheritingFromMoreThanOneBaseClassClientSide() {
 			Expect.Call(template.ClientInherits).Return("SomeType");
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<inherits type=\"TestType\" side=\"client\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?inherits type=\"TestType\" side=\"client\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
@@ -117,7 +119,7 @@ namespace SaltarelleParser.Tests {
 		public void TestTryProcess_ErrorIfInheritingFromMoreThanOneBaseClassServerSide() {
 			Expect.Call(template.ServerInherits).Return("SomeType");
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<inherits type=\"TestType\" side=\"server\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?inherits type=\"TestType\" side=\"server\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
@@ -125,7 +127,7 @@ namespace SaltarelleParser.Tests {
 		public void TestTryProcess_ErrorIfImplementingInterfaceTwiceServerSide() {
 			Expect.Call(template.ImplementsServerInterface("TestType")).Return(true);
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\" side=\"server\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\" side=\"server\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
@@ -133,7 +135,7 @@ namespace SaltarelleParser.Tests {
 		public void TestTryProcess_ErrorIfImplementingInterfaceTwiceClientSide() {
 			Expect.Call(template.ImplementsClientInterface("TestType")).Return(true);
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<implements type=\"TestType\" side=\"client\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new ImplementsOrInheritsNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?implements type=\"TestType\" side=\"client\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 	}

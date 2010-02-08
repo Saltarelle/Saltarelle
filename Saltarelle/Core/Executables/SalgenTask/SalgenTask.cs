@@ -45,6 +45,7 @@ namespace Saltarelle {
 				if (!areEqual) {
 					fs.Seek(0, SeekOrigin.Begin);
 					fs.Write(content, 0, content.Length);
+					fs.SetLength(content.Length);
 				}
 			}
 		}
@@ -77,11 +78,11 @@ namespace Saltarelle {
 						MaybeWriteFile(f.OutFile, outBytes);
 					}
 					catch (TemplateErrorException ex) {
-						Log.LogError(Path.GetFileName(f.InFile) + ": " + ex.Message);
+						Log.LogError(null, null, null, f.InFile, 0, 0, 0, 0, ex.Message);
 						success = false;
 					}
 					catch (XmlException ex) {
-						Log.LogError(Path.GetFileName(f.InFile) + ": " + ex.Message);
+						Log.LogErrorFromException(ex, true, true, f.InFile);
 						success = false;
 					}
 				}

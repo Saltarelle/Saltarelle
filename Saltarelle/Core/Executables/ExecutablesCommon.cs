@@ -31,7 +31,7 @@ namespace Saltarelle {
 		}
 	
 		public static string GetTemplateCodeFileContents(SaltarelleParser parser, XmlDocument doc, string className, string nmspace) {
-			ITemplate template = parser.ParseTemplate(doc.DocumentElement);
+			ITemplate template = parser.ParseTemplate(doc);
 			template.ClassName = className;
 			template.Nmspace   = nmspace;
 

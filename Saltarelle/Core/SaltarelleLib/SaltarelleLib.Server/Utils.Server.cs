@@ -211,10 +211,10 @@ namespace Saltarelle {
 			return n.OuterXml;
 		}
 
-		public static XmlNode ParseXml(string xml) {
+		public static XmlDocument ParseXml(string xml) {
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(xml);
-			return doc.DocumentElement;
+			return doc;
 		}
 		
 		public static void ClearStringBuilder(StringBuilder sb) {

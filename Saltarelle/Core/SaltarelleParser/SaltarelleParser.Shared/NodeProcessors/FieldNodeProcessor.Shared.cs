@@ -14,43 +14,43 @@ using System.Xml;
 namespace Saltarelle.NodeProcessors {
 	internal class FieldNodeProcessor : INodeProcessor {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (node.NodeType != XmlNodeType.Element || Utils.NodeName(node) != "field")
+			if (node.NodeType != XmlNodeType.ProcessingInstruction || Utils.NodeName(node) != "field")
 				return false;
-	
-			XmlAttribute typeAttr       = (XmlAttribute)node.Attributes.GetNamedItem("type"),
-			             serverTypeAttr = (XmlAttribute)node.Attributes.GetNamedItem("serverType"),
-			             clientTypeAttr = (XmlAttribute)node.Attributes.GetNamedItem("clientType"),
-			             nameAttr       = (XmlAttribute)node.Attributes.GetNamedItem("name");
+			if (!isRoot)
+				throw ParserUtils.TemplateErrorException(string.Format("The {0} directive can only appear outside of the template.", Utils.NodeName(node)));
+
+			string[] typeArr       = Utils.RegexExec(Utils.NodeValue(node), "type=\"([^\"]*)\"", "");
+			string[] serverTypeArr = Utils.RegexExec(Utils.NodeValue(node), "serverType=\"([^\"]*)\"", "");
+			string[] clientTypeArr = Utils.RegexExec(Utils.NodeValue(node), "clientType=\"([^\"]*)\"", "");
+			string[] nameArr       = Utils.RegexExec(Utils.NodeValue(node), "name=\"([^\"]*)\"", "");
 
 			string serverType, clientType;
-			if (typeAttr != null) {
-				if (string.IsNullOrEmpty(typeAttr.Value.Trim()))
+			if (typeArr != null) {
+				if (string.IsNullOrEmpty(typeArr[1].Trim()))
 					throw ParserUtils.TemplateErrorException("No type was specified for the field");
-				if (serverTypeAttr != null || clientTypeAttr != null)
+				if (serverTypeArr != null || clientTypeArr != null)
 					throw ParserUtils.TemplateErrorException("field elements cannot have both server/client type and type specified.");
-				serverType = clientType = typeAttr.Value;
+				serverType = clientType = typeArr[1].Trim();
 			}
-			else if (serverTypeAttr != null && clientTypeAttr != null) {
-				if (string.IsNullOrEmpty(clientTypeAttr.Value.Trim()))
+			else if (serverTypeArr != null && clientTypeArr != null) {
+				if (string.IsNullOrEmpty(serverTypeArr[1].Trim()))
 					throw ParserUtils.TemplateErrorException("No server type was specified for the field");
-				if (string.IsNullOrEmpty(serverTypeAttr.Value.Trim()))
+				if (string.IsNullOrEmpty(clientTypeArr[1].Trim()))
 					throw ParserUtils.TemplateErrorException("No client type was specified for the field");
-				serverType = serverTypeAttr.Value;
-				clientType = clientTypeAttr.Value;
+				serverType = serverTypeArr[1].Trim();
+				clientType = clientTypeArr[1].Trim();
 			}
 			else
 				throw ParserUtils.TemplateErrorException("field elements must have the type specified (either 'type' or 'serverType' and 'clientType').");
 
-			if (nameAttr == null || string.IsNullOrEmpty(nameAttr.Value.Trim()))
+			string name = nameArr != null ? nameArr[1].Trim() : null;
+			if (string.IsNullOrEmpty(name))
 				throw ParserUtils.TemplateErrorException("field elements must have a name specified.");
 
-			if (Utils.GetNumChildNodes(node) > 0)
-				throw ParserUtils.TemplateErrorException("field elements must be empty.");
+			if (template.HasMember(name))
+				throw ParserUtils.TemplateErrorException("Duplicate member " + name);
 
-			if (template.HasMember(nameAttr.Value))
-				throw ParserUtils.TemplateErrorException("Duplicate member " + nameAttr.Value);
-
-			template.AddMember(new FieldMember(nameAttr.Value, serverType, clientType));
+			template.AddMember(new FieldMember(name, serverType, clientType));
 
 			return true;
 		}

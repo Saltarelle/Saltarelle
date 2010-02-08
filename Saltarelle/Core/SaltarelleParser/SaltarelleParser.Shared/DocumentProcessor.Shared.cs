@@ -54,7 +54,9 @@ namespace Saltarelle {
 			if (node == null) throw Utils.ArgumentNullException("node");
 			
 			ITemplate result = new Template();
-			ActualProcess(node, true, result, result.MainRenderFunction);
+			Utils.DoForEachChild(node, delegate(XmlNode child) {
+				ActualProcess(child, true, result, result.MainRenderFunction);
+			});
 			return result;
 		}
 		
