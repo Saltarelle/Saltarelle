@@ -79,8 +79,7 @@ namespace SaltarelleParser.Tests {
 			string expected =  "public TestClass(string id) {" + Environment.NewLine
 			                +  "	if (!Script.IsUndefined(id)) {" + Environment.NewLine
 			                +  "		this.id = id;" + Environment.NewLine
-			                +  "		this.element = JQueryProxy.jQuery(\"#\" + id);" + Environment.NewLine
-			                +  "		Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr(\"__cfg\"));" + Environment.NewLine
+			                +  "		Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery(\"#\" + id).attr(\"__cfg\"));" + Environment.NewLine
 			                +  "		m1 = f2();" + Environment.NewLine
 			                +  "		m2 = g2();" + Environment.NewLine
 			                +  "		Constructed();" + Environment.NewLine
@@ -157,6 +156,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 
 			string expected =  "private void AttachSelf() {" + Environment.NewLine
+			                +  "	this.element = JQueryProxy.jQuery(\"#\" + id);" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
 			                +  "	Attached();" + Environment.NewLine
@@ -411,6 +411,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	[a]" + Environment.NewLine
 			                 + p + "	[b]" + Environment.NewLine
 			                 + p + "	private void AttachSelf() {" + Environment.NewLine
+			                 + p + "		this.element = JQueryProxy.jQuery(\"#\" + id);" + Environment.NewLine
 			                 + p + "		Attached();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
@@ -434,8 +435,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	public TestClass(string id) {" + Environment.NewLine
 			                 + p + "		if (!Script.IsUndefined(id)) {" + Environment.NewLine
 			                 + p + "			this.id = id;" + Environment.NewLine
-			                 + p + "			this.element = JQueryProxy.jQuery(\"#\" + id);" + Environment.NewLine
-			                 + p + "			Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr(\"__cfg\"));" + Environment.NewLine
+			                 + p + "			Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery(\"#\" + id).attr(\"__cfg\"));" + Environment.NewLine
 			                 + p + "			Constructed();" + Environment.NewLine
 			                 + p + "			AttachSelf();" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine

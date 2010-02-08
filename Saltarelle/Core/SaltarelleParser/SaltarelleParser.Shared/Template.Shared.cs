@@ -202,8 +202,7 @@ namespace Saltarelle {
 			cb.AppendLine("public " + tpl.ClassName + "(string id) {").Indent()
 			  .AppendLine("if (!Script.IsUndefined(id)) {").Indent()
 			  .AppendLine("this.id = id;")
-			  .AppendLine("this.element = JQueryProxy.jQuery(\"#\" + id);")
-			  .AppendLine("Dictionary " + ParserUtils.ConfigObjectName + " = (Dictionary)Utils.EvalJson((string)this.element.attr(\"" + ParserUtils.ConfigObjectName + "\"));");
+			  .AppendLine("Dictionary " + ParserUtils.ConfigObjectName + " = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery(\"#\" + id).attr(\"" + ParserUtils.ConfigObjectName + "\"));");
 
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
@@ -273,7 +272,8 @@ namespace Saltarelle {
 		}
 
 		internal static void WriteAttachSelf(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
-			cb.AppendLine("private void AttachSelf() {").Indent();
+			cb.AppendLine("private void AttachSelf() {").Indent()
+			  .AppendLine("this.element = JQueryProxy.jQuery(\"#\" + id);");
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.AttachSelf, cb);
 			cb.AppendLine("Attached();").Outdent()
