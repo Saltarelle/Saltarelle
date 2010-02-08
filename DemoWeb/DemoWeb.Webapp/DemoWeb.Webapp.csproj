@@ -51,9 +51,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SaltarelleLib, Version=0.5.0.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleLib, Version=0.5.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Saltarelle\SaltarelleLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -93,16 +93,9 @@
     <Compile Include="SaltarelleRuntime\DefaultUrlProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\Newtonsoft.Json.dll" />
-    <Content Include="bin\RouteDebug.dll" />
-    <Content Include="bin\Saltarelle.UI.dll" />
-    <Content Include="bin\Saltarelle.UI.pdb" />
-    <Content Include="bin\SaltarelleLib.dll" />
-    <Content Include="bin\SaltarelleLib.pdb" />
-    <Content Include="bin\SaltarelleParser.dll" />
-    <Content Include="bin\SaltarelleParser.pdb" />
     <Content Include="bin\DemoWeb.dll" />
     <Content Include="bin\DemoWeb.pdb" />
+    <Content Include="bin\Saltarelle.UI.dll" />
     <Content Include="Content\blank.gif" />
     <Content Include="Content\folder_closed.gif" />
     <Content Include="Content\folder_open.gif" />

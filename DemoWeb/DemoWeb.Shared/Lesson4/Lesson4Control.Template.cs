@@ -7,7 +7,6 @@ using Saltarelle;
 namespace DemoWeb {
 	public partial class Lesson4Control : IControl {
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
-		public Dictionary<string, IControl> Controls { get { return controls; } }
 
 		private Position position = PositionHelper.NotPositioned;
 		public Position Position { get { return position; } set { position = value; } }
@@ -107,7 +106,6 @@ using Saltarelle;
 namespace DemoWeb {
 	public partial class Lesson4Control : IControl {
 		private Dictionary controls = new Dictionary();
-		public Dictionary Controls { get { return controls; } }
 
 		private Position position;
 		public Position Position {
@@ -157,6 +155,7 @@ namespace DemoWeb {
 		private readonly Saltarelle.UI.DialogFrame EditEmployeeDialog;
 
 		private void AttachSelf() {
+			this.element = JQueryProxy.jQuery("#" + id);
 			this.FirstNameInput = JQueryProxy.jQuery("#" + id + "_FirstNameInput");
 			this.LastNameInput = JQueryProxy.jQuery("#" + id + "_LastNameInput");
 			this.TitleInput = JQueryProxy.jQuery("#" + id + "_TitleInput");
@@ -169,8 +168,7 @@ namespace DemoWeb {
 		public Lesson4Control(string id) {
 			if (!Script.IsUndefined(id)) {
 				this.id = id;
-				this.element = JQueryProxy.jQuery("#" + id);
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr("__cfg"));
+				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
 				this.controls["DepartmentsTree"] = this.DepartmentsTree = new Saltarelle.UI.Tree(id + "_DepartmentsTree");
 				this.controls["EmployeesGrid"] = this.EmployeesGrid = new Saltarelle.UI.Grid(id + "_EmployeesGrid");
 				this.controls["EditEmployeeDialog"] = this.EditEmployeeDialog = new Saltarelle.UI.DialogFrame(id + "_EditEmployeeDialog");

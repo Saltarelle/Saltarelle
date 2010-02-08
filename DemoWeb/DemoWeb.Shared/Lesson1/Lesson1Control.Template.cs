@@ -7,7 +7,6 @@ using Saltarelle;
 namespace DemoWeb {
 	public partial class Lesson1Control : IControl {
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
-		public Dictionary<string, IControl> Controls { get { return controls; } }
 
 		private Position position = PositionHelper.NotPositioned;
 		public Position Position { get { return position; } set { position = value; } }
@@ -73,7 +72,6 @@ using Saltarelle;
 namespace DemoWeb {
 	public partial class Lesson1Control : IControl {
 		private Dictionary controls = new Dictionary();
-		public Dictionary Controls { get { return controls; } }
 
 		private Position position;
 		public Position Position {
@@ -110,6 +108,7 @@ namespace DemoWeb {
 		private jQuery MessageLogDiv;
 
 		private void AttachSelf() {
+			this.element = JQueryProxy.jQuery("#" + id);
 			this.AddMessageButton = JQueryProxy.jQuery("#" + id + "_AddMessageButton");
 			this.CurrentMessageDiv = JQueryProxy.jQuery("#" + id + "_CurrentMessageDiv");
 			this.MessageLogDiv = JQueryProxy.jQuery("#" + id + "_MessageLogDiv");
@@ -119,8 +118,7 @@ namespace DemoWeb {
 		public Lesson1Control(string id) {
 			if (!Script.IsUndefined(id)) {
 				this.id = id;
-				this.element = JQueryProxy.jQuery("#" + id);
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr("__cfg"));
+				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
 				this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput(id + "_TheText");
 				Constructed();
 				AttachSelf();
