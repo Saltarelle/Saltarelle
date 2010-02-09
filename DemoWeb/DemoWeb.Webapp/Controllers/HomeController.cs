@@ -17,24 +17,8 @@ namespace DemoWeb.Webapp.Controllers {
 		public ActionResult Lesson4() {
 			return View();
 		}
-//		public ActionResult SimpleControl() {
-//			string s = GlobalServices.GetService<IUrlService>().GetActionUrl((HomeController c) => c.ContainerControl);
-//			s = GlobalServices.GetService<IUrlService>().GetActionUrl<HomeController, int>(c => c.SomethingElse);
-//			return View();
-//		}
 
-		public ActionResult SimpleControl() {
-			string s = GlobalServices.GetService<IUrlService>().GetTypedActionUrl((HomeController c) => c.ContainerControl);
-			s = GlobalServices.GetService<IUrlService>().GetTypedActionUrl((HomeController c) => c.SomethingElse, Unspecified<int>.Value);
-			s = GlobalServices.GetService<IUrlService>().GetTypedActionUrl((HomeController c) => c.SomethingElse, 0);
-			return View();
-		}
-
-		public ActionResult ContainerControl() {
-			return View();
-		}
-
-		public ActionResult SomethingElse(int x) {
+		public ActionResult Lesson5() {
 			return View();
 		}
 	}

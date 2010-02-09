@@ -93,6 +93,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Lesson4Control.tpl</DependentUpon>
     </Compile>
+    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Shared.cs">
+      <Link>Lesson5\Lesson5Control.Shared.cs</Link>
+    </None>
+    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
+      <Link>Lesson5\Lesson5InnerControl.Shared.cs</Link>
+    </None>
     <Compile Include="..\DemoWeb.Shared\Person.Shared.cs">
       <Link>Person.Shared.cs</Link>
     </Compile>
@@ -118,6 +124,14 @@
       <CustomToolNamespace>DemoWeb</CustomToolNamespace>
       <Generator>Salgen</Generator>
       <LastGenOutput>Lesson4Control.Template.cs</LastGenOutput>
+    </None>
+    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.tpl">
+      <Link>Lesson5\Lesson5Control.tpl</Link>
+      <LastGenOutput>Lesson5Control.Template.cs</LastGenOutput>
+    </None>
+    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.tpl">
+      <Link>Lesson5\Lesson5InnerControl.tpl</Link>
+      <LastGenOutput>Lesson5InnerControl.Template.cs</LastGenOutput>
     </None>
     <None Include="..\DemoWeb.Shared\saltarelle.config">
       <Link>saltarelle.config</Link>

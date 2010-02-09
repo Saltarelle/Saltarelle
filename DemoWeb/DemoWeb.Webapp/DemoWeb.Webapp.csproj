@@ -172,6 +172,7 @@
     <Content Include="Scripts\sscorlib.js" />
     <Content Include="Views\Home\Lesson1.aspx" />
     <Content Include="Views\Home\Lesson4.aspx" />
+    <None Include="Views\Home\Lesson5.aspx" />
     <Content Include="Web.config" />
     <Content Include="Views\Web.config" />
   </ItemGroup>

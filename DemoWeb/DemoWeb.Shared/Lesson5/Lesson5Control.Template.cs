@@ -5,9 +5,8 @@ using System.Text;
 using Saltarelle;
 
 namespace DemoWeb {
-	public partial class SimpleControl : IControl, IContainerControl {
+	public partial class Lesson5Control : IControl {
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
-		public Dictionary<string, IControl> Controls { get { return controls; } }
 
 		private Position position = PositionHelper.NotPositioned;
 		public Position Position { get { return position; } set { position = value; } }
@@ -24,13 +23,10 @@ namespace DemoWeb {
 
 		private Dictionary<string, object> GetConfig() {
 			Dictionary<string, object> __cfg = new Dictionary<string, object>();
-			__cfg["person"] = this.person;
 			return __cfg;
 		}
 
-		private DemoWeb.Person person;
-
-		private readonly DemoWeb.TextInput Textbox;
+		private readonly DemoWeb.Lesson5InnerControl Nested;
 
 		private string GetHtml() {
 			StringBuilder sb = new StringBuilder();
@@ -41,27 +37,7 @@ namespace DemoWeb {
 			sb.Append(@"""");
 			sb.Append(" __cfg=\"" + Utils.HtmlEncode(Utils.Json(GetConfig())) + "\"");
 			sb.Append(@"> ");
-			sb.Append(((IControl)Textbox).Html);
-			sb.Append(@" <button id=""");
-			sb.Append(Id);
-			sb.Append(@"_AlertButton"" type=""button"">Show value</button> <div id=""");
-			sb.Append(Id);
-			sb.Append(@"_ValueDisplayer"">&nbsp;</div> <img title=""CopyrightNotice""/> <copyright>Erik Källén</copyright> <br/> ");
-			sb.Append("This expression will be printed as code");
-			sb.Append(@" <br/> ");
-			int i = 0;
-			sb.Append(@" ");
-			sb.Append("Before: " + i.ToString());
-			sb.Append(@" <br/> ");
-			i++;
-			sb.Append(@" ");
-			sb.Append("After: " + i.ToString());
-			sb.Append(@" <br/> ");
-			for (int a = 0; a < 10; a++) {
-				sb.Append(@" <div>Iteration ");
-				sb.Append(a);
-				sb.Append(@".</div> ");
-			}
+			sb.Append(((IControl)Nested).Html);
 			sb.Append(@" </div>");
 			return sb.ToString();
 		}
@@ -74,12 +50,12 @@ namespace DemoWeb {
 			}
 		}
 
-		public SimpleControl() {
+		public Lesson5Control() {
 			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
-			this.controls["Textbox"] = this.Textbox = new DemoWeb.TextInput();
-			this.Textbox.Value = "Some value";
+			this.controls["Nested"] = this.Nested = new DemoWeb.Lesson5InnerControl();
+			this.Nested.Person = new Person(@"Erik", @"Källén");
 
-			Init();
+			Constructed();
 		}
 	}
 }
@@ -89,9 +65,8 @@ using System;
 using Saltarelle;
 
 namespace DemoWeb {
-	public partial class SimpleControl : IControl, IContainerControl {
+	public partial class Lesson5Control : IControl {
 		private Dictionary controls = new Dictionary();
-		public Dictionary Controls { get { return controls; } }
 
 		private Position position;
 		public Position Position {
@@ -113,33 +88,27 @@ namespace DemoWeb {
 				this.id = value;
 				foreach (DictionaryEntry kvp in controls)
 					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
-				AlertButton.attr("id", value + "_AlertButton");
-				ValueDisplayer.attr("id", value + "_ValueDisplayer");
 			}
 		}
 
-		private DemoWeb.Person person;
+		private readonly DemoWeb.Lesson5InnerControl Nested;
 
-		private readonly DemoWeb.TextInput Textbox;
+		private void AttachSelf() {
+			this.element = JQueryProxy.jQuery("#" + id);
+			Attached();
+		}
 
-		private jQuery AlertButton;
-
-		private jQuery ValueDisplayer;
-
-		public SimpleControl(string id) {
+		public Lesson5Control(string id) {
 			if (!Script.IsUndefined(id)) {
 				this.id = id;
-				this.element = JQueryProxy.jQuery("#" + id);
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)this.element.attr("__cfg"));
-				this.person = (DemoWeb.Person)__cfg["person"];
-				this.controls["Textbox"] = this.Textbox = new DemoWeb.TextInput(id + "_Textbox");
-				this.AlertButton = JQueryProxy.jQuery("#" + id + "_AlertButton");
-				this.ValueDisplayer = JQueryProxy.jQuery("#" + id + "_ValueDisplayer");
+				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
+				this.controls["Nested"] = this.Nested = new DemoWeb.Lesson5InnerControl(id + "_Nested");
+				Constructed();
+				AttachSelf();
 			}
 			else {
 				throw new Exception("This control must be created server-side");
 			}
-			Init();
 		}
 	}
 }
