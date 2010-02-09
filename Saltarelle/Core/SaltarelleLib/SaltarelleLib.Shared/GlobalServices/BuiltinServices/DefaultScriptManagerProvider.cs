@@ -26,7 +26,8 @@ namespace Saltarelle {
 		private List<Func<string>> startupScripts = new List<Func<string>>();
 		
 		private static Dictionary<Assembly, ReadOnlyCollection<Assembly>> assemblyDependencies = new Dictionary<Assembly, ReadOnlyCollection<Assembly>>();
-		private static Dictionary<Assembly, string> assemblyScripts = new Dictionary<Assembly, string>();
+		private static Dictionary<Assembly, string> debugAssemblyScripts = new Dictionary<Assembly, string>();
+		private static Dictionary<Assembly, string> releaseAssemblyScripts = new Dictionary<Assembly, string>();
 		private static IList<Assembly> GetDependencies(Assembly asm) {
 			lock (padlock) {
 				ReadOnlyCollection<Assembly> result;
@@ -34,9 +35,11 @@ namespace Saltarelle {
 					var l = new List<Assembly>();
 					foreach (var refName in asm.GetReferencedAssemblies()) {
 						Assembly refAsm = Assembly.Load(refName);
-						if (!assemblyScripts.ContainsKey(refAsm))
-							assemblyScripts[refAsm] = GetAssemblyScriptAssumingLock(refAsm);
-						if (assemblyScripts[refAsm] != null)
+						if (!debugAssemblyScripts.ContainsKey(refAsm)) {
+							debugAssemblyScripts[refAsm] = GetAssemblyScriptAssumingLock(refAsm, true);
+							releaseAssemblyScripts[refAsm] = GetAssemblyScriptAssumingLock(refAsm, false);
+						}
+						if (debugAssemblyScripts[refAsm] != null)
 							l.Add(refAsm);
 					}
 					assemblyDependencies[asm] = result = l.AsReadOnly();
@@ -45,8 +48,8 @@ namespace Saltarelle {
 			}
 		}
 		
-		private static string GetAssemblyScriptAssumingLock(Assembly asm) {
-			string scriptName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Script.js"));
+		private static string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {
+			string scriptName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith(debug ? "Script.js" : "Script.min.js"));
 			if (scriptName != null) {
 				using (var strm = asm.GetManifestResourceStream(scriptName))
 				using (var rdr = new StreamReader(strm)) {
@@ -56,11 +59,12 @@ namespace Saltarelle {
 			return null;
 		}
 		
-		private string InternalGetAssemblyScriptContent(Assembly asm) {
+		private string InternalGetAssemblyScriptContent(Assembly asm, bool debug) {
 			string s;
 			lock (padlock) {
-				if (!assemblyScripts.TryGetValue(asm, out s)) {
-					assemblyScripts[asm] = s = GetAssemblyScriptAssumingLock(asm);
+				var x = (debug ? debugAssemblyScripts : releaseAssemblyScripts);
+				if (!x.TryGetValue(asm, out s)) {
+					x[asm] = s = GetAssemblyScriptAssumingLock(asm, debug);
 				}
 			}
 			return s;
@@ -79,7 +83,7 @@ namespace Saltarelle {
 				// add all references (recursively) before adding the current one
 				foreach (var dep in GetDependencies(asm))
 					AddAssembliesInCorrectOrder(dep, l);
-				if (InternalGetAssemblyScriptContent(asm) != null)
+				if (InternalGetAssemblyScriptContent(asm, true) != null)
 					l.Add(asm);
 			}
 		}
@@ -109,8 +113,8 @@ namespace Saltarelle {
 			startupScripts.Add(() => script);
 		}
 		
-		public string GetAssemblyScriptContent(Assembly asm) {
-			string s = InternalGetAssemblyScriptContent(asm);
+		public string GetAssemblyScriptContent(Assembly assembly, bool release) {
+			string s = InternalGetAssemblyScriptContent(assembly, release);
 			if (s == null)
 				throw new HttpException(404, "File not found");
 			return s;

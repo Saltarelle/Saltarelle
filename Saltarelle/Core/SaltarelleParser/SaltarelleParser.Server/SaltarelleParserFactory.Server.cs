@@ -111,7 +111,8 @@ namespace Saltarelle {
 					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a TypedMarkupParserImplAttribute, does not implement ITypedMarkupParserImpl.");
 				if (tp.GetConstructor(Type.EmptyTypes) == null)
 					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a TypedMarkupParserImplAttribute, does not have a parameterless public constructor.");
-				parsers[g.Key] = (ITypedMarkupParserImpl)Activator.CreateInstance(tp);	// NOTE: Not add, just in case two plugins define the same type (the latest definition will prevail)
+				if (!parsers.ContainsKey(g.Key))
+					parsers.Add(g.Key, (ITypedMarkupParserImpl)Activator.CreateInstance(tp));
 			}
 		}
 		

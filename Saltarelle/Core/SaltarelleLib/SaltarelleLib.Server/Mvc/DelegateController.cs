@@ -116,7 +116,7 @@ namespace Saltarelle.Mvc
 			if (result == null || !typeof(ActionResult).IsAssignableFrom(result.GetType()))
 				result = JavaScript(Utils.Json(result));
 
-			return (ActionResult) result;
+			return (ActionResult)result;
 		}
 	}
 }

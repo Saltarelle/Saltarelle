@@ -4,23 +4,41 @@
 using System;
 using System.Web.Mvc;
 using System.Linq.Expressions;
+using System.ComponentModel;
 
 namespace Saltarelle.Mvc {
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static partial class UrlServiceExtensions {
 <#
 PushIndent("\t\t");
-for (int i = 0; i <= 4; i++)
+for (int i = 5; i <= MaxParams; i++) {
+	Write("public delegate TResult Func<");
+	for (int j = 1; j <= i; j++)
+		Write(FormatInvariant("T{0}, ", j));
+	Write("TResult>(");
+	for (int j = 1; j <=i; j++) {
+		if (j != 1)
+			Write(", ");
+		Write(FormatInvariant("T{0} t{0}", j));
+	}
+	WriteLine(");");
+}
+WriteLine("");
+for (int i = 0; i <= MaxParams; i++)
 	WriteMethods(i);
 PopIndent();
 #>
 	}
 }
 <#+
+private const int MaxParams = 6;
+
 private string FormatInvariant(string format, params object[] values) {
 	return string.Format(NumberFormatInfo.InvariantInfo, format, values);
 }
 
 private void WriteMethod(int numParams, int mask) {
+	WriteLine("[EditorBrowsable(EditorBrowsableState.Never)]");
 	Write("public static string GetTypedActionUrl<TController");
 	for (int i = 0; i < numParams; i++)
 		Write(FormatInvariant(", T{0}", i + 1));
