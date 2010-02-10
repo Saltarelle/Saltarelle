@@ -35,5 +35,13 @@ namespace SaltarelleParser.Tests {
 			Assert.AreEqual(0, fragments.Count);
 			mocks.VerifyAll();
 		}
+
+		[TestMethod]
+		public void TestTryProcess_ErrorIfNotRoot() {
+			mocks.ReplayAll();
+			Globals.AssertThrows(() => new DirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?enableClientCreate ?>"), false, template, renderFunction), (TemplateErrorException ex) => true);
+			Assert.AreEqual(0, fragments.Count);
+			mocks.VerifyAll();
+		}
 	}
 }

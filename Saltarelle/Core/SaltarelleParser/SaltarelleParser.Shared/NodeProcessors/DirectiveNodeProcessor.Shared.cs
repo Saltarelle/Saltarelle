@@ -18,6 +18,8 @@ namespace Saltarelle.NodeProcessors {
 
 			switch (Utils.NodeName(node)) {
 				case "enableClientCreate":
+					if (!isRoot)
+						throw ParserUtils.TemplateErrorException("The enableClientCreate directive can only appear outside of the template.");
 					template.EnableClientCreate = true;
 					return true;
 				default:
