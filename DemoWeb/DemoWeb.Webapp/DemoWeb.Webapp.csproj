@@ -51,6 +51,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RouteDebug, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="SaltarelleLib, Version=0.5.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Saltarelle\SaltarelleLib.dll</HintPath>
@@ -170,6 +171,7 @@
     <Content Include="Scripts\sscompat.js" />
     <Content Include="Scripts\sscorlib.debug.js" />
     <Content Include="Scripts\sscorlib.js" />
+    <None Include="Views\Home\Lesson7.aspx" />
     <Content Include="Views\Home\Lesson1.aspx" />
     <Content Include="Views\Home\Lesson4.aspx" />
     <None Include="Views\Home\Lesson5.aspx" />

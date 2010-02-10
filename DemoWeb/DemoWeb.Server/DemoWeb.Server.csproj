@@ -60,6 +60,10 @@
       <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SaltarelleParser, Version=0.5.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Saltarelle\SaltarelleParser.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -99,6 +103,21 @@
     <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
       <Link>Lesson5\Lesson5InnerControl.Shared.cs</Link>
     </None>
+    <Compile Include="..\DemoWeb.Shared\Lesson7\DefaultLesson7Provider.Shared.cs">
+      <Link>Lesson7\DefaultLesson7Provider.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\DemoWeb.Shared\Lesson7\ILesson7Service.Shared.cs">
+      <Link>Lesson7\ILesson7Service.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\DemoWeb.Shared\Lesson7\Lesson7Control.Shared.cs">
+      <Link>Lesson7\Lesson7Control.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\DemoWeb.Shared\Lesson7\Lesson7Control.Template.cs">
+      <Link>Lesson7\Lesson7Control.Template.cs</Link>
+      <DependentUpon>Lesson7Control.tpl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="..\DemoWeb.Shared\Person.Shared.cs">
       <Link>Person.Shared.cs</Link>
     </Compile>
@@ -132,6 +151,12 @@
     <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.tpl">
       <Link>Lesson5\Lesson5InnerControl.tpl</Link>
       <LastGenOutput>Lesson5InnerControl.Template.cs</LastGenOutput>
+    </None>
+    <None Include="..\DemoWeb.Shared\Lesson7\Lesson7Control.tpl">
+      <Link>Lesson7\Lesson7Control.tpl</Link>
+      <Generator>Salgen</Generator>
+      <LastGenOutput>Lesson7Control.Template.cs</LastGenOutput>
+      <CustomToolNamespace>DemoWeb</CustomToolNamespace>
     </None>
     <None Include="..\DemoWeb.Shared\saltarelle.config">
       <Link>saltarelle.config</Link>

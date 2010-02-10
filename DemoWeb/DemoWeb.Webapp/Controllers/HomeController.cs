@@ -21,5 +21,9 @@ namespace DemoWeb.Webapp.Controllers {
 		public ActionResult Lesson5() {
 			return View();
 		}
+
+		public ActionResult Lesson7() {
+			return View();
+		}
 	}
 }

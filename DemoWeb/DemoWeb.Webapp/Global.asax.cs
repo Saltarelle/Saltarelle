@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Saltarelle.Mvc;
 
 namespace DemoWeb.Webapp {
 	// Note: For instructions on enabling IIS6 or IIS7 classic mode, 
@@ -14,6 +15,7 @@ namespace DemoWeb.Webapp {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 			routes.MapRoute("AssemblyScripts", "AssemblyScripts/{assemblyName}.js", new { controller = "SaltarelleRuntime", action = "AssemblyScript" });
+			routes.MapRoute("Delegate", "Delegate/{typeName}/{method}", new { controller = "Delegate", action = "Execute" }, new[] { typeof(DelegateController).Namespace } );
 
 			routes.MapRoute(
 				"HomeShortcut",              // Route name
