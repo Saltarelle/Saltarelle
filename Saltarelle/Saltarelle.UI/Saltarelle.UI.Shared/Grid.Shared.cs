@@ -64,19 +64,19 @@ namespace Saltarelle.UI {
 	#endif
 
 	public class Grid : IControl, IClientCreateControl, IResizableX, IResizableY {
-		public const int BORDER_SIZE = 1;
+		public const int BorderSize = 1;
 	
-		public const string DIV_CLASS = "Grid ui-widget-content";
-		public const string DISABLED_DIV_CLASS = "DisabledGrid";
-		public const string SPACER_TH_CLASS = "spacer";
-		public const string HEADER_DIV_CLASS = "GridHeader";
-		public const string HEADER_TABLE_CLASS = "GridHeader";
-		public const string VALUES_DIV_CLASS = "GridValues";
-		public const string VALUES_TABLE_CLASS = "GridValues";
-		public const string EVEN_ROW_CLASS = "GridRowEven";
-		public const string ODD_ROW_CLASS = "GridRowOdd";
-		public const string ROW_HOVER_CLASS = "DropHover";
-		public const string CURRENT_DRAGGING_ROW_CLASS = "CurrentDraggingRow";
+		public const string DivClass = "Grid ui-widget-content";
+		public const string DisabledDivClass = "DisabledGrid";
+		public const string SpacerThClass = "spacer";
+		public const string HeaderDivClass = "GridHeader";
+		public const string HeaderTableClass = "GridHeader";
+		public const string ValuesDivClass = "GridValues";
+		public const string ValuesTableClass = "GridValues";
+		public const string EvenRowClass = "GridRowEven";
+		public const string OddRowClass = "GridRowOdd";
+		public const string RowHoverClass = "DropHover";
+		public const string CurrentDraggingRowClass = "CurrentDraggingRow";
 	
 		private string id;
 		private int[] colWidths = new int[0];
@@ -148,7 +148,7 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (element != null) {
-						element.children("div").andSelf().width(value - 2 * BORDER_SIZE);
+						element.children("div").andSelf().width(value - 2 * BorderSize);
 					}
 				#endif
 				width = value;
@@ -164,7 +164,7 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (element != null)
-						element.children("div:eq(1)").height(value - 2 * BORDER_SIZE - (colHeadersVisible ? headerHeight : 0));
+						element.children("div:eq(1)").height(value - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 				#endif
 				height = value;
 			}
@@ -299,11 +299,11 @@ namespace Saltarelle.UI {
 						}
 
 						if (value) {
-							element.removeClass(DISABLED_DIV_CLASS);
+							element.removeClass(DisabledDivClass);
 							element.attr("tabindex", tabIndex);
 						}
 						else {
-							element.addClass(DISABLED_DIV_CLASS);
+							element.addClass(DisabledDivClass);
 							element.removeAttr("tabindex");
 						}
 					}
@@ -319,7 +319,7 @@ namespace Saltarelle.UI {
 				#if CLIENT
 					if (element != null) {
 						element.children("div:eq(0)").css("display", colHeadersVisible ? "" : "none");
-						element.children("div:eq(1)").height(height - 2 * BORDER_SIZE - (colHeadersVisible ? headerHeight : 0));
+						element.children("div:eq(1)").height(height - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 					}
 				#endif
 			}
@@ -373,13 +373,13 @@ namespace Saltarelle.UI {
 						q.insertBefore(valuesTbody.children().eq(index));
 
 					for (jQuery next = q.next(); next.size() > 0; next = next.next()) {
-						if (next.isInExpression("." + EVEN_ROW_CLASS)) {
-							next.removeClass(EVEN_ROW_CLASS);
-							next.addClass(ODD_ROW_CLASS);
+						if (next.isInExpression("." + EvenRowClass)) {
+							next.removeClass(EvenRowClass);
+							next.addClass(OddRowClass);
 						}
 						else {
-							next.removeClass(ODD_ROW_CLASS);
-							next.addClass(EVEN_ROW_CLASS);
+							next.removeClass(OddRowClass);
+							next.addClass(EvenRowClass);
 						}
 					}
 
@@ -459,13 +459,13 @@ namespace Saltarelle.UI {
 					jQuery q = valuesTbody.children(":eq(" + row.ToString() + ")"), next = q.next();
 					q.remove();
 					for (; next.size() > 0; next = next.next()) {
-						if (next.isInExpression("." + EVEN_ROW_CLASS)) {
-							next.removeClass(EVEN_ROW_CLASS);
-							next.addClass(ODD_ROW_CLASS);
+						if (next.isInExpression("." + EvenRowClass)) {
+							next.removeClass(EvenRowClass);
+							next.addClass(OddRowClass);
 						}
 						else {
-							next.removeClass(ODD_ROW_CLASS);
-							next.addClass(EVEN_ROW_CLASS);
+							next.removeClass(OddRowClass);
+							next.addClass(EvenRowClass);
 						}
 					}
 					if (changeSelection) {
@@ -513,7 +513,7 @@ namespace Saltarelle.UI {
 		}
 		
 		private void AddRowHtml(StringBuilder sb, string[] cellTexts, bool even, bool selected, object data) {
-			sb.Append("<tr" + (data != null ? (" __data=\"" + Utils.HtmlEncode(Utils.Json(data)) + "\"") : "") + " class=\"" + (even ? EVEN_ROW_CLASS : ODD_ROW_CLASS) + (selected ? " ui-state-highlight" : "") + "\">");
+			sb.Append("<tr" + (data != null ? (" __data=\"" + Utils.HtmlEncode(Utils.Json(data)) + "\"") : "") + " class=\"" + (even ? EvenRowClass : OddRowClass) + (selected ? " ui-state-highlight" : "") + "\">");
 			for (int c = 0; c < NumColumns; c++)
 				sb.Append("<td " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (c < cellTexts.Length && !string.IsNullOrEmpty(cellTexts[c]) ? Utils.HtmlEncode(cellTexts[c]) : Utils.BlankImageHtml) + "</div></div></td>");
 			sb.Append("</tr>");
@@ -522,10 +522,11 @@ namespace Saltarelle.UI {
 		private string InnerHtml {
 			get {
 				StringBuilder sb = new StringBuilder();
-				sb.Append("<div class=\"" + HEADER_DIV_CLASS + "\" style=\"width: " + (this.width - 2 * BORDER_SIZE) + "px\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"" + HEADER_TABLE_CLASS + "\"><thead><tr>");
+				// position: relative on the header div solves an IE6 rendering bug.
+				sb.Append("<div class=\"" + HeaderDivClass + "\" style=\"position: relative; width: " + (this.width - 2 * BorderSize) + "px\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"" + HeaderTableClass + "\"><thead><tr>");
 				for (int c = 0; c < NumColumns; c++)
-					sb.Append("<th " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (!string.IsNullOrEmpty(colTitles[c]) ? Utils.HtmlEncode(colTitles[c]) : Utils.BlankImageHtml) + "</div></div></th>");
-				sb.Append("<th class=\"" + SPACER_TH_CLASS + "\"><div>&nbsp;</div></th></tr></thead></table></div><div class=\"" + VALUES_DIV_CLASS + "\" style=\"width: " + (this.width - 2 * BORDER_SIZE) + "px\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"" + VALUES_TABLE_CLASS + "\"><tbody>");
+					sb.Append("<th " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (!string.IsNullOrEmpty(colTitles[c]) ? Utils.HtmlEncode(colTitles[c]) : "&nbsp;") + "</div></div></th>");
+				sb.Append("<th class=\"" + SpacerThClass + "\"><div>&nbsp;</div></th></tr></thead></table></div><div class=\"" + ValuesDivClass + "\" style=\"width: " + (this.width - 2 * BorderSize) + "px\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"" + ValuesTableClass + "\"><tbody>");
 				int index = 0;
 				foreach (GridRowData r in rowsIfNotRendered) {
 					AddRowHtml(sb, r.cellTexts, (index % 2) == 0, index == selectedRowIndex, r.data);
@@ -544,8 +545,8 @@ namespace Saltarelle.UI {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
 				BeforeGetHtml();
-				string style = PositionHelper.CreateStyle(position, width - 2 * BORDER_SIZE, -1);
-				return "<div id=\"" + id + "\" class=\"" + DIV_CLASS + (enabled ? "" : (" " + DISABLED_DIV_CLASS)) + "\" style=\"" + style + "\"" + (enabled ? " tabindex=\"" + Utils.ToStringInvariantInt(tabIndex) + "\"" : "")
+				string style = PositionHelper.CreateStyle(position, width - 2 * BorderSize, -1);
+				return "<div id=\"" + id + "\" class=\"" + DivClass + (enabled ? "" : (" " + DisabledDivClass)) + "\" style=\"" + style + "\"" + (enabled ? " tabindex=\"" + Utils.ToStringInvariantInt(tabIndex) + "\"" : "")
 				#if SERVER
 					 + " __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
 				#endif
@@ -690,8 +691,8 @@ namespace Saltarelle.UI {
 				                         "appendTo", element.children("div:eq(1)").children("table").children("tbody"),
 				                         "scroll", false,
 			                             "containment", "parent",
-			                             "start", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(delegate(DOMElement d, JQueryEvent evt, DraggableEventObject ui) { JQueryProxy.jQuery(d).addClass(CURRENT_DRAGGING_ROW_CLASS); })),
-			                             "stop", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(delegate(DOMElement d, JQueryEvent evt, DraggableEventObject ui) { JQueryProxy.jQuery(d).removeClass(CURRENT_DRAGGING_ROW_CLASS); }))
+			                             "start", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(delegate(DOMElement d, JQueryEvent evt, DraggableEventObject ui) { JQueryProxy.jQuery(d).addClass(CurrentDraggingRowClass); })),
+			                             "stop", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(delegate(DOMElement d, JQueryEvent evt, DraggableEventObject ui) { JQueryProxy.jQuery(d).removeClass(CurrentDraggingRowClass); }))
 			                        ));
 		}
 		
@@ -713,7 +714,7 @@ namespace Saltarelle.UI {
 			rows.droppable(new Dictionary("tolerance", "pointer",
 			                              "drop", Utils.Wrap(new UnwrappedDroppableEventHandlerDelegate(Row_Drop)),
 			                              "greedy", true,
-			                              "hoverClass", ROW_HOVER_CLASS
+			                              "hoverClass", RowHoverClass
 			              ));
 		}
 
@@ -773,9 +774,11 @@ namespace Saltarelle.UI {
 			                                                                                       SetColWidth(index, Math.Round(ui.size.width));
 			                                                                                   }))
 			                                                           ));
+			if (jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 8)
+				headerTr.find(".ui-resizable-e").height(headerHeight);
 
 			jQuery valuesDiv = element.children("div:eq(1)");
-			valuesDiv.height(height - 2 * BORDER_SIZE - (colHeadersVisible ? headerHeight : 0));
+			valuesDiv.height(height - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 			valuesDiv.scroll(delegate {
 				element.children("div:eq(0)").scrollLeft(Math.Round(element.children("div:eq(1)").scrollLeft()));
 			});
