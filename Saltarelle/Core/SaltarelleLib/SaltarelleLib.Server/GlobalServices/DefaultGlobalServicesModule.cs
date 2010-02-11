@@ -8,6 +8,7 @@ using CreatedServicePair = System.Collections.Generic.KeyValuePair<System.Type, 
 namespace Saltarelle {
 	public class DefaultGlobalServicesModule : IHttpModule {
 		private const string CreatedServicesKey = "{EF8495B3-D241-4b32-AA39-B34D09F3E7E6}";
+		private object padlock;
 
 		private class DefaultGlobalServicesProvider : IGlobalServicesProvider {
 			private IDictionary<Type, Type> serviceProviders;
@@ -75,14 +76,18 @@ namespace Saltarelle {
 			context.EndRequest   += Application_EndRequest;
 			
 			if (GlobalServices.Provider == null) {
-				var serviceProviders = (  from asm in AppDomain.CurrentDomain.GetAssemblies()
-				                          from tp in asm.GetTypes()
-				                           let attr = (GlobalServiceAttribute)tp.GetCustomAttributes(typeof(GlobalServiceAttribute), false).FirstOrDefault()
-				                         where attr != null
-				                        select new { svcInterface = attr.InterfaceType, implementer = tp }
-				                       ).ToDictionary(x => x.svcInterface, x => x.implementer);
-
-				GlobalServices.Init(new DefaultGlobalServicesProvider(serviceProviders));
+				lock (padlock) {
+					// The Init event seems to fire more than once sometimes, so we might get errors during startup unless we do this.
+					if (GlobalServices.Provider == null) {
+						var serviceProviders = (  from asm in AppDomain.CurrentDomain.GetAssemblies()
+						                          from tp in asm.GetTypes()
+						                           let attr = (GlobalServiceAttribute)tp.GetCustomAttributes(typeof(GlobalServiceAttribute), false).FirstOrDefault()
+						                         where attr != null
+						                        select new { svcInterface = attr.InterfaceType, implementer = tp }
+						                       ).ToDictionary(x => x.svcInterface, x => x.implementer);
+						GlobalServices.Init(new DefaultGlobalServicesProvider(serviceProviders));
+					}
+				}
 			}
 		}
 
