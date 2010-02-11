@@ -12,8 +12,6 @@ namespace Saltarelle.Members {
 		
 		public FieldMember(string name, string serverType, string clientType) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("name");
-			if (string.IsNullOrEmpty(serverType)) throw Utils.ArgumentException("serverType");
-			if (string.IsNullOrEmpty(clientType)) throw Utils.ArgumentException("clientType");
 		
 			this.name       = name;
 			this.serverType = serverType;
@@ -35,7 +33,7 @@ namespace Saltarelle.Members {
 		}
 
 		public override int GetHashCode() {
-			return name.GetHashCode() ^ serverType.GetHashCode() ^ clientType.GetHashCode();
+			return name.GetHashCode() ^ (serverType != null ? serverType.GetHashCode() : 0) ^ (clientType != null ? clientType.GetHashCode() : 0);
 		}
 
 		public override string ToString() {
@@ -45,16 +43,20 @@ namespace Saltarelle.Members {
 		public void WriteCode(ITemplate tpl, MemberCodePoint point, CodeBuilder cb) {
 			switch (point) {
 				case MemberCodePoint.ServerDefinition:
-					cb.AppendLine("private " + ServerType + " " + Name + ";").AppendLine();
+					if (serverType != null)
+						cb.AppendLine("private " + serverType + " " + Name + ";").AppendLine();
 					break;
 				case MemberCodePoint.ClientDefinition:
-					cb.AppendLine("private " + ClientType + " " + Name + ";").AppendLine();
+					if (clientType != null)
+						cb.AppendLine("private " + ClientType + " " + Name + ";").AppendLine();
 					break;
 				case MemberCodePoint.TransferConstructor:
-					cb.AppendLine("this." + name + " = (" + clientType + ")" + ParserUtils.ConfigObjectName + "[\"" + name + "\"];");
+					if (serverType != null && clientType != null)
+						cb.AppendLine("this." + name + " = (" + clientType + ")" + ParserUtils.ConfigObjectName + "[\"" + name + "\"];");
 					break;
 				case MemberCodePoint.ConfigObjectInit:
-					cb.AppendLine(ParserUtils.ConfigObjectName + "[\"" + name + "\"] = this." + name + ";");
+					if (serverType != null && clientType != null)
+						cb.AppendLine(ParserUtils.ConfigObjectName + "[\"" + name + "\"] = this." + name + ";");
 					break;
 			}
 		}

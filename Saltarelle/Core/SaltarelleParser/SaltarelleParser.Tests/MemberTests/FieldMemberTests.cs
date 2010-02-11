@@ -37,7 +37,18 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestWriteClientDefinition_Works() {
+		public void TestWriteServerDefinition_NothingWrittenWhenNotServer() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			CodeBuilder cb = new CodeBuilder();
+			new FieldMember("TestId", null, "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ServerDefinition, cb);
+			Assert.AreEqual("", cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteClientDefinition_WorksWhenClientType() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
@@ -48,7 +59,18 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestWriteTransferConstructorCode_Works() {
+		public void TestWriteClientDefinition_NothingWrittenWhenNotClient() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			CodeBuilder cb = new CodeBuilder();
+			new FieldMember("TestId", "Namespace.ServerType", null).WriteCode(tpl, MemberCodePoint.ClientDefinition, cb);
+			Assert.AreEqual("", cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteTransferConstructorCode_WorksWhenBothServerAndClient() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
@@ -59,12 +81,56 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestWriteConfigObjectInitCode_Works() {
+		public void TestWriteTransferConstructorCode_NothingWrittenWhenNotClient() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			CodeBuilder cb = new CodeBuilder();
+			new FieldMember("TestId", "Namespace.ServerType", null).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
+			Assert.AreEqual("", cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteTransferConstructorCode_NothingWrittenWhenNotServer() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			CodeBuilder cb = new CodeBuilder();
+			new FieldMember("TestId", null, "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
+			Assert.AreEqual("", cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteConfigObjectInitCode_WorksWhenBothServerAndClient() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
 			Assert.AreEqual("__cfg[\"TestId\"] = this.TestId;" + Environment.NewLine, cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteConfigObjectInitCode_NothingWrittenWhenNotClient() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			CodeBuilder cb = new CodeBuilder();
+			new FieldMember("TestId", "Namespace.ServerType", null).WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
+			Assert.AreEqual("", cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestWriteConfigObjectInitCode_NothingWrittenWhenNotServer() {
+			var tpl = mocks.StrictMock<ITemplate>();
+			mocks.ReplayAll();
+			CodeBuilder cb = new CodeBuilder();
+			new FieldMember("TestId", null, "Namespace.ClientType").WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
+			Assert.AreEqual("", cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
 		}
