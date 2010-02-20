@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Saltarelle;
 using Rhino.Mocks;
 using Rhino.Mocks.Constraints;
+using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
 	[TestClass]

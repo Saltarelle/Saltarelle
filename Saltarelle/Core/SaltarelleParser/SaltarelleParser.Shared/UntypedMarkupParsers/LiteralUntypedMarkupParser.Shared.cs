@@ -1,3 +1,5 @@
+using Saltarelle.Fragments;
+
 namespace Saltarelle.UntypedMarkupParsers {
 	internal class LiteralUntypedMarkupParser : IUntypedMarkupParserImpl {
 		public IFragment TryParse(string value) {

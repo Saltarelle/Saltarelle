@@ -3,7 +3,7 @@
 using System.Text;
 #endif
 
-namespace Saltarelle {
+namespace Saltarelle.Fragments {
 	internal class ConfigObjectFragment : IFragment {
 		public ConfigObjectFragment() {
 		}

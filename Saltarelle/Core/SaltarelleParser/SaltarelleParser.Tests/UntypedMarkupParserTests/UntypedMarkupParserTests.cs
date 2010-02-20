@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Saltarelle;
 using Rhino.Mocks;
+using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
 	/// <summary>

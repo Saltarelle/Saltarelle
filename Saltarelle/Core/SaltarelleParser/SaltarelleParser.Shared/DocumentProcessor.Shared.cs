@@ -18,6 +18,7 @@ namespace Saltarelle {
 		private static INodeProcessor[] defaultNodeProcessors = { new ImplementsOrInheritsNodeProcessor(),
 		                                                          new FieldNodeProcessor(),
 		                                                          new ViewDirectiveNodeProcessor(),
+		                                                          new FunctionDefinitionAndCallNodeProcessor(),
 		                                                          new ControlInstantiationNodeProcessor(),
 		                                                          new ControlFlowTagProcessor(),
 		                                                          new LeafNodeProcessor(),

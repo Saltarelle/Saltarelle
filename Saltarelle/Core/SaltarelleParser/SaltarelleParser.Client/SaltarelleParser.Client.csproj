@@ -120,6 +120,9 @@
     <Compile Include="..\saltarelleparser.shared\nodeprocessors\FieldNodeProcessor.Shared.cs">
       <Link>NodeProcessors\FieldNodeProcessor.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\FunctionDefinitionAndCallNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\FunctionDefinitionAndCallNodeProcessor.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\saltarelleparser.shared\nodeprocessors\GenericElementProcessor.Shared.cs">
       <Link>NodeProcessors\GenericElementProcessor.Shared.cs</Link>
     </Compile>

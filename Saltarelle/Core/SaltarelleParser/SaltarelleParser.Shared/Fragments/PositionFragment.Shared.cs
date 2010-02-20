@@ -3,7 +3,7 @@
 using System.Text;
 #endif
 
-namespace Saltarelle {
+namespace Saltarelle.Fragments {
 	internal class PositionFragment : IFragment {
 		public PositionFragment() {
 		}

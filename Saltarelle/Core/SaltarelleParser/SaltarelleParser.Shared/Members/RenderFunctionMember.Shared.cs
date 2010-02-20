@@ -17,6 +17,7 @@ namespace Saltarelle.Members {
 		
 		public string Name { get { return name; } }
 		public string Parameters { get { return parameters; } }
+		public FragmentList Fragments { get { return fragments; } }
 		
 		public RenderFunctionMember(string name, string parameters) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("name");

@@ -1,5 +1,6 @@
 ﻿using System;
 using Saltarelle.Members;
+using Saltarelle.Fragments;
 #if CLIENT
 using XmlNode = System.XML.XMLNode;
 using XmlAttribute = System.XML.XMLAttribute;

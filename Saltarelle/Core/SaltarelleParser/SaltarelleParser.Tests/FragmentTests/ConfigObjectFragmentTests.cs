@@ -7,6 +7,7 @@ using System.Xml;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
+using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
 	internal class ConfigObjectFragmentTestsTestClass1 : IControl {

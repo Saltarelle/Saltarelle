@@ -3,7 +3,7 @@
 using System.Text;
 #endif
 
-namespace Saltarelle {
+namespace Saltarelle.Fragments {
 	internal class LiteralFragment : IFragment {
 		public readonly string Text;
 		public readonly bool IsCData;

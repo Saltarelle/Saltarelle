@@ -8,6 +8,7 @@ using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
+using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
 	[TestClass]

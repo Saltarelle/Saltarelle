@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
+using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
 	[TestClass]
