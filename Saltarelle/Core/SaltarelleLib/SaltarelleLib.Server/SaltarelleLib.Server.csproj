@@ -96,6 +96,7 @@
     <Compile Include="GlobalServices\BuiltinServices\IUrlService.Server.cs" />
     <Compile Include="Mvc\DelegateController.cs" />
     <Compile Include="Mvc\HtmlExtensions.cs" />
+    <Compile Include="Mvc\IView.cs" />
     <Compile Include="Mvc\UrlServiceExtensions.Autogen.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

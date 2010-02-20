@@ -99,6 +99,9 @@
     <Compile Include="..\saltarelleparser.shared\members\NamedElementMember.Shared.cs">
       <Link>Members\NamedElementMember.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\PropertyMember.Shared.cs">
+      <Link>Members\PropertyMember.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\saltarelleparser.shared\members\RenderFunctionMember.Shared.cs">
       <Link>Members\RenderFunctionMember.Shared.cs</Link>
     </Compile>
@@ -128,6 +131,9 @@
     </Compile>
     <Compile Include="..\saltarelleparser.shared\nodeprocessors\LeafNodeProcessor.Shared.cs">
       <Link>NodeProcessors\LeafNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs</Link>
     </Compile>
     <Compile Include="..\SaltarelleParser.Shared\ParserUtils.Shared.cs">
       <Link>ParserUtils.Shared.cs</Link>

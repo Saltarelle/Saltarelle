@@ -17,6 +17,7 @@ namespace Saltarelle {
 	internal class DocumentProcessor : IDocumentProcessor {
 		private static INodeProcessor[] defaultNodeProcessors = { new ImplementsOrInheritsNodeProcessor(),
 		                                                          new FieldNodeProcessor(),
+		                                                          new ViewDirectiveNodeProcessor(),
 		                                                          new ControlInstantiationNodeProcessor(),
 		                                                          new ControlFlowTagProcessor(),
 		                                                          new LeafNodeProcessor(),

@@ -57,6 +57,7 @@
     <Compile Include="FragmentTests\InstantiatedControlFragmentTests.cs" />
     <Compile Include="FragmentTests\IdFragmentTests.cs" />
     <Compile Include="FragmentTests\LiteralFragmentTests.cs" />
+    <Compile Include="MemberTests\PropertyMemberTests.Shared.cs" />
     <Compile Include="MemberTests\RenderFunctionMemberTests.cs" />
     <Compile Include="MemberTests\NamedElementMemberTests.cs" />
     <Compile Include="MemberTests\InstantiatedControlMemberTests.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="NodeProcessorTests\ControlFlowTagProcessorTests.cs" />
     <Compile Include="NodeProcessorTests\DirectiveNodeProcessorTests.cs" />
     <Compile Include="NodeProcessorTests\EmbeddedCodeNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\ViewDirectiveNodeProcessorTests.cs" />
     <Compile Include="ParserUtilsTests.cs" />
     <Compile Include="NodeProcessorTests\FieldNodeProcessorTests.cs" />
     <Compile Include="NodeProcessorTests\ImplementsOrInheritsNodeProcessorTests.cs" />

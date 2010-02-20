@@ -19,15 +19,15 @@ namespace Saltarelle.NodeProcessors {
 			if (!isRoot)
 				throw ParserUtils.TemplateErrorException(string.Format("The {0} directive can only appear outside of the template.", Utils.NodeName(node)));
 				
-			string[] sideArr2 = Utils.RegexExec(Utils.NodeValue(node), "side=\"([^\"]*)\"", "");
-			string[] typeArr2 = Utils.RegexExec(Utils.NodeValue(node), "type=\"([^\"]*)\"", "");
+			string[] sideArr = Utils.RegexExec(Utils.NodeValue(node), "side=\"([^\"]*)\"", "");
+			string[] typeArr = Utils.RegexExec(Utils.NodeValue(node), "type=\"([^\"]*)\"", "");
 	
-			if (typeArr2 == null)
+			if (typeArr == null)
 				throw ParserUtils.TemplateErrorException(Utils.NodeName(node) + " elements must have the type specified.");
-			if (sideArr2 == null)
+			if (sideArr == null)
 				throw ParserUtils.TemplateErrorException(Utils.NodeName(node) + " elements must have the side specified.");
 
-			string side = sideArr2[1].Trim(), type = typeArr2[1].Trim();
+			string side = sideArr[1].Trim(), type = typeArr[1].Trim();
 
 			bool serverSide, clientSide;
 			switch (side) {

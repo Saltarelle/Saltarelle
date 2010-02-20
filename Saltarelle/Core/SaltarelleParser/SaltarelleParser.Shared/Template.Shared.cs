@@ -119,7 +119,7 @@ namespace Saltarelle {
 		}
 		
 		public void AddMember(IMember member) {
-			if (!ParserUtils.IsValidUnqualifiedName(member.Name) || members.ContainsKey(member.Name)) throw Utils.ArgumentException("name");
+			if (members.ContainsKey(member.Name)) throw Utils.ArgumentException("name");
 			members[member.Name] = member;
 		}
 

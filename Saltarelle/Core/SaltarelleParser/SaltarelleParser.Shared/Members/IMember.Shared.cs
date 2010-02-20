@@ -1,6 +1,31 @@
 ﻿using System;
 
 namespace Saltarelle {
+	public enum AccessModifier {
+		_Public            = 0,
+		_Protected         = 1,
+		_Private           = 2,
+		_Internal          = 3,
+		_ProtectedInternal = 4,
+		_None              = 5
+	}
+	
+	public static class AccessModifierHelper {
+		public static string WriteDeclarator(AccessModifier am, string type, string name) {
+			string s;
+			switch (am) {
+				case AccessModifier._Public:            s = "public "; break;
+				case AccessModifier._Protected:         s = "protected "; break;
+				case AccessModifier._Private:           s = "private "; break;
+				case AccessModifier._Internal:          s = "internal "; break;
+				case AccessModifier._ProtectedInternal: s = "protected internal "; break;
+				case AccessModifier._None:              s = ""; break;
+				default: throw Utils.ArgumentException("am");
+			}
+			return s + type + " " + name;
+		}
+	}
+
 #if SERVER
 	public enum MemberCodePoint {
 		ServerDefinition    = 0,
