@@ -87,8 +87,6 @@ namespace Saltarelle.NodeProcessors {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
 			if (node.NodeType != XmlNodeType.Element)
 				return false;
-			if (isRoot)
-				throw ParserUtils.TemplateErrorException("Control flow nodes cannot be root elements.");
 
 			if (Utils.NodeName(node) == "case" || Utils.NodeName(node) == "default")
 				throw ParserUtils.TemplateErrorException("<case> and <default> can only occur inside <switch>");
@@ -96,6 +94,9 @@ namespace Saltarelle.NodeProcessors {
 			string statement = GetStatement(node);
 			if (statement == null)
 				return false;
+
+			if (isRoot)
+				throw ParserUtils.TemplateErrorException("Control flow nodes cannot be root elements.");
 
 			currentRenderFunction.AddFragment(new CodeFragment(statement + " {", 1));
 
