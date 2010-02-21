@@ -90,6 +90,8 @@ namespace Saltarelle.NodeProcessors {
 
 			if (Utils.NodeName(node) == "case" || Utils.NodeName(node) == "default")
 				throw ParserUtils.TemplateErrorException("<case> and <default> can only occur inside <switch>");
+			if (Utils.NodeName(node) == "else-if" || Utils.NodeName(node) == "else")
+				throw ParserUtils.TemplateErrorException("<else-if> and <else> can only occur inside <if>");
 
 			string statement = GetStatement(node);
 			if (statement == null)
@@ -104,8 +106,30 @@ namespace Saltarelle.NodeProcessors {
 				ProcessSwitchContent(docProcessor, node, template, currentRenderFunction);
 			}
 			else {
+				bool hasElse = false;
 				Utils.DoForEachChild(node, delegate(XmlNode child) {
-					docProcessor.ProcessRecursive(child, template, currentRenderFunction);
+					if (Utils.NodeName(node) == "if" && (child.NodeType == XmlNodeType.Element && (Utils.NodeName(child) == "else-if" || Utils.NodeName(child) == "else"))) {
+						if (hasElse)
+							throw ParserUtils.TemplateErrorException("There cannot be other <else-if> or <else> elements after <else>.");
+						if (Utils.GetNumChildNodes(child) > 0)
+							throw ParserUtils.TemplateErrorException("<" + Utils.NodeName(child) + "> elements should not have children.");
+						string possibleTest;
+						if (Utils.NodeName(child) == "else-if") {
+							XmlAttribute testAttr = (XmlAttribute)child.Attributes.GetNamedItem("test");
+							if (testAttr == null)
+								throw ParserUtils.TemplateErrorException("The <else-if> elements must have the test attribute specified.");
+							possibleTest = "if (" + Utils.NodeValue(testAttr) + ") ";
+						}
+						else {
+							hasElse = true;
+							possibleTest = "";
+						}
+						currentRenderFunction.AddFragment(new CodeFragment(null, -1));
+						currentRenderFunction.AddFragment(new CodeFragment("}", 0));
+						currentRenderFunction.AddFragment(new CodeFragment("else " + possibleTest + "{", 1));
+					}
+					else
+						docProcessor.ProcessRecursive(child, template, currentRenderFunction);
 				});
 			}
 			

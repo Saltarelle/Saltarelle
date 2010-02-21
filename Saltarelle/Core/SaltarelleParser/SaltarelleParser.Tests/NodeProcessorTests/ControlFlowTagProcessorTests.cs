@@ -140,7 +140,7 @@ namespace SaltarelleParser.Tests {
 		}
 		
 		[TestMethod]
-		public void TestTryProcessSwitch_Works() {
+		public void TestTryProcess_SwitchWorks() {
 			XmlNode node = Globals.GetXmlNode("<switch expr=\"testexpr\"> <case value=\"1\"><x/></case>  <default><y/></default> <!-- comment --> <case value=\"2\"><z1/><z2/></case></switch>");
 			XmlNode x = node.SelectSingleNode("//x"), y = node.SelectSingleNode("//y"), z1 = node.SelectSingleNode("//z1"), z2 = node.SelectSingleNode("//z2");
 
@@ -173,20 +173,82 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestTryProcess_ErrorIfRoot() {
+		public void TestTryProcess_IfStatementErrorIfElseContent() {
+			Expect.Call(() => docProcessor.ProcessRecursive(null, null, null)).IgnoreArguments().Repeat.Any();
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new ControlFlowTagProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<if test=\"x\"/>"), true, template, renderFunction), (TemplateErrorException ex) => true);
+			XmlNode node = Globals.GetXmlNode("<if test=\"testexpr\">x<else>x</else>x</if>");
+			Globals.AssertThrows(() => new ControlFlowTagProcessor().TryProcess(docProcessor, node, false, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
-		
+
+
 		[TestMethod]
-		public void TestTryProcess_NonSwitchWorks() {
-			XmlNode n = Globals.GetXmlNode("<if test=\"x\"><a/><b/></if>"), n1 = n.ChildNodes[0], n2 = n.ChildNodes[1];
+		public void TestTryProcess_IfStatementErrorIfElseIfDoesNotHaveTest() {
+			Expect.Call(() => docProcessor.ProcessRecursive(null, null, null)).IgnoreArguments().Repeat.Any();
+			mocks.ReplayAll();
+			XmlNode node = Globals.GetXmlNode("<if test=\"testexpr\">x<else-if/>x</if>");
+			Globals.AssertThrows(() => new ControlFlowTagProcessor().TryProcess(docProcessor, node, false, template, renderFunction), (TemplateErrorException ex) => true);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestTryProcess_IfStatementErrorIfElseIfAfterElse() {
+			Expect.Call(() => docProcessor.ProcessRecursive(null, null, null)).IgnoreArguments().Repeat.Any();
+			mocks.ReplayAll();
+			XmlNode node = Globals.GetXmlNode("<if test=\"testexpr\">x<else/>x<else-if test=\"test2\"/>x</if>");
+			Globals.AssertThrows(() => new ControlFlowTagProcessor().TryProcess(docProcessor, node, false, template, renderFunction), (TemplateErrorException ex) => true);
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestTryProcess_IfWorks() {
+			XmlNode node = Globals.GetXmlNode("<if test=\"test1\"><x1/><x2/><else-if test=\"test2\"/><y1/><y2/><else/><z1/><z2/></if>");
+			XmlNode x1 = node.SelectSingleNode("//x1"), x2 = node.SelectSingleNode("//x2"), y1 = node.SelectSingleNode("//y1"), y2 = node.SelectSingleNode("//y2"), z1 = node.SelectSingleNode("//z1"), z2 = node.SelectSingleNode("//z2");
+
+			Expect.Call(() => docProcessor.ProcessRecursive(x1, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("[a1]"))));
+			Expect.Call(() => docProcessor.ProcessRecursive(x2, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("[a2]"))));
+			Expect.Call(() => docProcessor.ProcessRecursive(y1, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("[b1]"))));
+			Expect.Call(() => docProcessor.ProcessRecursive(y2, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("[b2]"))));
+			Expect.Call(() => docProcessor.ProcessRecursive(z1, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("[c1]"))));
+			Expect.Call(() => docProcessor.ProcessRecursive(z2, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("[c2]"))));
+
+			mocks.ReplayAll();
+			Assert.IsTrue(new ControlFlowTagProcessor().TryProcess(docProcessor, node, false, template, renderFunction));
+			
+			Assert.IsTrue(new IFragment[] { new CodeFragment("if (test1) {", 1),
+			                                new LiteralFragment("[a1]"),
+			                                new LiteralFragment("[a2]"),
+			                                new CodeFragment(null, -1),
+			                                new CodeFragment("}", 0),
+			                                new CodeFragment("else if (test2) {", 1),
+			                                new LiteralFragment("[b1]"),
+			                                new LiteralFragment("[b2]"),
+			                                new CodeFragment(null, -1),
+			                                new CodeFragment("}", 0),
+			                                new CodeFragment("else {", 1),
+			                                new LiteralFragment("[c1]"),
+			                                new LiteralFragment("[c2]"),
+			                                new CodeFragment(null, -1),
+			                                new CodeFragment("}", 0) }.SequenceEqual(fragments));
+
+			mocks.VerifyAll();			
+		}
+
+		[TestMethod]
+		public void TestTryProcess_SimpleWorks() {
+			XmlNode n = Globals.GetXmlNode("<while test=\"x\"><a/><b/></while>"), n1 = n.ChildNodes[0], n2 = n.ChildNodes[1];
 			Expect.Call(() => docProcessor.ProcessRecursive(n1, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("a"))));
 			Expect.Call(() => docProcessor.ProcessRecursive(n2, template, renderFunction)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((_, __, f) => f.AddFragment(new LiteralFragment("b"))));
 			mocks.ReplayAll();
 			Assert.IsTrue(new ControlFlowTagProcessor().TryProcess(docProcessor, n, false, template, renderFunction));
-			Assert.IsTrue(new IFragment[] { new CodeFragment("if (x) {", 1), new LiteralFragment("a"), new LiteralFragment("b"), new CodeFragment(null, -1), new CodeFragment("}", 0) }.SequenceEqual(fragments));
+			Assert.IsTrue(new IFragment[] { new CodeFragment("while (x) {", 1), new LiteralFragment("a"), new LiteralFragment("b"), new CodeFragment(null, -1), new CodeFragment("}", 0) }.SequenceEqual(fragments));
+		}
+
+		[TestMethod]
+		public void TestTryProcess_ErrorIfRoot() {
+			mocks.ReplayAll();
+			Globals.AssertThrows(() => new ControlFlowTagProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<if test=\"x\"/>"), true, template, renderFunction), (TemplateErrorException ex) => true);
+			mocks.VerifyAll();
 		}
 	}
 }
