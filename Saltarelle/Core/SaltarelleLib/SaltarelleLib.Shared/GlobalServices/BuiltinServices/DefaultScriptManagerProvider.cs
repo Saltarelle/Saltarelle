@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Web;
 using System.IO;
 using System.Linq;
+using dotless.Core;
+using dotless.Core.configuration;
+using Saltarelle.Mvc;
 #endif
 #if CLIENT
 using System.DHTML;
@@ -18,81 +21,18 @@ namespace Saltarelle {
 		private int nextUniqueId = 1;
 		private IUrlService urlService;
 	
-		private static object padlock = new object();
-		
 		private HashSet<Assembly> registeredAssemblies = new HashSet<Assembly>();
 		private List<string> earlyAdditionalIncludes = new List<string>();
 		private List<string> lateAdditionalIncludes = new List<string>();
 		private List<Func<string>> startupScripts = new List<Func<string>>();
-		
-		private static Dictionary<Assembly, ReadOnlyCollection<Assembly>> assemblyDependencies = new Dictionary<Assembly, ReadOnlyCollection<Assembly>>();
-		private static Dictionary<Assembly, string> debugAssemblyScripts = new Dictionary<Assembly, string>();
-		private static Dictionary<Assembly, string> releaseAssemblyScripts = new Dictionary<Assembly, string>();
-		private static IList<Assembly> GetDependencies(Assembly asm) {
-			lock (padlock) {
-				ReadOnlyCollection<Assembly> result;
-				if (!assemblyDependencies.TryGetValue(asm, out result)) {
-					var l = new List<Assembly>();
-					foreach (var refName in asm.GetReferencedAssemblies()) {
-						Assembly refAsm = Assembly.Load(refName);
-						if (!debugAssemblyScripts.ContainsKey(refAsm)) {
-							debugAssemblyScripts[refAsm] = GetAssemblyScriptAssumingLock(refAsm, true);
-							releaseAssemblyScripts[refAsm] = GetAssemblyScriptAssumingLock(refAsm, false);
-						}
-						if (debugAssemblyScripts[refAsm] != null)
-							l.Add(refAsm);
-					}
-					assemblyDependencies[asm] = result = l.AsReadOnly();
-				}
-				return result;
-			}
-		}
-		
-		private static string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {
-			string scriptName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith(debug ? "Script.js" : "Script.min.js"));
-			if (scriptName != null) {
-				using (var strm = asm.GetManifestResourceStream(scriptName))
-				using (var rdr = new StreamReader(strm)) {
-					return rdr.ReadToEnd();
-				}
-			}
-			return null;
-		}
-		
-		private string InternalGetAssemblyScriptContent(Assembly asm, bool debug) {
-			string s;
-			lock (padlock) {
-				var x = (debug ? debugAssemblyScripts : releaseAssemblyScripts);
-				if (!x.TryGetValue(asm, out s)) {
-					x[asm] = s = GetAssemblyScriptAssumingLock(asm, debug);
-				}
-			}
-			return s;
-		}
-
-		private static string GetAssemblyIdentifier(Assembly a) {
-			return Path.GetFileNameWithoutExtension(a.GetName().Name);
-		}
 
 		public void RegisterType(Type type) {
 			registeredAssemblies.Add(type.Assembly);
 		}
-		
-		private void AddAssembliesInCorrectOrder(Assembly asm, IList<Assembly> l) {
-			if (!l.Contains(asm)) {
-				// add all references (recursively) before adding the current one
-				foreach (var dep in GetDependencies(asm))
-					AddAssembliesInCorrectOrder(dep, l);
-				if (InternalGetAssemblyScriptContent(asm, true) != null)
-					l.Add(asm);
-			}
-		}
-		
+
 		public IEnumerable<string> GetAllRequiredIncludes() {
-			IList<Assembly> asms = new List<Assembly>();
-			foreach (Assembly a in registeredAssemblies.Concat(GlobalServices.AllLoadedServices.Select(kvp => kvp.Value.GetType().Assembly)))
-				AddAssembliesInCorrectOrder(a, asms);
-			return earlyAdditionalIncludes.Concat(asms.Select(a => urlService.GetAssemblyScriptPath(a))).Concat(lateAdditionalIncludes);
+			var asms = registeredAssemblies.Concat(GlobalServices.AllLoadedServices.Select(kvp => kvp.Value.GetType().Assembly));
+			return earlyAdditionalIncludes.Concat(ModuleUtils.TopologicalSortAssembliesWithDependencies(asms).Select(a => urlService.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
 		}
 		
 		public void AddScriptInclude(string url, bool includeBeforeAssemblyScripts) {
@@ -113,13 +53,6 @@ namespace Saltarelle {
 			startupScripts.Add(() => script);
 		}
 		
-		public string GetAssemblyScriptContent(Assembly assembly, bool release) {
-			string s = InternalGetAssemblyScriptContent(assembly, release);
-			if (s == null)
-				throw new HttpException(404, "File not found");
-			return s;
-		}
-		
 		public IEnumerable<string> GetStartupScripts() {
 			return startupScripts.Select(f => f()).Where(s => !string.IsNullOrEmpty(s));
 		}
@@ -131,15 +64,15 @@ namespace Saltarelle {
 		public void Setup() {
 			urlService = GlobalServices.Provider.GetService<IUrlService>();
 
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("sscompat.debug.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("sscorlib.debug.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("jquery-1.4.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("jquery-ui-1.7.2.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("jquery.focus.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("JQuerySharp.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("jquery.json-1.3.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("jquery.bgiframe.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptPath("date.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("sscompat.debug.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("sscorlib.debug.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery-1.4.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery-ui-1.7.2.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery.focus.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("JQuerySharp.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery.json-1.3.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery.bgiframe.js"));
+			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("date.js"));
 
 			AddStartupScript(() => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + typeof(IScriptManagerService) + ")) Saltarelle.GlobalServices.setService(" + typeof(IScriptManagerService).FullName + ", new " + typeof(DefaultScriptManagerProvider).FullName + "(" + Utils.ToStringInvariantInt(nextUniqueId) + "));");
 			AddStartupScript(() => "if (typeof(Saltarelle) != 'undefined' && typeof(Saltarelle.Utils) != 'undefined' && Saltarelle.Utils.blankImageUrl == null) Saltarelle.Utils.blankImageUrl = " + Utils.ScriptStr(GlobalServices.GetService<IUrlService>().BlankImageUrl) + ";");

@@ -20,7 +20,7 @@ namespace Saltarelle.Mvc {
 		/// <param name="type">The type in question</param>
 		/// <returns>A url template, where {0} can be replaced by a method name, to invoke a method on this type</returns>
 		public static string GetNonControllerActionUrlTemplate(this IUrlService svc, Type type) {
-			return GetTypedActionUrl(svc, (DelegateController c) => c.Execute, type.FullName, "__METHOD__NAME__").Replace("__METHOD__NAME__", "{0}");
+			return GetTypedActionUrl(svc, (SaltarelleController c) => c.Delegate, type.FullName, "__METHOD__NAME__").Replace("__METHOD__NAME__", "{0}");
 		}
 
 		private static MethodInfo FindMethodInfo(Expression expr) {

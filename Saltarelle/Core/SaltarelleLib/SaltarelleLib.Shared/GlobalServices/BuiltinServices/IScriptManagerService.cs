@@ -32,15 +32,6 @@ namespace Saltarelle {
 		void AddScriptInclude(string url, bool includeBeforeAssemblyScripts);
 
 		/// <summary>
-		/// Get the script for the specified assembly. The debug script should be an embedded resource in the assembly with the name *.Script.js
-		/// and the release script should be a resource called *.Script.min.js
-		/// </summary>
-		/// <param name="assembly">The assembly to get the script for</param>
-		/// <param name="debug">false to retrieve the release (minified) script, true for the debug (non-minified) script</param>
-		/// <returns></returns>
-		string GetAssemblyScriptContent(Assembly assembly, bool debug);
-
-		/// <summary>
 		/// Get an ordered list of scripts to include. This method will return all assembly scripts in the correct topological order of their dependencies.
 		/// </summary>
 		/// <returns></returns>

@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dotless.Core.NoMinifier, Version=0.0.0.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\References\dotless.Core.NoMinifier.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\References\Newtonsoft.Json.dll</HintPath>
@@ -42,6 +46,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -94,7 +99,9 @@
     <Compile Include="GlobalServices\GlobalServiceAttribute.Server.cs" />
     <Compile Include="GlobalServices\GlobalServices.Server.cs" />
     <Compile Include="GlobalServices\BuiltinServices\IUrlService.Server.cs" />
-    <Compile Include="Mvc\DelegateController.cs" />
+    <Compile Include="Mvc\ModuleUtils.cs" />
+    <Compile Include="Mvc\ImportCssResourceAttribute.cs" />
+    <Compile Include="Mvc\SaltarelleController.cs" />
     <Compile Include="Mvc\HtmlExtensions.cs" />
     <Compile Include="Mvc\IView.cs" />
     <Compile Include="Mvc\UrlServiceExtensions.Autogen.cs">
@@ -103,6 +110,7 @@
       <DependentUpon>UrlServiceExtensions.tt</DependentUpon>
     </Compile>
     <Compile Include="Mvc\UrlServiceExtensions.cs" />
+    <Compile Include="Mvc\CssResourceAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaltarelleConfigSection.cs" />
     <Compile Include="Utils.Server.cs" />
