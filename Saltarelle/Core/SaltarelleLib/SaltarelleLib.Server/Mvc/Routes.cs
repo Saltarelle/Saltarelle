@@ -49,10 +49,10 @@ namespace Saltarelle.Mvc {
 		}
 
 		public static void RegisterRoutes(RouteCollection routes) {
-			bool debugScripts = true;
 			var config = (SaltarelleConfigSection)WebConfigurationManager.GetSection("saltarelle");
 			if (config == null)
 				throw new ConfigurationErrorsException("The <saltarelle> section is missing from web.config.");
+			bool debugScripts = config.Scripts.Debug;
 
 			if (string.IsNullOrEmpty(config.Routes.AssemblyScripts))
 				throw new ConfigurationErrorsException("The saltarelle/routes/@assemblyScripts configuration attribute must be specified.");
@@ -89,8 +89,6 @@ namespace Saltarelle.Mvc {
 		}
 
 		public static string GetAssemblyResourceUrl(Assembly asm, string resourcePublicName) {
-			Version v = asm.GetName().Version;
-//			return GetVirtualPath(AssemblyResourcesRouteName, new RouteValueDictionary() { { SaltarelleController.AssemblyNameParam, asm.GetName().Name }, { SaltarelleController.ResourceNameParam, resourcePublicName }, { "version", (v.Major > 0 || v.Minor > 0 || v.Build > 0 || v.Revision > 0) ? v.ToString() : "v.x" } });
 			return GetVirtualPath(AssemblyResourcesRouteName, new RouteValueDictionary() { { SaltarelleController.AssemblyNameParam, asm.GetName().Name }, { SaltarelleController.ResourceNameParam, resourcePublicName } });
 		}
 
