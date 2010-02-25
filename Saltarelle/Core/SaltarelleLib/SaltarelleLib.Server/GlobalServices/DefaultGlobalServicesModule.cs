@@ -79,7 +79,7 @@ namespace Saltarelle {
 				lock (padlock) {
 					// The Init event seems to fire more than once sometimes, so we might get errors during startup unless we do this.
 					if (GlobalServices.Provider == null) {
-						var serviceProviders = (  from asm in AppDomain.CurrentDomain.GetAssemblies()
+						var serviceProviders = (  from asm in Utils.GetAllAssemblies()
 						                          from tp in asm.GetTypes()
 						                           let attr = (GlobalServiceAttribute)tp.GetCustomAttributes(typeof(GlobalServiceAttribute), false).FirstOrDefault()
 						                         where attr != null

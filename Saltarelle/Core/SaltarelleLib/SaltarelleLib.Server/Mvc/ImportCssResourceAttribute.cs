@@ -16,21 +16,25 @@ namespace Saltarelle.Mvc {
 		/// </summary>
 		public string   PublicResourceName { get; private set; }
 
+		/// <summary>
+		/// The LessCss variable used to identify the resource in css (without @ sign).
+		/// This may only consist of the letters a-z, hyphen and the underscore character.
+		/// </summary>
 		public string   CssVariableName { get; set; }
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="typeInAssembly">A type in the assembly containing the resource.</param>
-		/// <param name="resourceName">Name of the resource to import. Note: The name, not the PublicResourceName or the QualifiedResourceName. This parameter will also by default be used as the css variable name.</param>
-		public ImportCssResourceAttribute(Type typeInAssembly, string resourceName) {
+		/// <param name="resourceName">PublicResourceName of the resource to import.</param>
+		public ImportCssResourceAttribute(Type typeInAssembly, string publicResourceName, string cssVariableName) {
 			this.ResourceAssembly = typeInAssembly.Assembly;
-			CssResourceAttribute attr = this.ResourceAssembly.GetCustomAttributes(typeof(CssResourceAttribute), false).Cast<CssResourceAttribute>().SingleOrDefault(x => x.Name == resourceName);
+			WebResourceAttribute attr = this.ResourceAssembly.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == publicResourceName);
 			if (attr == null)
-				throw new ArgumentException("The assembly " + this.ResourceAssembly.GetName().Name + " does not export a css resource with the name " + resourceName);
+				throw new ArgumentException("The assembly " + this.ResourceAssembly.GetName().Name + " does not export a resource with the name " + publicResourceName);
 
 			this.PublicResourceName = attr.PublicResourceName;
-			this.CssVariableName    = resourceName;
+			this.CssVariableName    = cssVariableName;
 		}
 	}
 }

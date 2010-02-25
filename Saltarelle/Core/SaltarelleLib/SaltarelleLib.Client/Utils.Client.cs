@@ -7,12 +7,6 @@ namespace Saltarelle {
 	public delegate void XmlNodeAction(XMLNode n);
 
 	public static partial class Utils {
-		public static readonly string blankImageUrl;
-		
-		public static string BlankImageUrl {
-			get { return blankImageUrl; }
-		}
-	
 		public static int ParseInt(string s) {
 			return Number.ParseInt(s, 10);
 		}

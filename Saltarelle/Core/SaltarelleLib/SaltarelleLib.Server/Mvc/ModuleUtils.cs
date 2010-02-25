@@ -7,6 +7,7 @@ using dotless.Core;
 using dotless.Core.configuration;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Reflection.Emit;
 
 namespace Saltarelle.Mvc {
 	public static class ModuleUtils {
@@ -38,6 +39,9 @@ namespace Saltarelle.Mvc {
 		}
 		
 		private static string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {
+			if (asm is AssemblyBuilder)
+				return null;
+		
 			string scriptName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith(debug ? "Script.js" : "Script.min.js"));
 			if (scriptName != null) {
 				using (var strm = asm.GetManifestResourceStream(scriptName))
@@ -60,24 +64,25 @@ namespace Saltarelle.Mvc {
 		}
 
 		private static string GetLessVariableDefinitions(Assembly asm) {
-			var url = GlobalServices.Provider.GetService<IUrlService>();
 			return string.Join(Environment.NewLine,
 			                   asm.GetCustomAttributes(typeof(CssResourceAttribute), false)
 			                      .Cast<CssResourceAttribute>()
-			                      .Select(a => "@" + a.Name + ": url(" + url.GetAssemblyResourceUrl(asm, a.PublicResourceName) + ");")
+			                      .Select(a => "@" + a.CssVariableName + ": url(" + Routes.GetAssemblyResourceUrl(asm, a.PublicResourceName) + ");")
 			           .Concat(asm.GetCustomAttributes(typeof(ImportCssResourceAttribute), false)
 			                      .Cast<ImportCssResourceAttribute>()
-			                      .Select(a => "@" + a.CssVariableName + ": url(" + url.GetAssemblyResourceUrl(a.ResourceAssembly, a.PublicResourceName) + ");"))
+			                      .Select(a => "@" + a.CssVariableName + ": url(" + Routes.GetAssemblyResourceUrl(a.ResourceAssembly, a.PublicResourceName) + ");"))
 			           .ToArray());
 		}
 		
-		private static string GetAssemblyCssAssumingLock(Assembly asm) {
+		private static string GenerateAssemblyCss(Assembly asm) {
+			if (asm is AssemblyBuilder)
+				return null;
+
 			string resName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Module.less"));
 			if (resName != null) {
 				using (var strm = asm.GetManifestResourceStream(resName))
 				using (var rdr = new StreamReader(strm)) {
-					var engine = new EngineFactory().GetEngine(DotlessConfiguration.Default);
-					return engine.TransformToCss(new StringSource().GetSource(GetLessVariableDefinitions(asm) + Environment.NewLine + rdr.ReadToEnd()));
+					return GetCss(rdr.ReadToEnd(), asm);
 				}
 			}
 			return null;
@@ -87,7 +92,7 @@ namespace Saltarelle.Mvc {
 			lock (cssLock) {
 				string s;
 				if (!assemblyCss.TryGetValue(assembly, out s)) {
-					assemblyCss[assembly] = s = GetAssemblyCssAssumingLock(assembly);
+					assemblyCss[assembly] = s = GenerateAssemblyCss(assembly);
 				}
 				return s;
 			}

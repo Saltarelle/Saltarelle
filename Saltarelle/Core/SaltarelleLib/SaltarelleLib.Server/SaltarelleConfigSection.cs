@@ -61,19 +61,67 @@ namespace Saltarelle.Configuration {
 			return ((PluginElement)element).Assembly;
 		}
 	}
+	
+	public class RoutesElement : ConfigurationElement {
+		private static ConfigurationProperty propAssemblyScripts;
+		private static ConfigurationProperty propAssemblyCss;
+		private static ConfigurationProperty propAssemblyResources;
+		private static ConfigurationProperty propDelegate;
+		
+		private static ConfigurationPropertyCollection properties;
+
+		static RoutesElement() {
+			propAssemblyScripts   = new ConfigurationProperty("assemblyScripts", typeof(string));
+			propAssemblyCss       = new ConfigurationProperty("assemblyCss", typeof(string));
+			propAssemblyResources = new ConfigurationProperty("assemblyResources", typeof(string));
+			propDelegate          = new ConfigurationProperty("delegate", typeof(string));
+			properties            = new ConfigurationPropertyCollection() { propAssemblyScripts, propAssemblyCss, propAssemblyResources, propDelegate };
+		}
+
+		[ConfigurationProperty("assemblyScripts")]
+		public string AssemblyScripts {
+			get { return (string)base[propAssemblyScripts]; }
+		}
+
+		[ConfigurationProperty("assemblyCss")]
+		public string AssemblyCss {
+			get { return (string)base[propAssemblyCss]; }
+		}
+
+		[ConfigurationProperty("assemblyResources")]
+		public string AssemblyResources {
+			get { return (string)base[propAssemblyResources]; }
+		}
+
+		[ConfigurationProperty("delegate")]
+		public string Delegate {
+			get { return (string)base[propDelegate]; }
+		}
+
+		protected override ConfigurationPropertyCollection Properties {
+			get { return properties; }
+		}
+	}
 
 	public class SaltarelleConfigSection : ConfigurationSection {
 		private static ConfigurationProperty propPlugins;
+		private static ConfigurationProperty propRoutes;
 		private static ConfigurationPropertyCollection properties;
 
 		static SaltarelleConfigSection() {
 			propPlugins = new ConfigurationProperty("plugins", typeof(PluginElementCollection));
-			properties = new ConfigurationPropertyCollection() { propPlugins };
+			propRoutes  = new ConfigurationProperty("routes", typeof(RoutesElement));
+			properties  = new ConfigurationPropertyCollection() { propPlugins, propRoutes };
 		}
 		
 		[ConfigurationProperty("plugins")]
 		public PluginElementCollection Plugins {
 			get { return (PluginElementCollection)base[propPlugins]; }
+		}
+
+		[ConfigurationProperty("routes")]
+		public RoutesElement Routes {
+			get { return (RoutesElement)base[propRoutes]; }
 		}
 
 		protected override ConfigurationPropertyCollection Properties {

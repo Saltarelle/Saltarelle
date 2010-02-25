@@ -19,7 +19,6 @@ namespace Saltarelle {
 	[GlobalService(typeof(IScriptManagerService))]
 	public class DefaultScriptManagerProvider : IScriptManagerService, IGlobalService {
 		private int nextUniqueId = 1;
-		private IUrlService urlService;
 	
 		private HashSet<Assembly> registeredAssemblies = new HashSet<Assembly>();
 		private List<string> earlyAdditionalIncludes = new List<string>();
@@ -32,7 +31,7 @@ namespace Saltarelle {
 
 		public IEnumerable<string> GetAllRequiredIncludes() {
 			var asms = registeredAssemblies.Concat(GlobalServices.AllLoadedServices.Select(kvp => kvp.Value.GetType().Assembly));
-			return earlyAdditionalIncludes.Concat(ModuleUtils.TopologicalSortAssembliesWithDependencies(asms).Select(a => urlService.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
+			return earlyAdditionalIncludes.Concat(ModuleUtils.TopologicalSortAssembliesWithDependencies(asms).Select(a => Routes.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
 		}
 		
 		public void AddScriptInclude(string url, bool includeBeforeAssemblyScripts) {
@@ -62,20 +61,10 @@ namespace Saltarelle {
 		}
 		
 		public void Setup() {
-			urlService = GlobalServices.Provider.GetService<IUrlService>();
-
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("sscompat.debug.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("sscorlib.debug.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery-1.4.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery-ui-1.7.2.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery.focus.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("JQuerySharp.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery.json-1.3.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("jquery.bgiframe.js"));
-			earlyAdditionalIncludes.Add(urlService.GetCoreScriptUrl("date.js"));
-
+			bool debug = true;
+			earlyAdditionalIncludes.AddRange((debug ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => Routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
+		
 			AddStartupScript(() => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + typeof(IScriptManagerService) + ")) Saltarelle.GlobalServices.setService(" + typeof(IScriptManagerService).FullName + ", new " + typeof(DefaultScriptManagerProvider).FullName + "(" + Utils.ToStringInvariantInt(nextUniqueId) + "));");
-			AddStartupScript(() => "if (typeof(Saltarelle) != 'undefined' && typeof(Saltarelle.Utils) != 'undefined' && Saltarelle.Utils.blankImageUrl == null) Saltarelle.Utils.blankImageUrl = " + Utils.ScriptStr(GlobalServices.GetService<IUrlService>().BlankImageUrl) + ";");
 		}
 		
 		public void Dispose() {

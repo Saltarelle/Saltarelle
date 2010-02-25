@@ -17,10 +17,6 @@ namespace Saltarelle {
 		public static string IntRegex   = "^\\s*[+-]?\\d+\\s*$";
 		public static string FloatRegex = "^\\s*([+-]?(?:(?:\\d+\\.?\\d*)|(?:\\.\\d+))(?:[eE][+-]?\\d+)?)\\s*$";
 		
-		public static string BlankImageHtml {
-			get { return "<img src=\"" + BlankImageUrl + "\" alt=\"\"/>"; }
-		}
-
 		public static string ScriptStr(string s) {
 			return s == null ? "null" : ("'" + ScriptEncode(s) + "'");
 		}

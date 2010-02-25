@@ -185,16 +185,10 @@ namespace Saltarelle.Mvc
 			return (ActionResult)result;
 		}
 		
-		private Assembly FindAssembly(string assemblyName) {
-			lock (AppDomain.CurrentDomain) {
-				return AppDomain.CurrentDomain.GetAssemblies().Where(asm => asm.GetName().Name == assemblyName).SingleOrDefault();
-			}
-		}
-		
 		[OutputCache(Duration=int.MaxValue, Location=OutputCacheLocation.Any, VaryByParam="*")]
 		public ActionResult GetAssemblyScript(string assemblyName, string debug) {
-			var asm = FindAssembly(assemblyName);
-			if (asm != null) {
+			Assembly asm;
+			if (Utils.TryFindAssembly(assemblyName, out asm)) {
 				string s = ModuleUtils.GetAssemblyScriptContent(asm, !string.IsNullOrEmpty(debug));
 				if (s != null)
 					return JavaScript(s);
@@ -203,9 +197,9 @@ namespace Saltarelle.Mvc
 		}
 
 		[OutputCache(Duration=int.MaxValue, Location=OutputCacheLocation.Any, VaryByParam="*")]
-		public ActionResult GetModuleCss(string assemblyName) {
-			var asm = FindAssembly(assemblyName);
-			if (asm != null) {
+		public ActionResult GetAssemblyCss(string assemblyName) {
+			Assembly asm;
+			if (Utils.TryFindAssembly(assemblyName, out asm)) {
 				string s = ModuleUtils.GetAssemblyCss(asm);
 				if (s != null)
 					return Content(s, "text/css");
@@ -215,12 +209,12 @@ namespace Saltarelle.Mvc
 
 		[OutputCache(Duration=int.MaxValue, Location=OutputCacheLocation.Any, VaryByParam="*")]
 		public ActionResult GetAssemblyResource(string assemblyName, string resourceName) {
-			var asm = FindAssembly(assemblyName);
-			if (asm != null) {
-				CssResourceAttribute attr = asm.GetCustomAttributes(typeof(CssResourceAttribute), false).Cast<CssResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == resourceName);
+			Assembly asm;
+			if (Utils.TryFindAssembly(assemblyName, out asm)) {
+				WebResourceAttribute attr = asm.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == resourceName);
 				if (attr != null) {
 					string mime;
-					mimeMap.TryGetValue("." + Path.GetExtension(resourceName).ToLowerInvariant(), out mime);
+					mimeMap.TryGetValue(Path.GetExtension(resourceName).ToLowerInvariant(), out mime);
 
 					return File(asm.GetManifestResourceStream(attr.ResourceQualifiedName), mime ?? "application/octet-stream");
 				}

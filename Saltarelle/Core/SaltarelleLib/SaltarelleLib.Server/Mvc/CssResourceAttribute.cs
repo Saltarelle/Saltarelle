@@ -6,27 +6,17 @@ using System.Reflection;
 
 namespace Saltarelle.Mvc {
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple=true)]
-	public sealed class CssResourceAttribute : Attribute {
+	public class CssResourceAttribute : WebResourceAttribute {
 		/// <summary>
-		/// The name of the resource, which is the same as the name of the LessCss variable that will contain the resource path.
+		/// The LessCss variable used to identify the resource in css (without @ sign).
 		/// This may only consist of the letters a-z, hyphen and the underscore character.
 		/// </summary>
-		public string Name { get; private set; }
-		/// <summary>
-		/// Fully qualified name of the resource, e.g. Namespace.SubNamespace.Image.gif
-		/// </summary>
-		public string ResourceQualifiedName { get; private set; }
-		/// <summary>
-		/// Name under which the resource is published e.g. Image.gif. By default, the qualified resource name will be used.
-		/// </summary>
-		public string PublicResourceName { get; set; }
+		public string CssVariableName { get; private set; }
 		
-		public CssResourceAttribute(string name, string resourceQualifiedName) {
-			if (name.ToLowerInvariant().Trim(Enumerable.Range('a', 26).Select(i => (char)i).Concat(new[] { '_', '-' }).ToArray()) != "")
+		public CssResourceAttribute(string resourceQualifiedName, string publicResourceName, string cssVariableName) : base(resourceQualifiedName, publicResourceName) {
+			if (cssVariableName.ToLowerInvariant().Trim(Enumerable.Range('a', 26).Select(i => (char)i).Concat(new[] { '_', '-' }).ToArray()) != "")
 				throw new ArgumentException("name");
-			this.Name = name;
-			this.ResourceQualifiedName = resourceQualifiedName;
-			this.PublicResourceName = resourceQualifiedName;
+			this.CssVariableName = cssVariableName;
 		}
 	}
 }

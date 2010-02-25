@@ -22,11 +22,8 @@ namespace Saltarelle {
 	public delegate void XmlNodeAction(XmlNode n);
 
 	public static partial class Utils {
-		private static readonly Dictionary<string, Type> typeCache = new Dictionary<string, Type>();
-
-		public static string BlankImageUrl {
-			get { return GlobalServices.GetService<IUrlService>().BlankImageUrl; }
-		}
+		private static readonly Dictionary<string, Type>     typeCache = new Dictionary<string, Type>();
+		private static readonly Dictionary<string, Assembly> asmCache  = new Dictionary<string, Assembly>();
 
 		public static int ParseInt(string s) {
 			return int.Parse(s, System.Globalization.NumberFormatInfo.InvariantInfo);
@@ -255,11 +252,17 @@ namespace Saltarelle {
 				throw new ArgumentException("The type " + typeName + " was not found in any loaded assembly.");
 			return t;
 		}
+		
+		public static Assembly[] GetAllAssemblies() {
+			lock (AppDomain.CurrentDomain) {
+				return AppDomain.CurrentDomain.GetAssemblies();
+			}
+		}
 
 		public static bool TryFindType(string typeName, out Type t) {
 			lock (typeCache) {
 				if (!typeCache.TryGetValue(typeName, out t)) {
-					foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies()) {
+					foreach (Assembly a in GetAllAssemblies()) {
 						t = a.GetType(typeName);
 						if (t != null)
 							break;
@@ -268,6 +271,22 @@ namespace Saltarelle {
 				}
 			}
 			return t != null;
+		}
+		
+		public static Assembly FindAssembly(string assemblyName) {
+			Assembly a;
+			if (!TryFindAssembly(assemblyName, out a))
+				throw new ArgumentException("The assembly " + assemblyName + " was not found.");
+			return a;
+		}
+		
+		public static bool TryFindAssembly(string assemblyName, out Assembly a) {
+			if (!asmCache.TryGetValue(assemblyName, out a)) {
+				lock (asmCache) {
+					asmCache[assemblyName] = a = GetAllAssemblies().SingleOrDefault(x => x.GetName().Name == assemblyName);
+				}
+			}
+			return a != null;
 		}
 
 		public static Exception ArgumentException(string argument) {
