@@ -109,6 +109,7 @@ namespace Saltarelle.UI {
 		private int      nextNodeId;
 		private bool     enableDragDrop;
 		private bool     hasChecks;
+		private string   blankImageUrl;
 		#if CLIENT
 			private jQuery element;
 			private bool rebuilding;
@@ -470,8 +471,8 @@ namespace Saltarelle.UI {
 			string suffix = (hasChildren ? (n.expanded ? ExpandedSuffix : CollapsedSuffix) : LeafSuffix);
 			StringBuilder sb = new StringBuilder();
 			sb.Append("<div class=\"" + NodeClass + " " + NodeClass + suffix + "\" __nodeid=\"" + Utils.ToStringInvariantInt(n.id) + "\" __data=\"" + Utils.HtmlEncode(Utils.Json(n.data)) + "\">");
-			sb.Append("<span class=\"" + ExpandCollapseClass + " " + ExpandCollapseClass + suffix + "\">" + Utils.BlankImageHtml + "</span>");
-			sb.Append("<span class=\"" + IconClass + " " + IconClass + suffix  + "\">" + Utils.BlankImageHtml + "</span>");
+			sb.Append("<span class=\"" + ExpandCollapseClass + " " + ExpandCollapseClass + suffix + "\"><img src=\"" + blankImageUrl + "\" alt=\"\"/></span>");
+			sb.Append("<span class=\"" + IconClass + " " + IconClass + suffix  + "\"><img src=\"" + blankImageUrl + "\" alt=\"\"/></span>");
 			if (hasChecks)
 				sb.Append("<input type=\"checkbox\"" + (n.isChecked ? " checked=\"checked\"" : "") + "class=\"checkbox\" tabindex=\"-1\"/>");
 			sb.Append("<span class=\"" + ItemTextClass + "\">" + Utils.HtmlEncode(n.text) + "</span>");
@@ -487,7 +488,7 @@ namespace Saltarelle.UI {
 			return sb.ToString();
 		}
 		
-		private string SpacerHtml {get { return "<div class=\"" + SpacerClass + "\">" + Utils.BlankImageHtml + "</div>"; } }
+		private string SpacerHtml {get { return "<div class=\"" + SpacerClass + "\"><img src=\"" + blankImageUrl + "\" alt=\"\"/></div>"; } }
 
 		private string InnerHtml {
 			get {
@@ -522,10 +523,12 @@ namespace Saltarelle.UI {
 			position      = PositionHelper.NotPositioned;
 			invisibleRoot = new TreeNode(0, null, null);
 			nextNodeId    = 1;
+			blankImageUrl = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 		}
 #if SERVER
 		public Tree() {
 			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.Provider.LoadService<ISaltarelleUIService>();
 			DefaultInit();
 		}
 		

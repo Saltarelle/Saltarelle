@@ -515,7 +515,7 @@ namespace Saltarelle.UI {
 		private void AddRowHtml(StringBuilder sb, string[] cellTexts, bool even, bool selected, object data) {
 			sb.Append("<tr" + (data != null ? (" __data=\"" + Utils.HtmlEncode(Utils.Json(data)) + "\"") : "") + " class=\"" + (even ? EvenRowClass : OddRowClass) + (selected ? " ui-state-highlight" : "") + "\">");
 			for (int c = 0; c < NumColumns; c++)
-				sb.Append("<td " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (c < cellTexts.Length && !string.IsNullOrEmpty(cellTexts[c]) ? Utils.HtmlEncode(cellTexts[c]) : Utils.BlankImageHtml) + "</div></div></td>");
+				sb.Append("<td " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (c < cellTexts.Length && !string.IsNullOrEmpty(cellTexts[c]) ? Utils.HtmlEncode(cellTexts[c]) : "&nbsp;") + "</div></div></td>");
 			sb.Append("</tr>");
 		}
 		

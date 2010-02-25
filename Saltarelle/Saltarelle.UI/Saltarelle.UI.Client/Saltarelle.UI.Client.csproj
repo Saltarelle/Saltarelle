@@ -76,6 +76,12 @@
     <Compile Include="..\Saltarelle.UI.Shared\Label.Shared.cs">
       <Link>Label.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\saltarelle.ui.shared\services\DefaultSaltarelleUIProvider.Shared.cs">
+      <Link>Services\DefaultSaltarelleUIProvider.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelle.ui.shared\services\ISaltarelleUIService.Shared.cs">
+      <Link>Services\ISaltarelleUIService.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\Saltarelle.UI.Shared\SupportClasses.Shared.cs">
       <Link>SupportClasses.Shared.cs</Link>
     </Compile>
