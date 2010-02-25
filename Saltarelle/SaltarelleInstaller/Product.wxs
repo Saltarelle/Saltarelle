@@ -9,6 +9,24 @@
 			<Component Id="NewtonsoftJsonComponentGAC" Guid="DBA2322E-EAE1-4f0e-A5BB-630FB7A04652">
 				<File Id="NewtonsoftJsonDllGAC" Name="Newtonsoft.Json.dll" Assembly=".net" Source="..\..\References\Newtonsoft.Json.dll" KeyPath="yes" DiskId="1" />
 			</Component>
+			
+			<!-- dotless and references -->
+			<Component Id="DotLessCssCoreNoMinifierComponentGAC" Guid="54651ED1-1EB8-4c5b-8864-42815D62E1AD">
+				<File Id="DotLessCssCoreNoMinifierDllGAC" Name="dotless.Core.NoMinifier.dll" Assembly=".net" Source="..\..\References\dotless.Core.NoMinifier.dll" KeyPath="yes" DiskId="1"/>
+			</Component>
+
+			<Component Id="MicrosoftPracticesServiceLocationComponentGAC" Guid="9A950BAD-5B08-4627-A966-89B428289392">
+				<File Id="MicrosoftPracticesServiceLocationDllGAC" Name="Microsoft.Practices.ServiceLocation.dll" Assembly=".net" Source="..\..\References\Microsoft.Practices.ServiceLocation.dll" KeyPath="yes" DiskId="1"/>
+			</Component>
+
+			<Component Id="PandoraComponentGAC" Guid="FB8A3517-5797-443b-A6FC-92981933112A">
+				<File Id="PandoraDllGAC" Name="Pandora.dll" Assembly=".net" Source="..\..\References\Pandora.dll" KeyPath="yes" DiskId="1"/>
+			</Component>
+
+			<Component Id="PegBaseComponentGAC" Guid="391677A6-41A7-4b16-8314-D30DCB84C1EF">
+				<File Id="PegBaseDllGAC" Name="PegBase.dll" Assembly=".net" Source="..\..\References\PegBase.dll" KeyPath="yes" DiskId="1"/>
+			</Component>
+			<!-- /dotless and references-->
 
 			<Component Id="LibComponentGAC" Guid="0834CF8C-2277-419B-AFD3-33129C0F6803">
 				<File Id="LibDllGAC" Name="SaltarelleLib.dll" Assembly=".net" Source="..\Core\SaltarelleLib\SaltarelleLib.Server\bin\Release\SaltarelleLib.dll" KeyPath="yes" DiskId="1" />
@@ -45,6 +63,24 @@
 						<File Id="NewtonsoftJsonDll" Name="Newtonsoft.Json.dll" Source="..\..\References\Newtonsoft.Json.dll" KeyPath="yes" DiskId="1" />
 					</Component>
 
+					<!-- dotless and references -->
+					<Component Id="DotLessCssCoreNoMinifierComponent" Guid="83F6BAEB-A119-4a70-9234-528837705A34">
+						<File Id="DotLessCssCoreNoMinifierDll" Name="dotless.Core.NoMinifier.dll" Assembly=".net" Source="..\..\References\dotless.Core.NoMinifier.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+
+					<Component Id="MicrosoftPracticesServiceLocationComponent" Guid="D8E61FF8-F3A7-4f04-B0F6-163E8AAFA5CD">
+						<File Id="MicrosoftPracticesServiceLocationDll" Name="Microsoft.Practices.ServiceLocation.dll" Source="..\..\References\Microsoft.Practices.ServiceLocation.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+
+					<Component Id="PandoraComponent" Guid="339AE47F-D831-44ba-800F-1AD5398A7490">
+						<File Id="PandoraDll" Name="Pandora.dll" Source="..\..\References\Pandora.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+
+					<Component Id="PegBaseComponent" Guid="04D6F67C-6B3A-441d-ABCE-0E29C88BACB7">
+						<File Id="PegBaseDll" Name="PegBase.dll" Source="..\..\References\PegBase.dll" KeyPath="yes" DiskId="1"/>
+					</Component>
+					<!-- /dotless and references-->
+
 					<Component Id="LibComponent" Guid="59A868A8-BB89-4E0B-8D49-D9EE51EF3441">
 						<File Id="LibDll" Name="SaltarelleLib.dll" Source="..\Core\SaltarelleLib\SaltarelleLib.Server\bin\Release\SaltarelleLib.dll" KeyPath="yes" DiskId="1" />
 					</Component>
@@ -75,7 +111,7 @@
 					</Component>
 					<Component Id="SaltarelleTargetsComponent" Guid="006E9107-F3AF-4D0D-80F0-53BF066DE0C3">
 						<File Id="SaltarelleTargets" Name="Saltarelle.targets" Source="..\Core\Executables\SalgenTask\Saltarelle.targets" KeyPath="yes" DiskId="1" />
-					</Component>
+					</Component> 
 
 					<Component Id="SalgenExeComponent" Guid="BB39365F-8B0C-49D9-825E-DA7BDA2436D3">
 						<File Id="SalgenExe" Name="salgen.exe" Source="..\Core\Executables\Salgen.exe\bin\Release\salgen.exe" KeyPath="yes" DiskId="1"/>
@@ -96,6 +132,16 @@
 			<Feature Id="SaltarelleCore" Title="Core Components" Level="1">
 				<ComponentRef Id="NewtonsoftJsonComponent"/>
 				<ComponentRef Id="NewtonsoftJsonComponentGAC"/>
+
+				<ComponentRef Id="DotLessCssCoreNoMinifierComponent"/>
+				<ComponentRef Id="DotLessCssCoreNoMinifierComponentGAC"/>
+				<ComponentRef Id="MicrosoftPracticesServiceLocationComponent"/>
+				<ComponentRef Id="MicrosoftPracticesServiceLocationComponentGAC"/>
+				<ComponentRef Id="PandoraComponent"/>
+				<ComponentRef Id="PandoraComponentGAC"/>
+				<ComponentRef Id="PegBaseComponent"/>
+				<ComponentRef Id="PegBaseComponentGAC"/>
+			
 				<ComponentRef Id="LibComponent"/>
 				<ComponentRef Id="LibComponentGAC"/>
 				<ComponentRef Id="ClientLibComponent"/>
