@@ -551,6 +551,7 @@ namespace Saltarelle.UI {
 				nextNodeId     = (int)config["nextNodeId"];
 				enableDragDrop = (bool)config["enableDragDrop"];
 				hasChecks      = (bool)config["hasChecks"];
+				blankImageUrl  = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 				invisibleRoot  = null;
 
 				Attach();
