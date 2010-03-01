@@ -25,9 +25,5 @@ namespace DemoWeb.Webapp.Controllers {
 		public ActionResult Lesson7() {
 			return View();
 		}
-
-		public ActionResult Lesson8() {
-			return View("Saltarelle:" + typeof(Lesson8Control).FullName);
-		}
 	}
 }
