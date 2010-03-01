@@ -13,9 +13,8 @@ namespace DemoWeb.Webapp {
 	public class MvcApplication : System.Web.HttpApplication {
 		public static void RegisterRoutes(RouteCollection routes) {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
-			routes.MapRoute("AssemblyScripts", "AssemblyScripts/{assemblyName}.js", new { controller = "SaltarelleRuntime", action = "AssemblyScript" });
-			routes.MapRoute("Delegate", "Delegate/{typeName}/{method}", new { controller = "Delegate", action = "Execute" }, new[] { typeof(DelegateController).Namespace } );
+			
+			Saltarelle.Mvc.Routes.RegisterRoutes(routes);
 
 			routes.MapRoute(
 				"HomeShortcut",              // Route name

@@ -12,7 +12,7 @@ namespace DemoWeb {
 	public class DefaultLesson7Provider : ILesson7Service, IGlobalService {
 		public void Setup() {
 			var sm = GlobalServices.Provider.GetService<IScriptManagerService>();
-			sm.AddStartupScript("if (!" + typeof(GlobalServices).FullName + ".hasService(" + typeof(ILesson7Service).FullName + ")) " + typeof(GlobalServices).FullName + ".setService(" + typeof(ILesson7Service).FullName + ", new " + typeof(DefaultLesson7Provider).FullName + "(" + Utils.ScriptStr(GlobalServices.GetService<IUrlService>().GetNonControllerActionUrlTemplate(typeof(ILesson7Service))) + "));");
+			sm.AddStartupScript("if (!" + typeof(GlobalServices).FullName + ".hasService(" + typeof(ILesson7Service).FullName + ")) " + typeof(GlobalServices).FullName + ".setService(" + typeof(ILesson7Service).FullName + ", new " + typeof(DefaultLesson7Provider).FullName + "(" + Utils.ScriptStr(Routes.GetDelegateUrlTemplate(typeof(ILesson7Service))) + "));");
 		}
 
 		public ControlDocumentFragment CreateGrid(int numRows) {

@@ -81,7 +81,6 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SaltarelleRuntime\SaltarelleRuntimeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -91,7 +90,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SaltarelleRuntime\DefaultUrlProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\DemoWeb.dll" />
