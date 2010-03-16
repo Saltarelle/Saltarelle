@@ -18,7 +18,7 @@ namespace Saltarelle.NodeProcessors {
 			XmlAttribute nameAttr   = (XmlAttribute)node.Attributes.GetNamedItem("name");
 			XmlAttribute paramsAttr = (XmlAttribute)node.Attributes.GetNamedItem("params");
 			
-			if (nameAttr == null)
+			if (Utils.IsNull(nameAttr))
 				throw ParserUtils.TemplateErrorException("The <def-fragment> element must have the name attribute specified.");
 			string name = Utils.NodeValue(nameAttr);
 			if (!ParserUtils.IsValidUnqualifiedName(name))
@@ -26,7 +26,7 @@ namespace Saltarelle.NodeProcessors {
 			if (template.HasMember(name))
 				throw ParserUtils.TemplateErrorException("Duplicate definition of member " + name + ".");
 
-			RenderFunctionMember m = new RenderFunctionMember(Utils.NodeValue(nameAttr), paramsAttr != null ? Utils.NodeValue(paramsAttr) : "");
+			RenderFunctionMember m = new RenderFunctionMember(Utils.NodeValue(nameAttr), !Utils.IsNull(paramsAttr) ? Utils.NodeValue(paramsAttr) : "");
 
 			Utils.DoForEachChild(node, delegate(XmlNode n) {
 				docProcessor.ProcessRecursive(n, template, m);
@@ -41,7 +41,7 @@ namespace Saltarelle.NodeProcessors {
 			XmlAttribute nameAttr   = (XmlAttribute)node.Attributes.GetNamedItem("name");
 			XmlAttribute paramsAttr = (XmlAttribute)node.Attributes.GetNamedItem("params");
 			
-			if (nameAttr == null)
+			if (Utils.IsNull(nameAttr))
 				throw ParserUtils.TemplateErrorException("The <call-fragment> element must have the name attribute specified.");
 			string name = Utils.NodeValue(nameAttr);
 			if (!ParserUtils.IsValidUnqualifiedName(name))
@@ -49,7 +49,7 @@ namespace Saltarelle.NodeProcessors {
 			if (Utils.GetNumChildNodes(node) != 0)
 				throw ParserUtils.TemplateErrorException("The <call-fragment> element cannot have children.");
 
-			return new CodeExpressionFragment(name + "(" + (paramsAttr != null ? Utils.NodeValue(paramsAttr) : "") + ")");
+			return new CodeExpressionFragment(name + "(" + (!Utils.IsNull(paramsAttr) ? Utils.NodeValue(paramsAttr) : "") + ")");
 		}
 
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {

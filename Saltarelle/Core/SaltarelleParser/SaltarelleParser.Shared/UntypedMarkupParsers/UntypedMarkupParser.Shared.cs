@@ -13,7 +13,7 @@ namespace Saltarelle {
 		private IUntypedMarkupParserImpl[] parsers;
 
 		public UntypedMarkupParser(IUntypedMarkupParserImpl[] pluginImplementers) {
-			int numPluginImplementers = (pluginImplementers != null ? pluginImplementers.Length : 0);
+			int numPluginImplementers = (!Utils.IsNull(pluginImplementers) ? pluginImplementers.Length : 0);
 			parsers = new IUntypedMarkupParserImpl[numPluginImplementers + defaultParsers.Length];
 			for (int i = 0; i < numPluginImplementers; i++)
 				parsers[i] = pluginImplementers[i];
@@ -24,7 +24,7 @@ namespace Saltarelle {
 		public IFragment ParseMarkup(string markup) {
 			foreach (IUntypedMarkupParserImpl p in parsers) {
 				IFragment f = p.TryParse(markup);
-				if (f != null)
+				if (!Utils.IsNull(f))
 					return f;
 			}
 			throw ParserUtils.TemplateErrorException("Invalid markup " + markup); // Should never happen since the LiteralUntypedMarkupParser is a catch-all

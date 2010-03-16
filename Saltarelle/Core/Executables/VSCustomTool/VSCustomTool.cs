@@ -23,7 +23,7 @@ namespace Saltarelle {
 			string result;
 			try {
 				string configPath = ExecutablesCommon.FindConfigFilePath(wszInputFilePath);
-				SaltarelleParser parser = configPath != null ? SaltarelleParserFactory.CreateParserFromConfigFile(configPath) : SaltarelleParserFactory.CreateDefaultParser();
+				SaltarelleParser parser = !Utils.IsNull(configPath) ? SaltarelleParserFactory.CreateParserFromConfigFile(configPath) : SaltarelleParserFactory.CreateDefaultParser();
 			
 				XmlDocument doc = ExecutablesCommon.CreateXmlDocument();
 				doc.LoadXml(bstrInputFileContents);

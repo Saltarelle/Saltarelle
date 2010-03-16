@@ -48,7 +48,7 @@ namespace Saltarelle {
 						throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' could not be loaded.", ex);
 					}
 					var res = asm.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == elem.Resource);
-					if (res == null)
+					if (Utils.IsNull(res))
 						throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' does not contain a resource named '" + elem.Resource + "'.");
 					url = Routes.GetAssemblyResourceUrl(asm, res.PublicResourceName);
 				}
@@ -132,7 +132,7 @@ namespace Saltarelle {
 			includedScripts = new ArrayList();
 			JQueryProxy.jQuery("script").each(delegate(int _, DOMElement el) {
 				string s = ((ScriptElement)el).Src;
-				if (s != null) {
+				if (!Utils.IsNull(s)) {
 					int ix = s.IndexOf("://");
 					includedScripts.Add(ix != -1 ? s.Substr(s.IndexOf("/", ix + 3)) : s); // IE6 seems to return script paths relative, others return it as absolute
 				}

@@ -38,7 +38,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 			}
@@ -47,7 +47,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -55,7 +55,7 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -65,7 +65,7 @@ namespace Saltarelle.UI {
 			get { return tabCaptions; }
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						// Rendered means no changing number of tabs.
 						int oldNum = tabCaptions.Length;
 						tabCaptions = new string[oldNum];
@@ -88,7 +88,7 @@ namespace Saltarelle.UI {
 			get { return rightAlignTabs; }
 			set {
 				#if CLIENT
-					if (element != null && value != rightAlignTabs) {
+					if (!Utils.IsNull(element) && value != rightAlignTabs) {
 						selectedTabIfNotRendered = SelectedTab;
 						element.tabs("destroy");
 						rightAlignTabs = value;
@@ -108,7 +108,7 @@ namespace Saltarelle.UI {
 		public int SelectedTab {
 			get {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						int s = (int)element.tabs("option", "selected");
 						return rightAlignTabs ? (tabCaptions.Length - 1 - s) : s;
 					}
@@ -117,7 +117,7 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.tabs("select", rightAlignTabs ? (tabCaptions.Length - 1 - value) : value);
 				#endif
 				selectedTabIfNotRendered = value;
@@ -202,7 +202,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void Attach() {
-			if (id == null || element != null)
+			if (Utils.IsNull(id) || !Utils.IsNull(element))
 				throw new Exception("Must set ID and can only attach once");
 		
 			element = JQueryProxy.jQuery("#" + id);
@@ -255,12 +255,12 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void OnSelectedTabChanging(TabControlSelectedTabChangingEventArgs e) {
-			if (SelectedTabChanging != null)
+			if (!Utils.IsNull(SelectedTabChanging))
 				SelectedTabChanging(this, e);
 		}
 
 		protected virtual void OnSelectedTabChanged(EventArgs e) {
-			if (SelectedTabChanged != null)
+			if (!Utils.IsNull(SelectedTabChanged))
 				SelectedTabChanged(this, e);
 		}
 		

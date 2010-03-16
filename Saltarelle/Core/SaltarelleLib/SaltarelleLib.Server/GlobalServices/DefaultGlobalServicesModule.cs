@@ -18,13 +18,13 @@ namespace Saltarelle {
 			}
 		
 			private object GetService(Type serviceType, bool allowLoad) {
-				if (serviceType == null || !serviceType.IsInterface)
+				if (Utils.IsNull(serviceType) || !serviceType.IsInterface)
 					throw new ArgumentException("serviceType must be an interface");
 				IList<CreatedServicePair> registered = (IList<CreatedServicePair>)HttpContext.Current.Items[CreatedServicesKey];
-				if (registered == null)
+				if (Utils.IsNull(registered))
 					HttpContext.Current.Items[CreatedServicesKey] = registered = new List<CreatedServicePair>();
 				CreatedServicePair regEntry = registered.FirstOrDefault(x => x.Key == serviceType);
-				if (regEntry.Value != null)
+				if (!Utils.IsNull(regEntry.Value))
 					return regEntry.Value;
 				
 				if (!allowLoad)
@@ -37,7 +37,7 @@ namespace Saltarelle {
 				object implementer = Activator.CreateInstance(classType);
 				regEntry = new CreatedServicePair(serviceType, implementer);
 				var igs = implementer as IGlobalService;
-				if (igs != null) {
+				if (!Utils.IsNull(igs)) {
 					// Kind of a hack: The service must be registered during the call to its own Setup method, however, later we must make sure that dependencies will appear in the correct order.
 					int index = registered.Count;
 					registered.Add(regEntry);
@@ -63,7 +63,7 @@ namespace Saltarelle {
 			public IEnumerable<KeyValuePair<Type, object>> AllLoadedServices {
 				get {
 					var l = (IList<CreatedServicePair>)HttpContext.Current.Items[CreatedServicesKey];
-					if (l != null) {
+					if (!Utils.IsNull(l)) {
 						foreach (var x in l)
 							yield return x;
 					}
@@ -75,14 +75,14 @@ namespace Saltarelle {
 			context.BeginRequest += Application_BeginRequest;
 			context.EndRequest   += Application_EndRequest;
 			
-			if (GlobalServices.Provider == null) {
+			if (Utils.IsNull(GlobalServices.Provider)) {
 				lock (padlock) {
 					// The Init event seems to fire more than once sometimes, so we might get errors during startup unless we do this.
-					if (GlobalServices.Provider == null) {
+					if (Utils.IsNull(GlobalServices.Provider)) {
 						var serviceProviders = (  from asm in Utils.GetAllAssemblies()
 						                          from tp in asm.GetTypes()
 						                           let attr = (GlobalServiceAttribute)tp.GetCustomAttributes(typeof(GlobalServiceAttribute), false).FirstOrDefault()
-						                         where attr != null
+						                         where !Utils.IsNull(attr)
 						                        select new { svcInterface = attr.InterfaceType, implementer = tp }
 						                       ).ToDictionary(x => x.svcInterface, x => x.implementer);
 						GlobalServices.Init(new DefaultGlobalServicesProvider(serviceProviders));
@@ -96,10 +96,10 @@ namespace Saltarelle {
 
 		void Application_EndRequest(object sender, EventArgs e) {
 			IList<CreatedServicePair> list = (IList<CreatedServicePair>)HttpContext.Current.Items[CreatedServicesKey];
-			if (list != null) {
+			if (!Utils.IsNull(list)) {
 				for (int i = list.Count - 1; i >= 0; i--) {
 					var igs = list[i].Value as IDisposable;
-					if (igs != null)
+					if (!Utils.IsNull(igs))
 						igs.Dispose();
 				}
 			}

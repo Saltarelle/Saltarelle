@@ -44,7 +44,7 @@ namespace Saltarelle {
 		
 		public void AddControl(string name, IControl control) {
 			controls[name] = control;
-			if (id != null)
+			if (!Utils.IsNull(id))
 				control.Id = id + "_" + name;
 		}
 		
@@ -63,7 +63,7 @@ namespace Saltarelle {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -71,7 +71,7 @@ namespace Saltarelle {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -84,7 +84,7 @@ namespace Saltarelle {
 				foreach (ControlEntry kvp in controls)
 					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						foreach (string s in namedElements)
 							GetNamedElement(s).attr("id", value + "_" + s);
 					}
@@ -96,7 +96,7 @@ namespace Saltarelle {
 			get {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
-				if (getHtml == null)
+				if (Utils.IsNull(getHtml))
 					throw new Exception("This control was created server-side");
 				return getHtml(this);
 			}
@@ -135,7 +135,7 @@ namespace Saltarelle {
 		}
 
 		public jQuery GetNamedElement(string name) {
-			if (element == null)
+			if (Utils.IsNull(element))
 				throw new Exception("Must attach first");
 			return JQueryProxy.jQuery("#" + id + "_" + name);
 		}
@@ -143,7 +143,7 @@ namespace Saltarelle {
 		public void Attach() {
 			foreach (DictionaryEntry de in controls) {
 				IClientCreateControl cc = (de.Value as IClientCreateControl);
-				if (cc == null)
+				if (Utils.IsNull(cc))
 					throw new Exception("The control " + de.Key + " does not implement IClientCreateControl.");
 				cc.Attach();
 			}

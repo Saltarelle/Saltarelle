@@ -121,7 +121,7 @@ namespace Saltarelle.UI {
 		
 		public void BeginRebuild() {
 			#if CLIENT
-				if (element != null) {
+				if (!Utils.IsNull(element)) {
 					element.empty();
 					selectedJQ = null;
 					invisibleRoot = new TreeNode(0, null, null);
@@ -136,7 +136,7 @@ namespace Saltarelle.UI {
 		public void EndRebuild() {
 			#if CLIENT
 				rebuilding = false;
-				if (element != null) {
+				if (!Utils.IsNull(element)) {
 					element.html(InnerHtml);
 					BringToLife(element, true);
 				}
@@ -146,7 +146,7 @@ namespace Saltarelle.UI {
 		public int AddNode(int parentId, string text, object data, bool expandParent) {
 			int nodeId = nextNodeId++;
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					jQuery list;
 					if (parentId == 0) {
 						list = element;
@@ -174,7 +174,7 @@ namespace Saltarelle.UI {
 				}
 			#endif
 			TreeNode parent = FindNode(parentId, invisibleRoot);
-			if (parent.children == null)
+			if (Utils.IsNull(parent.children))
 				parent.children = new ArrayList();
 			parent.children.Add(new TreeNode(nodeId, text, data));
 			parent.expanded = parent.expanded | expandParent;
@@ -183,7 +183,7 @@ namespace Saltarelle.UI {
 		
 		public void RemoveNode(int id) {
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					if (id == SelectedId) {
 						jQuery newSel = Utils.Next(selectedJQ, "." + NodeClass);
 						if (newSel.size() == 0) {
@@ -218,7 +218,7 @@ namespace Saltarelle.UI {
 		public int[] GetChildNodeIds(int parentId) {
 			#if CLIENT
 				ArrayList l = new ArrayList();
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					(parentId == 0 ? element : FindNodeJQ(parentId).children("." + NestedListClass)).children("." + NodeClass)
 					     .each(delegate(int index, DOMElement elem) {
 					         l.Add(Utils.ParseInt((string)elem.GetAttribute("__nodeid")));
@@ -227,7 +227,7 @@ namespace Saltarelle.UI {
 				}
 				else {
 					ArrayList children = FindNode(parentId, invisibleRoot).children;
-					if (children != null) {
+					if (!Utils.IsNull(children)) {
 						foreach (TreeNode tn in children)
 							l.Add(tn.id);
 					}
@@ -245,7 +245,7 @@ namespace Saltarelle.UI {
 		
 		public string GetNodeText(int id) {
 			#if CLIENT
-				if (element != null && !rebuilding)
+				if (!Utils.IsNull(element) && !rebuilding)
 					return FindNodeJQ(id).children("." + ItemTextClass).text();
 			#endif
 			return FindNode(id, invisibleRoot).text;
@@ -253,7 +253,7 @@ namespace Saltarelle.UI {
 
 		public void SetNodeText(int id, string text) {
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					FindNodeJQ(id).children("." + ItemTextClass).text(text);
 					return;
 				}
@@ -263,7 +263,7 @@ namespace Saltarelle.UI {
 		
 		public object GetNodeData(int id) {
 			#if CLIENT
-				if (element != null && !rebuilding)
+				if (!Utils.IsNull(element) && !rebuilding)
 					return Type.GetField(FindNodeJQ(id).get(0), "__data");
 			#endif
 			return FindNode(id, invisibleRoot).data;
@@ -271,7 +271,7 @@ namespace Saltarelle.UI {
 
 		public void SetNodeData(int id, object data) {
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					Type.SetField(FindNodeJQ(id).get(0), "__data", data);
 					return;
 				}
@@ -281,7 +281,7 @@ namespace Saltarelle.UI {
 
 		public bool IsNodeChecked(int id) {
 			#if CLIENT
-				if (element != null && !rebuilding)
+				if (!Utils.IsNull(element) && !rebuilding)
 					return FindNodeJQ(id).find("input:checkbox").isInExpression(":checked");
 			#endif
 			return FindNode(id, invisibleRoot).isChecked;
@@ -289,7 +289,7 @@ namespace Saltarelle.UI {
 
 		public void ExpandNode(int id, bool expanded) {
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					ExpandNodeJQ(FindNodeJQ(id), expanded);
 					return;
 				}
@@ -301,7 +301,7 @@ namespace Saltarelle.UI {
 			if (!hasChecks)
 				throw new Exception("The tree does not have any checkboxes");
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					FindNodeJQ(id).find("input:checkbox").each(delegate(int _, DOMElement e) {
 						((CheckBoxElement)e).Checked = isChecked;
 						return true;
@@ -317,7 +317,7 @@ namespace Saltarelle.UI {
 		
 		public int GetParentNodeId(int nodeId) {
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					jQuery q = FindNodeJQ(nodeId);
 					if (q.size() > 0) {
 						jQuery parentJQ = Utils.Parent(q, "." + NodeClass + ",." + ClassName);
@@ -359,7 +359,7 @@ namespace Saltarelle.UI {
 			set {
 				enableDragDrop = value;
 				#if CLIENT
-					if (selectedJQ != null) {
+					if (!Utils.IsNull(selectedJQ)) {
 						if (value)
 							MakeDraggable(selectedJQ);
 						else
@@ -374,7 +374,7 @@ namespace Saltarelle.UI {
 			get { return hasChecks; }
 			set {
 				#if CLIENT
-				if (element != null) {
+				if (!Utils.IsNull(element)) {
 					if (value && !hasChecks) {
 						// add checkboxes
 						JQueryProxy.jQuery("<input type=\"checkbox\" class=\"checkbox\" tabindex=\"-1\"/>").insertBefore(element.find("." + ItemTextClass));
@@ -393,10 +393,10 @@ namespace Saltarelle.UI {
 		private TreeNode FindNode(int nodeIdToFind, TreeNode nodeToSearch) {
 			if (nodeIdToFind == nodeToSearch.id)
 				return nodeToSearch;
-			if (nodeToSearch.children != null) {
+			if (!Utils.IsNull(nodeToSearch.children)) {
 				foreach (TreeNode n in nodeToSearch.children) {
 					TreeNode x = FindNode(nodeIdToFind, n);
-					if (x != null)
+					if (!Utils.IsNull(x))
 						return x;
 				}
 			}
@@ -407,9 +407,9 @@ namespace Saltarelle.UI {
 			foreach (TreeNode n in parentToSearch.children) {
 				if (n.id == nodeIdToFind)
 					return parentToSearch;
-				if (n.children != null) {
+				if (!Utils.IsNull(n.children)) {
 					TreeNode x = FindParent(nodeIdToFind, n);
-					if (x != null)
+					if (!Utils.IsNull(x))
 						return x;
 				}
 			}
@@ -421,7 +421,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 			}
@@ -430,7 +430,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -438,7 +438,7 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -449,7 +449,7 @@ namespace Saltarelle.UI {
 			set {
 				width = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.width(value - HorzBorderSize);
 				#endif
 			}
@@ -460,14 +460,14 @@ namespace Saltarelle.UI {
 			set {
 				height = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.height(value - 2 * VertBorderSize);
 				#endif
 			}
 		}
 
 		private string GetNodeHtml(TreeNode n) {
-			bool hasChildren = n.children != null && Utils.ArrayLength(n.children) > 0;
+			bool hasChildren = !Utils.IsNull(n.children) && Utils.ArrayLength(n.children) > 0;
 			string suffix = (hasChildren ? (n.expanded ? ExpandedSuffix : CollapsedSuffix) : LeafSuffix);
 			StringBuilder sb = new StringBuilder();
 			sb.Append("<div class=\"" + NodeClass + " " + NodeClass + suffix + "\" __nodeid=\"" + Utils.ToStringInvariantInt(n.id) + "\" __data=\"" + Utils.HtmlEncode(Utils.Json(n.data)) + "\">");
@@ -577,18 +577,18 @@ namespace Saltarelle.UI {
 		private jQuery FindNodeJQ(int nodeId) { return JQueryProxy.jQuery((DOMElement)nodeHash[nodeId.ToString()]); }
 		
 		public int SelectedId {
-			get { return selectedJQ != null && selectedJQ.size() > 0 ? Utils.ParseInt((string)selectedJQ.attr("__nodeid")) : 0; }
+			get { return !Utils.IsNull(selectedJQ) && selectedJQ.size() > 0 ? Utils.ParseInt((string)selectedJQ.attr("__nodeid")) : 0; }
 			set { SetSelectedJQ(FindNodeJQ(value)); }
 		}
 		public string SelectedText {
-			get { return selectedJQ != null && selectedJQ.size() > 0 ? selectedJQ.children("." + ItemTextClass).text() : null; }
+			get { return !Utils.IsNull(selectedJQ) && selectedJQ.size() > 0 ? selectedJQ.children("." + ItemTextClass).text() : null; }
 		}
 		public object SelectedData {
-			get { return selectedJQ != null && selectedJQ.size() > 0 ? Type.GetField(selectedJQ.get(0), "__data") : null; }
+			get { return !Utils.IsNull(selectedJQ) && selectedJQ.size() > 0 ? Type.GetField(selectedJQ.get(0), "__data") : null; }
 		}
 
 		public void Focus() {
-			if (element != null)
+			if (!Utils.IsNull(element))
 				element.focus();
 		}
 
@@ -616,20 +616,20 @@ namespace Saltarelle.UI {
 		private bool SetSelectedJQ(jQuery value) {
 			if (value.size() == 0)
 				value = null;
-			if (SelectedId == (value != null ? Utils.ParseInt((string)value.attr("__nodeid")) : 0))
+			if (SelectedId == (!Utils.IsNull(value) ? Utils.ParseInt((string)value.attr("__nodeid")) : 0))
 				return true;
 			
 			if (!RaiseSelectionChanging())
 				return false;
 		
-			if (selectedJQ != null) {
+			if (!Utils.IsNull(selectedJQ)) {
 				selectedJQ.children("." + ItemTextClass).removeClass(SelectedNodeClass)
 				                                          .draggable("destroy");
 			}
 			
 			selectedJQ = value;
 
-			if (value != null) {
+			if (!Utils.IsNull(value)) {
 				EnsureExpandedTo(selectedJQ);
 				EnsureVisible(selectedJQ);
 				selectedJQ.children("." + ItemTextClass).addClass(SelectedNodeClass);
@@ -654,7 +654,7 @@ namespace Saltarelle.UI {
 		private bool ExpandNodeJQ(jQuery node, bool expanded) {
 			bool leaf = node.isInExpression("." + NodeClass + LeafSuffix);
 			
-			if (!leaf && !expanded && selectedJQ != null && selectedJQ.size() > 0) {
+			if (!leaf && !expanded && !Utils.IsNull(selectedJQ) && selectedJQ.size() > 0) {
 				// if we are collapsing the node containing the current selected node, we have to make sure it's OK and also select this node.
 				jQuery n = selectedJQ;
 				for (;;) {
@@ -827,7 +827,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void Attach() {
-			if (id == null || element != null)
+			if (Utils.IsNull(id) || !Utils.IsNull(element))
 				throw new Exception("Must set ID and can only attach once");
 		
 			element = JQueryProxy.jQuery("#" + id);
@@ -948,32 +948,32 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void OnSelectionChanging(TreeSelectionChangingEventArgs e) {
-			if (SelectionChanging != null)
+			if (!Utils.IsNull(SelectionChanging))
 				SelectionChanging(this, e);
 		}
 		
 		protected virtual void OnSelectionChanged(EventArgs e) {
-			if (SelectionChanged != null)
+			if (!Utils.IsNull(SelectionChanged))
 				SelectionChanged(this, e);
 		}
 
 		protected virtual void OnNodeChecked(TreeNodeEventArgs e) {
-			if (NodeChecked != null)
+			if (!Utils.IsNull(NodeChecked))
 				NodeChecked(this, e);
 		}
 
 		protected virtual void OnKeyPress(TreeKeyPressEventArgs e) {
-			if (KeyPress != null)
+			if (!Utils.IsNull(KeyPress))
 				KeyPress(this, e);
 		}
 		
 		protected virtual void OnDragDropCompleting(TreeDragDropCompletingEventArgs e) {
-			if (DragDropCompleting != null)
+			if (!Utils.IsNull(DragDropCompleting))
 				DragDropCompleting(this, e);
 		}
 
 		protected virtual void OnDragDropCompleted(TreeDragDropCompletedEventArgs e) {
-			if (DragDropCompleted != null)
+			if (!Utils.IsNull(DragDropCompleted))
 				DragDropCompleted(this, e);
 		}
 #endif

@@ -22,7 +22,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 			}
@@ -31,14 +31,14 @@ namespace Saltarelle.UI {
 		public string Text {
 			get {
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						return element.text();
 				#endif
 				return text;
 			}
 			set {
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.text(value);
 				#endif
 				text = value;
@@ -49,7 +49,7 @@ namespace Saltarelle.UI {
 			get { return additionalClass; }
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						if (!string.IsNullOrEmpty(additionalClass))
 							element.removeClass(additionalClass);
 						if (!string.IsNullOrEmpty(value))
@@ -76,7 +76,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -84,7 +84,7 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -134,7 +134,7 @@ namespace Saltarelle.UI {
 		public jQuery Element { get { return element; } }
 
 		public void Attach() {
-			if (id == null || element != null)
+			if (Utils.IsNull(id) || !Utils.IsNull(element))
 				throw new Exception("Must set ID and can only attach once");
 		
 			element = JQueryProxy.jQuery("#" + id);

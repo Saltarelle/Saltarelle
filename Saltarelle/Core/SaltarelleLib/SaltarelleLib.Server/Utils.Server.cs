@@ -110,6 +110,10 @@ namespace Saltarelle {
 		public static bool IsNaN(double v) {
 			return double.IsNaN(v);
 		}
+
+		public static bool IsNull(object o) {
+			return o == null;
+		}
 		
 		public static string JoinStrings(string separator, string[] value) {
 			return string.Join(separator, value);
@@ -264,13 +268,13 @@ namespace Saltarelle {
 				if (!typeCache.TryGetValue(typeName, out t)) {
 					foreach (Assembly a in GetAllAssemblies()) {
 						t = a.GetType(typeName);
-						if (t != null)
+						if (!IsNull(t))
 							break;
 					}
 					typeCache[typeName] = t; // perhaps null
 				}
 			}
-			return t != null;
+			return !IsNull(t);
 		}
 		
 		public static Assembly FindAssembly(string assemblyName) {
@@ -286,7 +290,7 @@ namespace Saltarelle {
 					asmCache[assemblyName] = a = GetAllAssemblies().SingleOrDefault(x => x.GetName().Name == assemblyName);
 				}
 			}
-			return a != null;
+			return !IsNull(a);
 		}
 
 		public static Exception ArgumentException(string argument) {

@@ -264,7 +264,7 @@ namespace Saltarelle {
 
 		internal static void WriteAttach(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
 			cb.AppendLine("public void Attach() {").Indent()
-			  .AppendLine("if (Script.IsNullOrEmpty(id) || element != null) throw new Exception(\"Must set id before attach and can only attach once.\");");
+			  .AppendLine("if (Script.IsNullOrEmpty(id) || !Utils.IsNull(element)) throw new Exception(\"Must set id before attach and can only attach once.\");");
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.Attach, cb);
 			cb.AppendLine("AttachSelf();").Outdent()
@@ -285,7 +285,7 @@ namespace Saltarelle {
 			if (!string.IsNullOrEmpty(inherits))
 				sb.Append(inherits);
 			sb.Append((Utils.IsStringBuilderEmpty(sb) ? "" : ", ") + "IControl" + (enableClientCreate ? ", IClientCreateControl" : ""));
-			if (interfaces != null) {
+			if (!Utils.IsNull(interfaces)) {
 				for (int i = 0; i < interfaces.Count; i++) {
 					sb.Append(", " + interfaces[i]);
 				}
@@ -351,10 +351,10 @@ namespace Saltarelle {
 			  .AppendLine("private Dictionary controls = new Dictionary();").AppendLine()
 			  .AppendLine("private Position position;")
 			  .AppendLine("public Position Position {").Indent()
-			  .AppendLine("get { return element != null ? PositionHelper.GetPosition(element) : position; }")
+			  .AppendLine("get { return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position; }")
 			  .AppendLine("set {").Indent()
 			  .AppendLine("position = value;")
-			  .AppendLine("if (element != null)").Indent()
+			  .AppendLine("if (!Utils.IsNull(element))").Indent()
 			  .AppendLine("PositionHelper.ApplyPosition(element, value);").Outdent()
 			  .Outdent().AppendLine("}")
 			  .Outdent().AppendLine("}").AppendLine()

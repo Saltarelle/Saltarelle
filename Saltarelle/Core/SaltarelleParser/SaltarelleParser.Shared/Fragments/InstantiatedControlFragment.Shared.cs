@@ -36,7 +36,7 @@ namespace Saltarelle.Fragments {
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = obj as InstantiatedControlFragment;
-			return other != null && other.Id == Id && other.HasInnerHtml == HasInnerHtml;
+			return !Utils.IsNull(other) && other.Id == Id && other.HasInnerHtml == HasInnerHtml;
 		}
 		
 		public override int GetHashCode() {

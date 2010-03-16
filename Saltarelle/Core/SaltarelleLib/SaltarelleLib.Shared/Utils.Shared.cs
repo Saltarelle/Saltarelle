@@ -18,7 +18,7 @@ namespace Saltarelle {
 		public static string FloatRegex = "^\\s*([+-]?(?:(?:\\d+\\.?\\d*)|(?:\\.\\d+))(?:[eE][+-]?\\d+)?)\\s*$";
 		
 		public static string ScriptStr(string s) {
-			return s == null ? "null" : ("'" + ScriptEncode(s) + "'");
+			return IsNull(s) ? "null" : ("'" + ScriptEncode(s) + "'");
 		}
 
 		public static string ScriptBool(bool b) {

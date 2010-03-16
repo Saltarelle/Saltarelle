@@ -76,9 +76,9 @@ namespace Saltarelle.TypedMarkupParsers {
 					string typeName = null;
 					for (int i = 0; i < split.Length; i++) {
 						SingleEnumMarkupValue v = ParseSingle(split[i]);
-						if (v == null || (typeName != null && typeName != v.typeName))
+						if (Utils.IsNull(v) || (!Utils.IsNull(typeName) && typeName != v.typeName))
 							throw ParserUtils.TemplateErrorException(ParserUtils.MakeTypedMarkupErrorMessage(registeredPrefix, isArray, value));
-						if (typeName == null) {
+						if (Utils.IsNull(typeName)) {
 							typeName = v.typeName;
 							sb.Append("new " + typeName + "[] {");
 							#if SERVER
@@ -101,7 +101,7 @@ namespace Saltarelle.TypedMarkupParsers {
 			}
 			else {
 				SingleEnumMarkupValue v = ParseSingle(value);
-				if (v == null)
+				if (Utils.IsNull(v))
 					throw ParserUtils.TemplateErrorException(ParserUtils.MakeTypedMarkupErrorMessage(registeredPrefix, isArray, value));
 				return new TypedMarkupData(v.typeName + "." + v.valueStr, delegate() { return v.value; });
 			}

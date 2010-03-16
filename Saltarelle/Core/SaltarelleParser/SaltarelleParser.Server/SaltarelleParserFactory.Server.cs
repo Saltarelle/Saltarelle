@@ -21,7 +21,7 @@ namespace Saltarelle {
 			var typedParserImplementers   = new Dictionary<string, ITypedMarkupParserImpl>();
 			var untypedParserImplementers = new List<IUntypedMarkupParserImpl>();
 
-			if (config != null && config.Plugins != null) {
+			if (!Utils.IsNull(config) && !Utils.IsNull(config.Plugins)) {
 				foreach (PluginElement p in config.Plugins) {
 					Assembly asm = LoadAssembly(p.Assembly, rootPath);
 					nodeProcessors.AddRange(GetNodeProcessors(asm));
@@ -56,16 +56,16 @@ namespace Saltarelle {
 		}
 
 		private static SaltarelleConfigSection LoadConfig(string fileName) {
-			if (fileName == null) throw new ArgumentException("fileName");
+			if (Utils.IsNull(fileName)) throw new ArgumentException("fileName");
 			ConfigurationFileMap fileMap = new ConfigurationFileMap(fileName);
 			SysConfig cfg = ConfigurationManager.OpenMappedMachineConfiguration(fileMap);
-			return cfg != null ? (SaltarelleConfigSection)cfg.Sections["saltarelle"] : null;
+			return !Utils.IsNull(cfg) ? (SaltarelleConfigSection)cfg.Sections["saltarelle"] : null;
 		}
 		
 		private static IEnumerable<INodeProcessor> GetNodeProcessors(Assembly asm) {
 			var seq = (   from tp in asm.GetTypes()
 			               let attr = (NodeProcessorAttribute)Attribute.GetCustomAttribute(tp, typeof(NodeProcessorAttribute))
-			             where attr != null
+			             where !Utils.IsNull(attr)
 			           orderby attr.Priority descending
 			            select tp);
 			var result = new List<INodeProcessor>();
@@ -82,7 +82,7 @@ namespace Saltarelle {
 		private static IEnumerable<IUntypedMarkupParserImpl> GetUntypedParsers(Assembly asm) {
 			var seq = (   from tp in asm.GetTypes()
 			               let attr = (UntypedMarkupParserImplAttribute)Attribute.GetCustomAttribute(tp, typeof(UntypedMarkupParserImplAttribute))
-			             where attr != null
+			             where !Utils.IsNull(attr)
 			           orderby attr.Priority descending
 			            select tp);
 			var result = new List<IUntypedMarkupParserImpl>();
@@ -99,7 +99,7 @@ namespace Saltarelle {
 		private static void AddTypedMarkupParsersToDictionary(Assembly asm, IDictionary<string, ITypedMarkupParserImpl> parsers) {
 			var seq = (   from tp in asm.GetTypes()
 			               let p = new { tp, attr = (TypedMarkupParserImplAttribute)Attribute.GetCustomAttribute(tp, typeof(TypedMarkupParserImplAttribute)) }
-			             where p.attr != null
+			             where !Utils.IsNull(p.attr)
 			             group p by p.attr.Prefix into g
 			            select g);
 

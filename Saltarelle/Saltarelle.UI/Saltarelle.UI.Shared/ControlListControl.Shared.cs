@@ -34,7 +34,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 				for (int i = 0; i < Utils.ArrayLength(controls); i++) {
@@ -46,7 +46,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -54,7 +54,7 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -64,7 +64,7 @@ namespace Saltarelle.UI {
 			get { return className; }
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						if (!string.IsNullOrEmpty(className))
 							element.removeClass(className);
 						if (!string.IsNullOrEmpty(value))
@@ -159,7 +159,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void AddControl(string controlId, IControl control, object data) {
-			if (id != null)
+			if (!Utils.IsNull(id))
 				control.Id = id + "_" + Utils.ToStringInvariantInt(Utils.ArrayLength(controls));
 			controlIds.Add(controlId);
 			controls.Add(control);
@@ -197,17 +197,17 @@ namespace Saltarelle.UI {
 		public jQuery Element { get { return element; } }
 
 		public void Attach() {
-			if (id == null || element != null)
+			if (Utils.IsNull(id) || !Utils.IsNull(element))
 				throw new Exception("Must set ID and can only attach once");
 			element = JQueryProxy.jQuery("#" + id);
 		}
 
 		public void AddControl(string controlId, IClientCreateControl control, object data) {
-			if (((IControl)control).Element != null)
+			if (!Utils.IsNull(((IControl)control).Element))
 				throw new Exception("The control must not be rendered.");
-			if (id != null)
+			if (!Utils.IsNull(id))
 				((IControl)control).Id = id + "_" + Utils.ToStringInvariantInt(Utils.ArrayLength(controls));
-			if (element != null)
+			if (!Utils.IsNull(element))
 				Utils.RenderControl(control, element);
 			controlIds.Add(controlId);
 			controls.Add(control);

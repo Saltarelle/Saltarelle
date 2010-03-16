@@ -12,8 +12,8 @@ namespace Saltarelle {
 		public readonly TypedMarkupDataValueRetriever ValueRetriever;
 
 		public TypedMarkupData(string initializerString, TypedMarkupDataValueRetriever valueRetriever) {
-			if (initializerString == null) throw Utils.ArgumentNullException("initializerString");
-			if (valueRetriever == null) throw Utils.ArgumentNullException("valueRetriever");
+			if (Utils.IsNull(initializerString)) throw Utils.ArgumentNullException("initializerString");
+			if (Utils.IsNull(valueRetriever)) throw Utils.ArgumentNullException("valueRetriever");
 			this.InitializerString = initializerString;
 			this.ValueRetriever    = valueRetriever;
 		}
@@ -21,7 +21,7 @@ namespace Saltarelle {
 #if SERVER
 		/// Should only be used during test
 		internal TypedMarkupData(string initializerString) {
-			if (initializerString == null) throw new ArgumentNullException("initializerString");
+			if (Utils.IsNull(initializerString)) throw new ArgumentNullException("initializerString");
 			this.InitializerString = initializerString;
 			this.ValueRetriever    = null;
 		}

@@ -129,7 +129,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 
 			string expected =  "public void Attach() {" + Environment.NewLine
-			                +  "	if (Script.IsNullOrEmpty(id) || element != null) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
+			                +  "	if (Script.IsNullOrEmpty(id) || !Utils.IsNull(element)) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
 			                +  "	AttachSelf();" + Environment.NewLine
@@ -379,10 +379,10 @@ namespace SaltarelleParser.Tests {
 			                 +     Environment.NewLine
 			                 + p + "	private Position position;" + Environment.NewLine
 			                 + p + "	public Position Position {" + Environment.NewLine
-			                 + p + "		get { return element != null ? PositionHelper.GetPosition(element) : position; }" + Environment.NewLine
+			                 + p + "		get { return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
 			                 + p + "			position = value;" + Environment.NewLine
-			                 + p + "			if (element != null)" + Environment.NewLine
+			                 + p + "			if (!Utils.IsNull(element))" + Environment.NewLine
 			                 + p + "				PositionHelper.ApplyPosition(element, value);" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
@@ -416,7 +416,7 @@ namespace SaltarelleParser.Tests {
 			                 + Environment.NewLine
 			                 + (enableClientCreate
 			                 ? p + "	public void Attach() {" + Environment.NewLine
-			                 + p + "		if (Script.IsNullOrEmpty(id) || element != null) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
+			                 + p + "		if (Script.IsNullOrEmpty(id) || !Utils.IsNull(element)) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
 			                 + p + "		AttachSelf();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine

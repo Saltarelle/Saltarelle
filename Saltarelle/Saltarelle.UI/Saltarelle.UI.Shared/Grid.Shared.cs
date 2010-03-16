@@ -107,7 +107,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 			}
@@ -117,7 +117,7 @@ namespace Saltarelle.UI {
 			get { return tabIndex; }
 			set {
 				#if CLIENT
-					if (element != null && enabled)
+					if (!Utils.IsNull(element) && enabled)
 						element.attr("tabindex", value);
 				#endif
 				tabIndex = value;
@@ -127,7 +127,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -135,7 +135,7 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -147,7 +147,7 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						element.children("div").andSelf().width(value - 2 * BorderSize);
 					}
 				#endif
@@ -163,7 +163,7 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.children("div:eq(1)").height(value - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 				#endif
 				height = value;
@@ -187,7 +187,7 @@ namespace Saltarelle.UI {
 				colTitles = (string[])Utils.ArrayResize(colTitles, value, "");
 				colClasses = (string[])Utils.ArrayResize(colClasses, value, "");
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						element.html(InnerHtml);
 						AttachInner();
 					}
@@ -197,7 +197,7 @@ namespace Saltarelle.UI {
 
 		public void SetColTitle(int col, string title) {
 			#if CLIENT
-				if (element != null)
+				if (!Utils.IsNull(element))
 					headerTr.children("th:eq(" + col.ToString() + ")").children("div").children("div:eq(0)").text(title);
 			#endif
 			colTitles[col] = title;
@@ -221,7 +221,7 @@ namespace Saltarelle.UI {
 
 		public void SetColWidth(int col, int width) {
 			#if CLIENT
-				if (element != null) {
+				if (!Utils.IsNull(element)) {
 					element.children("div").children("table").children("thead,tbody").children("tr").children("th,td").filter(":nth-child(" + (col + 1).ToString() + ")").children("div").width(width);
 					element.children("div:eq(1)").scroll();
 				}
@@ -250,7 +250,7 @@ namespace Saltarelle.UI {
 		
 		public void SetColClass(int col, string cls) {
 			#if CLIENT
-				if (element != null) {
+				if (!Utils.IsNull(element)) {
 					jQuery cells = valuesTbody.children("tr").children("td:nth-child(" + (col + 1).ToString() + ")");
 					if (!string.IsNullOrEmpty(colClasses[col]))
 						cells.removeClass(colClasses[col]);
@@ -284,7 +284,7 @@ namespace Saltarelle.UI {
 			get { return enabled; }
 			set {
 				#if CLIENT
-					if (element != null && value != enabled) {
+					if (!Utils.IsNull(element) && value != enabled) {
 						if (selectedRowIndex != -1) {
 							if (value && enableDragDrop) {
 								MakeDraggable(SelectedRow);
@@ -317,7 +317,7 @@ namespace Saltarelle.UI {
 			set {
 				colHeadersVisible = value;
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						element.children("div:eq(0)").css("display", colHeadersVisible ? "" : "none");
 						element.children("div:eq(1)").height(height - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 					}
@@ -331,7 +331,7 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (element != null && value != enableDragDrop) {
+					if (!Utils.IsNull(element) && value != enableDragDrop) {
 						if (selectedRowIndex != -1) {
 							if (value && enabled) {
 								MakeDraggable(SelectedRow);
@@ -359,7 +359,7 @@ namespace Saltarelle.UI {
 			if (selectedRowIndex >= index)
 				selectedRowIndex++;
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					StringBuilder sb = new StringBuilder();
 					AddRowHtml(sb, cellTexts, (numRows % 2) == 1, false, null);
 					jQuery q = JQueryProxy.jQuery(sb.ToString());
@@ -401,7 +401,7 @@ namespace Saltarelle.UI {
 			#if CLIENT
 				rebuilding = false;
 				
-				if (element != null) {
+				if (!Utils.IsNull(element)) {
 					int index = 0;
 					StringBuilder sb = new StringBuilder();
 					foreach (GridRowData r in rowsIfNotRendered) {
@@ -419,7 +419,7 @@ namespace Saltarelle.UI {
 			numRows = 0;
 			selectedRowIndex = -1;
 			#if CLIENT
-				if (element != null) {
+				if (!Utils.IsNull(element)) {
 					valuesTbody.empty();
 					OnSelectionChanged(EventArgs.Empty);
 				}
@@ -429,7 +429,7 @@ namespace Saltarelle.UI {
 		
 		public void UpdateItem(int row, string[] cellTexts, object data) {
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					jQuery q = valuesTbody.children(":eq(" + row.ToString() + ")");
 					Type.SetField(q.get(0), "__data", data);
 					q.children("td").each(delegate(int col, DOMElement e) {
@@ -444,7 +444,7 @@ namespace Saltarelle.UI {
 		public void DeleteItem(int row) {
 			numRows--;
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					int newSelection = SelectedRowIndex;
 					bool changeSelection = false;
 					if (SelectedRowIndex == row) {
@@ -485,7 +485,7 @@ namespace Saltarelle.UI {
 			if (row < 0 || row >= numRows)
 				return null;
 			#if CLIENT
-				if (element != null && !rebuilding)
+				if (!Utils.IsNull(element) && !rebuilding)
 					return Type.GetField(((TableSectionElement)valuesTbody.get(0)).Rows[row], "__data");
 			#endif
 			return ((GridRowData)rowsIfNotRendered[row]).data;
@@ -495,7 +495,7 @@ namespace Saltarelle.UI {
 			if (row < 0 || row >= numRows)
 				return null;
 			#if CLIENT
-				if (element != null && !rebuilding) {
+				if (!Utils.IsNull(element) && !rebuilding) {
 					jQuery jq = JQueryProxy.jQuery(((TableSectionElement)valuesTbody.get(0)).Rows[row]);
 					string[] result = new string[jq.children().size()];
 					for (int i = 0; i < result.Length; i++)
@@ -513,7 +513,7 @@ namespace Saltarelle.UI {
 		}
 		
 		private void AddRowHtml(StringBuilder sb, string[] cellTexts, bool even, bool selected, object data) {
-			sb.Append("<tr" + (data != null ? (" __data=\"" + Utils.HtmlEncode(Utils.Json(data)) + "\"") : "") + " class=\"" + (even ? EvenRowClass : OddRowClass) + (selected ? " ui-state-highlight" : "") + "\">");
+			sb.Append("<tr" + (!Utils.IsNull(data) ? (" __data=\"" + Utils.HtmlEncode(Utils.Json(data)) + "\"") : "") + " class=\"" + (even ? EvenRowClass : OddRowClass) + (selected ? " ui-state-highlight" : "") + "\">");
 			for (int c = 0; c < NumColumns; c++)
 				sb.Append("<td " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (c < cellTexts.Length && !string.IsNullOrEmpty(cellTexts[c]) ? Utils.HtmlEncode(cellTexts[c]) : "&nbsp;") + "</div></div></td>");
 			sb.Append("</tr>");
@@ -785,7 +785,7 @@ namespace Saltarelle.UI {
 		}
 		
 		public void Attach() {
-			if (id == null || element != null)
+			if (Utils.IsNull(id) || !Utils.IsNull(element))
 				throw new Exception("Must set ID and can only attach once");
 		
 			element = JQueryProxy.jQuery("#" + id);
@@ -864,37 +864,37 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void OnSelectionChanging(GridSelectionChangingEventArgs e) {
-			if (SelectionChanging != null)
+			if (!Utils.IsNull(SelectionChanging))
 				SelectionChanging(this, e);
 		}
 		
 		protected virtual void OnSelectionChanged(EventArgs e) {
-			if (SelectionChanged != null)
+			if (!Utils.IsNull(SelectionChanged))
 				SelectionChanged(this, e);
 		}
 
 		protected virtual void OnCellClicked(GridCellClickedEventArgs e) {
-			if (CellClicked != null)
+			if (!Utils.IsNull(CellClicked))
 				CellClicked(this, e);
 		}
 		
 		protected virtual void OnKeyPress(GridKeyPressEventArgs e) {
-			if (KeyPress != null)
+			if (!Utils.IsNull(KeyPress))
 				KeyPress(this, e);
 		}
 		
 		protected virtual void OnDragDropCompleting(GridDragDropCompletingEventArgs e) {
-			if (DragDropCompleting != null)
+			if (!Utils.IsNull(DragDropCompleting))
 				DragDropCompleting(this, e);
 		}
 
 		protected virtual void OnDragDropCompleted(GridDragDropCompletedEventArgs e) {
-			if (DragDropCompleted != null)
+			if (!Utils.IsNull(DragDropCompleted))
 				DragDropCompleted(this, e);
 		}
 
 		public void Focus() {
-			if (element != null)
+			if (!Utils.IsNull(element))
 				element.focus();
 		}
 #endif

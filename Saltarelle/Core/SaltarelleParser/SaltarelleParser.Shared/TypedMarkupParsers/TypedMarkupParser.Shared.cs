@@ -33,7 +33,7 @@ namespace Saltarelle {
 			implementers = new TypedMarkupParserImplDictionary();
 			foreach (TypedMarkupParserImplEntry kvp in defaultImplementers)
 				implementers[kvp.Key] = kvp.Value;
-			if (pluginImplementers != null) {
+			if (!Utils.IsNull(pluginImplementers)) {
 				foreach (TypedMarkupParserImplEntry kvp in pluginImplementers)
 					implementers[kvp.Key] = kvp.Value;
 			}

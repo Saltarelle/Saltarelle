@@ -18,22 +18,22 @@ namespace Saltarelle {
 		private static readonly Regex QualifiedNameRegex = new Regex("^(?:[a-z_][a-z_0-9]*\\.)*[a-z_][a-z_0-9]*$", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
 
 		public static bool IsValidUnqualifiedName(string id) {
-			return id != null && UnqualifiedNameRegex.IsMatch(id);
+			return !Utils.IsNull(id) && UnqualifiedNameRegex.IsMatch(id);
 		}
 
 		public static bool IsValidQualifiedName(string id) {
-			return id != null && QualifiedNameRegex.IsMatch(id);
+			return !Utils.IsNull(id) && QualifiedNameRegex.IsMatch(id);
 		}
 #else
 		private static readonly RegularExpression UnqualifiedNameRegex = new RegularExpression("^[a-z_][a-z_0-9]*$", "i");
 		private static readonly RegularExpression QualifiedNameRegex = new RegularExpression("^(?:[a-z_][a-z_0-9]*\\.)*[a-z_][a-z_0-9]*$", "i");
 
 		public static bool IsValidUnqualifiedName(string id) {
-			return id != null && UnqualifiedNameRegex.Exec(id) != null;
+			return !Utils.IsNull(id) && UnqualifiedNameRegex.Exec(id) != null;
 		}
 
 		public static bool IsValidQualifiedName(string id) {
-			return id != null && QualifiedNameRegex.Exec(id) != null;
+			return !Utils.IsNull(id) && QualifiedNameRegex.Exec(id) != null;
 		}
 #endif
 
@@ -49,7 +49,7 @@ namespace Saltarelle {
 					while (enumerator.MoveNext()) {
 						IFragment item = (IFragment)enumerator.Current;
 						IFragment merged = current.TryMergeWithNext(item);
-						if (merged == null) {
+						if (Utils.IsNull(merged)) {
 							result.Add(current);
 							current = item;
 						}
@@ -62,7 +62,7 @@ namespace Saltarelle {
 			}
 			finally {
 				#if SERVER
-					if (enumerator != null)
+					if (!Utils.IsNull(enumerator))
 						enumerator.Dispose();
 				#endif
 			}

@@ -24,11 +24,11 @@ namespace Saltarelle {
 				InputFile = Path.GetFullPath(cmdLine.FileList[0]);
 
 				Nmspace = cmdLine["namespace"];
-				if (Nmspace != null && !ParserUtils.IsValidQualifiedName(Nmspace))
+				if (!Utils.IsNull(Nmspace) && !ParserUtils.IsValidQualifiedName(Nmspace))
 					IsValid = false;
 				
 				ClassName = cmdLine["class"];
-				if (ClassName == null) {
+				if (Utils.IsNull(ClassName)) {
 					ClassName = new Regex("[^0-9a-zA-Z_]", RegexOptions.IgnoreCase).Replace(Path.GetFileNameWithoutExtension(InputFile), "_");
 					if (ClassName.Length == 0 || ClassName.IndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }) == 0)
 						ClassName = "_" + ClassName;
@@ -39,13 +39,13 @@ namespace Saltarelle {
 				OutputFile = cmdLine["out"];
 				if (OutputFile == "")
 					return;
-				if (OutputFile == null)
+				if (Utils.IsNull(OutputFile))
 					OutputFile = Path.ChangeExtension(InputFile, ExecutablesCommon.GeneratedFileExtension);
 
 				ConfigFile = cmdLine["config"];
 				if (ConfigFile == "")
 					return;
-				else if (ConfigFile == null)
+				else if (Utils.IsNull(ConfigFile))
 					ConfigFile = ExecutablesCommon.FindConfigFilePath(InputFile);
 
 				IsValid = true;
@@ -80,7 +80,7 @@ namespace Saltarelle {
 					return;
 				}
 				
-				SaltarelleParser parser = opts.ConfigFile != null ? SaltarelleParserFactory.CreateParserFromConfigFile(opts.ConfigFile) : SaltarelleParserFactory.CreateDefaultParser();
+				SaltarelleParser parser = !Utils.IsNull(opts.ConfigFile) ? SaltarelleParserFactory.CreateParserFromConfigFile(opts.ConfigFile) : SaltarelleParserFactory.CreateDefaultParser();
 
 				XmlDocument doc = ExecutablesCommon.CreateXmlDocument();
 				doc.Load(opts.InputFile);

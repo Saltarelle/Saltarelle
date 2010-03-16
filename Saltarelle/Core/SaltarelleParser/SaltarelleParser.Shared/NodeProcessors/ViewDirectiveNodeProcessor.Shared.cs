@@ -21,13 +21,13 @@ namespace Saltarelle.NodeProcessors {
 
 			string[] serverTypeArr = Utils.RegexExec(Utils.NodeValue(node), "modelType=\"([^\"]*)\"", "");
 			string[] clientTypeArr = Utils.RegexExec(Utils.NodeValue(node), "clientModelType=\"([^\"]*)\"", "");
-			if (serverTypeArr == null && clientTypeArr != null)
+			if (Utils.IsNull(serverTypeArr) && !Utils.IsNull(clientTypeArr))
 				throw ParserUtils.TemplateErrorException("You cannot specify a client type for the model if you don't specify a server type");
 
 			if (template.HasMember("Model") || template.HasMember("model") || template.HasMember("Saltarelle.Mvc.IView.Model"))
 				throw ParserUtils.TemplateErrorException("The template already defines at least one of the members essential to use the view directive. Have you specified <?view?> more than once?");
 
-			string serverType = (serverTypeArr != null ? serverTypeArr[1] : "object"), clientType = (clientTypeArr != null ? clientTypeArr[1] : null);
+			string serverType = (!Utils.IsNull(serverTypeArr) ? serverTypeArr[1] : "object"), clientType = (!Utils.IsNull(clientTypeArr) ? clientTypeArr[1] : null);
 			string viewInterface = "Saltarelle.Mvc.IView<" + serverType + ">";
 
 			if (template.ImplementsServerInterface(viewInterface))

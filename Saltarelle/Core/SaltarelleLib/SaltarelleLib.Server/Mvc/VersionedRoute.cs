@@ -28,7 +28,7 @@ namespace Saltarelle.Mvc {
 			RouteValueDictionary rvd = new RouteValueDictionary(values);
 			foreach (var dep in dependencies) {
 				string v = dep.Value(values);
-				if (v != null)
+				if (!Utils.IsNull(v))
 					rvd[dep.Key] = v;
 			}
 			return base.GetVirtualPath(requestContext, rvd);

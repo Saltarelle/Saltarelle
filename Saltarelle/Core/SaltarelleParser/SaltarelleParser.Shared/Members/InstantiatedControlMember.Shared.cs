@@ -27,8 +27,8 @@ namespace Saltarelle.Members {
 		public InstantiatedControlMember(string name, string typeName, bool customInstantiate, AdditionalPropertiesDictionary additionalProperties, bool hasInnerHtml, IMember[] dependencies) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("id");
 			if (string.IsNullOrEmpty(typeName)) throw Utils.ArgumentException("type");
-			if (additionalProperties == null) throw Utils.ArgumentNullException("additionalProperties");
-			if (dependencies == null) throw Utils.ArgumentNullException("dependencies");
+			if (Utils.IsNull(additionalProperties)) throw Utils.ArgumentNullException("additionalProperties");
+			if (Utils.IsNull(dependencies)) throw Utils.ArgumentNullException("dependencies");
 			this.name = name;
 			this.typeName = typeName;
 			this.customInstantiate = customInstantiate;
@@ -61,7 +61,7 @@ namespace Saltarelle.Members {
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = obj as InstantiatedControlMember;
-			if (other == null || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || other.hasInnerHtml != hasInnerHtml || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Length != dependencies.Length)
+			if (Utils.IsNull(other) || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || other.hasInnerHtml != hasInnerHtml || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Length != dependencies.Length)
 				return false;
 			foreach (var kvp in additionalProperties) {
 				if (!other.additionalProperties.ContainsKey(kvp.Key) || other.additionalProperties[kvp.Key].InitializerString != kvp.Value.InitializerString)

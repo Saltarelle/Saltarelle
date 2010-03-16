@@ -24,7 +24,7 @@ namespace Saltarelle
 			if (!GlobalServices.allowReinit)
 				throw new InvalidOperationException("Can only init once");
 			IDisposable d = GlobalServices.provider as IDisposable;
-			if (d != null)
+			if (!Utils.IsNull(d))
 				d.Dispose();
 			GlobalServices.provider    = provider;
 			GlobalServices.allowReinit = allowReinit;

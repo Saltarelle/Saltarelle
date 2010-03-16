@@ -212,7 +212,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "if (this.CtlName == null) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");" + Environment.NewLine + "this.CtlName.Attach();" + Environment.NewLine;
+			string expected = "if (Utils.IsNull(this.CtlName)) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");" + Environment.NewLine + "this.CtlName.Attach();" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, false, new IMember[0]).WriteCode(tpl, MemberCodePoint.Attach, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);

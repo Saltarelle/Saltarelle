@@ -12,7 +12,7 @@ namespace Saltarelle {
 		public string Prefix { get; set; }
 		
 		public TypedMarkupParserImplAttribute(string prefix) {
-			if (prefix == null || !validPrefixRegex.IsMatch(prefix)) throw new ArgumentException(prefix);
+			if (Utils.IsNull(prefix) || !validPrefixRegex.IsMatch(prefix)) throw new ArgumentException(prefix);
 			this.Prefix = prefix;
 		}
 	}

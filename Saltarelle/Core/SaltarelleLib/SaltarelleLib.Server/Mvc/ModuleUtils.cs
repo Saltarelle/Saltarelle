@@ -43,7 +43,7 @@ namespace Saltarelle.Mvc {
 				return null;
 		
 			string scriptName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith(debug ? "Script.js" : "Script.min.js"));
-			if (scriptName != null) {
+			if (!Utils.IsNull(scriptName)) {
 				using (var strm = asm.GetManifestResourceStream(scriptName))
 				using (var rdr = new StreamReader(strm)) {
 					return rdr.ReadToEnd();
@@ -79,7 +79,7 @@ namespace Saltarelle.Mvc {
 				return null;
 
 			string resName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Module.less"));
-			if (resName != null) {
+			if (!Utils.IsNull(resName)) {
 				using (var strm = asm.GetManifestResourceStream(resName))
 				using (var rdr = new StreamReader(strm)) {
 					return GetCss(rdr.ReadToEnd(), asm);
@@ -100,7 +100,7 @@ namespace Saltarelle.Mvc {
 		
 		public static string GetCss(string lessSource, Assembly contextAssembly) {
 			var engine = new EngineFactory().GetEngine(DotlessConfiguration.Default);
-			return engine.TransformToCss(new StringSource().GetSource((contextAssembly != null ? GetLessVariableDefinitions(contextAssembly) + Environment.NewLine : "") + lessSource));
+			return engine.TransformToCss(new StringSource().GetSource((!Utils.IsNull(contextAssembly) ? GetLessVariableDefinitions(contextAssembly) + Environment.NewLine : "") + lessSource));
 		}
 		
 		private static void AddAssembliesInCorrectOrder(Assembly asm, IList<Assembly> l) {

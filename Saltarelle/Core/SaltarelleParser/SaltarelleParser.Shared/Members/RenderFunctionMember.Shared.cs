@@ -21,7 +21,7 @@ namespace Saltarelle.Members {
 		
 		public RenderFunctionMember(string name, string parameters) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("name");
-			if (parameters == null) throw Utils.ArgumentNullException("parameters");
+			if (Utils.IsNull(parameters)) throw Utils.ArgumentNullException("parameters");
 			this.name         = name;
 			this.parameters   = parameters;
 			this.fragments    = new FragmentList();
@@ -63,7 +63,7 @@ namespace Saltarelle.Members {
 #if SERVER
 		public override bool Equals(object obj) {
 			RenderFunctionMember other = obj as RenderFunctionMember;
-			if (other == null || other.name != name || other.parameters != parameters || other.fragments.Count != fragments.Count || other.dependencies.Count != dependencies.Count)
+			if (Utils.IsNull(other) || other.name != name || other.parameters != parameters || other.fragments.Count != fragments.Count || other.dependencies.Count != dependencies.Count)
 				return false;
 			for (int i = 0; i < fragments.Count; i++) {
 				if (!other.fragments[i].Equals(fragments[i]))

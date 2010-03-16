@@ -29,11 +29,11 @@ namespace Saltarelle.Members {
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = obj as FieldMember;
-			return other != null && other.name == name && other.serverType == serverType && other.clientType == clientType;
+			return !Utils.IsNull(other) && other.name == name && other.serverType == serverType && other.clientType == clientType;
 		}
 
 		public override int GetHashCode() {
-			return name.GetHashCode() ^ (serverType != null ? serverType.GetHashCode() : 0) ^ (clientType != null ? clientType.GetHashCode() : 0);
+			return name.GetHashCode() ^ (!Utils.IsNull(serverType) ? serverType.GetHashCode() : 0) ^ (!Utils.IsNull(clientType) ? clientType.GetHashCode() : 0);
 		}
 
 		public override string ToString() {
@@ -43,19 +43,19 @@ namespace Saltarelle.Members {
 		public void WriteCode(ITemplate tpl, MemberCodePoint point, CodeBuilder cb) {
 			switch (point) {
 				case MemberCodePoint.ServerDefinition:
-					if (serverType != null)
+					if (!Utils.IsNull(serverType))
 						cb.AppendLine("private " + serverType + " " + Name + ";").AppendLine();
 					break;
 				case MemberCodePoint.ClientDefinition:
-					if (clientType != null)
+					if (!Utils.IsNull(clientType))
 						cb.AppendLine("private " + ClientType + " " + Name + ";").AppendLine();
 					break;
 				case MemberCodePoint.TransferConstructor:
-					if (serverType != null && clientType != null)
+					if (!Utils.IsNull(serverType) && !Utils.IsNull(clientType))
 						cb.AppendLine("this." + name + " = (" + clientType + ")" + ParserUtils.ConfigObjectName + "[\"" + name + "\"];");
 					break;
 				case MemberCodePoint.ConfigObjectInit:
-					if (serverType != null && clientType != null)
+					if (!Utils.IsNull(serverType) && !Utils.IsNull(clientType))
 						cb.AppendLine(ParserUtils.ConfigObjectName + "[\"" + name + "\"] = this." + name + ";");
 					break;
 			}

@@ -39,7 +39,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 			}
@@ -65,7 +65,7 @@ namespace Saltarelle.UI {
 			set {
 				width = value;
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						element.dialog("option", "width", value);
 						element.dialog("option", "minWidth", value);
 						element.dialog("option", "maxWidth", value);
@@ -79,7 +79,7 @@ namespace Saltarelle.UI {
 			set {
 				height = value;
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						element.dialog("option", "height", value);
 						element.dialog("option", "minHeight", value);
 						element.dialog("option", "maxHeight", value);
@@ -92,7 +92,7 @@ namespace Saltarelle.UI {
 			get { return title; }
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						WidthHeight old = GetMyExtraSpace();
 						title = value;
 						WidthHeight nw = GetMyExtraSpace();
@@ -112,7 +112,7 @@ namespace Saltarelle.UI {
 			set {
 				className = value;
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						element.dialog("option", "dialogClass", EffectiveDialogClass);
 					}
 				#endif
@@ -137,7 +137,7 @@ namespace Saltarelle.UI {
 			get { return noPadding; }
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						WidthHeight old = GetMyExtraSpace();
 						noPadding = value;
 						WidthHeight nw = GetMyExtraSpace();
@@ -244,7 +244,7 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AttachSelf() {
-			if (id == null || element != null)
+			if (Utils.IsNull(id) || !Utils.IsNull(element))
 				throw new Exception("Must set ID and can only attach once");
 			element = JQueryProxy.jQuery("#" + id);
 			if (width < 0 || height < 0) {
@@ -311,22 +311,22 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void OnOpening(CancelEventArgs e) {
-			if (Opening != null)
+			if (!Utils.IsNull(Opening))
 				Opening(this, e);
 		}
 		
 		protected virtual void OnOpened(EventArgs e) {
-			if (Opened != null)
+			if (!Utils.IsNull(Opened))
 				Opened(this, e);
 		}
 
 		protected virtual void OnClosing(CancelEventArgs e) {
-			if (Closing != null)
+			if (!Utils.IsNull(Closing))
 				Closing(this, e);
 		}
 
 		protected virtual void OnClosed(EventArgs e) {
-			if (Closed != null)
+			if (!Utils.IsNull(Closed))
 				Closed(this, e);
 		}
 		
@@ -342,7 +342,7 @@ namespace Saltarelle.UI {
 
 		public void SetInnerHtml(string html) {
 			#if CLIENT
-				if (Element != null)
+				if (!Utils.IsNull(Element))
 					throw new Exception("Can't change inner HTML after render.");
 			#endif
 			innerHtml = html;
@@ -376,7 +376,7 @@ namespace Saltarelle.UI {
 			get { return base.Id; }
 			set {
 				base.Id = value;
-				if (containedControl != null)
+				if (!Utils.IsNull(containedControl))
 					containedControl.Id = value + "_control";
 			}
 		}
@@ -416,7 +416,7 @@ namespace Saltarelle.UI {
 		protected override string InnerHtml { get { return ((IClientCreateControl)containedControl).Html; } }
 		
 		protected void SetContainedControlBase(IClientCreateControl control) {
-			if (((IControl)control).Element != null)
+			if (!Utils.IsNull(((IControl)control).Element))
 				throw new Exception("The control must not be rendered.");
 			containedControl = (IControl)control;
 			if (!string.IsNullOrEmpty(Id))

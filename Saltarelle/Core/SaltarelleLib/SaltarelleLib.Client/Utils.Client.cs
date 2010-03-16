@@ -71,6 +71,10 @@ namespace Saltarelle {
 		public static bool IsNaN(double v) {
 			return Number.IsNaN(v);
 		}
+		
+		public static bool IsNull(object o) {
+			return Script.IsNull(o);
+		}
 
 		public static string JoinStrings(string separator, string[] value) {
 			return value.Join(separator);
@@ -197,7 +201,7 @@ namespace Saltarelle {
 
 		public static Type FindType(string typeName) {
 			Type tp = TryFindType(typeName);
-			if (tp == null)
+			if (Utils.IsNull(tp))
 				throw new Exception("The type " + typeName + " does not exist");
 			return tp;
 		}

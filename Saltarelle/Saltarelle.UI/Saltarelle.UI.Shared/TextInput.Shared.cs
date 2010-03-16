@@ -23,7 +23,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -31,7 +31,7 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -42,7 +42,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 			}
@@ -51,7 +51,7 @@ namespace Saltarelle.UI {
 		public int Width {
 			get {
 				#if CLIENT
-					return element != null ? (int)Math.Round(element.width()) : width;
+					return !Utils.IsNull(element) ? (int)Math.Round(element.width()) : width;
 				#else
 					return width;
 				#endif
@@ -59,7 +59,7 @@ namespace Saltarelle.UI {
 			set {
 				width = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.width(value > 0 ? Utils.ToStringInvariantInt(value) : "");
 				#endif
 			}
@@ -69,7 +69,7 @@ namespace Saltarelle.UI {
 			get { return cssClass; }
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						if (!string.IsNullOrEmpty(cssClass))
 							element.removeClass(cssClass);
 						if (!string.IsNullOrEmpty(value))
@@ -95,7 +95,7 @@ namespace Saltarelle.UI {
 		public string Value {
 			get {
 				#if CLIENT
-					return element != null ? element.val() : value;
+					return !Utils.IsNull(element) ? element.val() : value;
 				#else
 					return value;
 				#endif
@@ -103,7 +103,7 @@ namespace Saltarelle.UI {
 			set {
 				this.value = value ?? "";
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.val(value);
 					OnValueChanged(EventArgs.Empty);
 				#endif
@@ -167,7 +167,7 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void OnValueChanged(EventArgs e) {
-			if (ValueChanged != null)
+			if (!Utils.IsNull(ValueChanged))
 				ValueChanged(this, e);
 		}
 #endif

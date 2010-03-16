@@ -21,7 +21,7 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						element.attr("id", value);
 				#endif
 			}
@@ -30,7 +30,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return element != null ? PositionHelper.GetPosition(element) : position;
+					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
 				#else
 					return position;
 				#endif
@@ -38,7 +38,7 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (element != null)
+					if (!Utils.IsNull(element))
 						PositionHelper.ApplyPosition(element, value);
 				#endif
 			}
@@ -48,7 +48,7 @@ namespace Saltarelle.UI {
 			get { return title; }
 			set {
 				#if CLIENT
-					if (element != null) {
+					if (!Utils.IsNull(element)) {
 						if (string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(value)) {
 							element.prepend(JQueryProxy.jQuery("<legend>" + Utils.HtmlEncode(value) + "</legend>")); // add legend
 							element.children().removeClass(NoLegendChildClassName);
@@ -130,7 +130,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void Attach() {
-			if (id == null || element != null)
+			if (Utils.IsNull(id) || !Utils.IsNull(element))
 				throw new Exception("Must set ID and can only attach once");
 			element = JQueryProxy.jQuery("#" + id);
 			if (string.IsNullOrEmpty(title))
