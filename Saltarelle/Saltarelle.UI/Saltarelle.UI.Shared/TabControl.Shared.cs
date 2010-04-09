@@ -265,18 +265,28 @@ namespace Saltarelle.UI {
 		}
 		
 		public void AddTab(string title, string html, int position) {
-			element.tabs("destroy");
+			if (element != null) {
+				element.tabs("destroy");
 
-			tabCaptions = (string[])(position > 0 ? tabCaptions.Extract(0, position) : new string[0]).Concat(title).Concat(tabCaptions.Extract(position));	// Script# bug/misfeature makes Extract() return the whole array if 0 is specified for count
-			element.children().eq(0).html(TabsInnerHtml);
+				tabCaptions = (string[])(position > 0 ? tabCaptions.Extract(0, position) : new string[0]).Concat(title).Concat(tabCaptions.Extract(position));	// Script# bug/misfeature makes Extract() return the whole array if 0 is specified for count
+				element.children().eq(0).html(TabsInnerHtml);
 
-			jQuery q = JQueryProxy.jQuery("<div style=\"position: relative\">" + html + "</div>");
-			element.children().eq(position).after(q);	// use this index since we have the tab caption list before everything else.
+				jQuery q = JQueryProxy.jQuery("<div style=\"position: relative\">" + html + "</div>");
+				element.children().eq(position).after(q);	// use this index since we have the tab caption list before everything else.
 
-			Tabify();
+				Tabify();
+			}
+			else {
+				if (position != tabCaptions.Length)
+					throw Utils.ArgumentException("When adding a tab before render, the new tab must be the last one.");
+				tabCaptions = (string[])Utils.ArrayAppend(tabCaptions, title);
+				innerHtml += html;
+			}
 		}
 
 		public void RemoveTab(int position) {
+			if (element == null)
+				throw new Exception("Cannot remove tab before render.");
 			element.tabs("destroy");
 			tabCaptions = (string[])(position > 0 ? tabCaptions.Extract(0, position) : new string[0]).Concat(tabCaptions.Extract(position + 1));	// Script# bug/misfeature makes Extract() return the whole array if 0 is specified for count
 			element.children().eq(0).html(TabsInnerHtml);
