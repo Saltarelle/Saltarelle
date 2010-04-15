@@ -36,7 +36,8 @@ namespace Saltarelle {
 			template.Nmspace   = nmspace;
 
 			CodeBuilder cb = new CodeBuilder();
-			cb.AppendLine("#if SERVER");
+			cb.AppendLine("#pragma warning disable 1591")
+			  .AppendLine("#if SERVER");
 			template.WriteServerCode(cb);
 			cb.AppendLine("#endif")
 			  .AppendLine("#if CLIENT");
