@@ -65,7 +65,7 @@
 
 					<!-- dotless and references -->
 					<Component Id="DotLessCssCoreNoMinifierComponent" Guid="83F6BAEB-A119-4a70-9234-528837705A34">
-						<File Id="DotLessCssCoreNoMinifierDll" Name="dotless.Core.NoMinifier.dll" Assembly=".net" Source="..\..\References\dotless.Core.NoMinifier.dll" KeyPath="yes" DiskId="1"/>
+						<File Id="DotLessCssCoreNoMinifierDll" Name="dotless.Core.NoMinifier.dll" Source="..\..\References\dotless.Core.NoMinifier.dll" KeyPath="yes" DiskId="1"/>
 					</Component>
 
 					<Component Id="MicrosoftPracticesServiceLocationComponent" Guid="D8E61FF8-F3A7-4f04-B0F6-163E8AAFA5CD">
