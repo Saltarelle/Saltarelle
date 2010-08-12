@@ -8,7 +8,7 @@ using CreatedServicePair = System.Collections.Generic.KeyValuePair<System.Type, 
 namespace Saltarelle {
 	public class DefaultGlobalServicesModule : IHttpModule {
 		private const string CreatedServicesKey = "{EF8495B3-D241-4b32-AA39-B34D09F3E7E6}";
-		private object padlock = new object();
+		private static object padlock = new object();
 
 		private class DefaultGlobalServicesProvider : IGlobalServicesProvider {
 			private IDictionary<Type, Type> serviceProviders;
