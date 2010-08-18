@@ -137,7 +137,7 @@
     $.evalJSON = function(src)
     // Evals JSON that we know to be safe.
     {
-		src = src.replace(/"\\\/Date\((\d+)\)\\\/"/g, "new Date($1)");
+		src = src.replace(/"\\\/Date\((-?\d+)\)\\\/"/g, "new Date($1)");
         return eval("(" + src + ")");
     };
     
