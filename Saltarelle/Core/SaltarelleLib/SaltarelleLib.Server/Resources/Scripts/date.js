@@ -98,7 +98,7 @@
 
 				i_val += year.length;
 				if (year.length == 2) {
-					if (year > 70) {
+					if (year > 30) {
 						year = 1900 + (year-0);
 					}
 					else {
