@@ -142,23 +142,23 @@ namespace Saltarelle.Members {
 		
 		private void WriteTransferConstructorCode(CodeBuilder cb) {
 			if (customInstantiate) {
-				cb.AppendLine("Type __" + name + "Type" + " = Type.GetType((string)" + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);")
-				  .AppendLine("this.controls[\"" + name + "\"] = this." + name + " = Type.CreateInstance(__" + name + "Type, id + \"_" + name + "\");");
+				cb.AppendLine("Type __" + name + "Type" + " = Type.GetType((string)" + ParserUtils.ConfigObjectName + "[\"" + name + "$type\"]);")
+				  .AppendLine("this.controls[\"" + name + "\"] = this." + name + " = Type.CreateInstance(__" + name + "Type, " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 			else {
-				cb.AppendLine("this.controls[\"" + name + "\"] = this." + name + " = new " + typeName + "(id + \"_" + name + "\");");
+				cb.AppendLine("this.controls[\"" + name + "\"] = this." + name + " = new " + typeName + "(" + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 		}
 
 		private void WriteConfigObjectInitCode(CodeBuilder cb) {
-			if (customInstantiate) {
-				cb.AppendLine(ParserUtils.ConfigObjectName + "[\"" + name + "\"] = this." + name + ".GetType().FullName;");
-			}
+			if (customInstantiate)
+				cb.AppendLine(ParserUtils.ConfigObjectName + "[\"" + name + "$type\"] = this." + name + ".GetType().FullName;");
+			cb.AppendLine(ParserUtils.ConfigObjectName + "[\"" + name + "\"] = this." + name + ".ConfigObject;");
 		}
 		
 		private void WriteAttachCode(CodeBuilder cb) {
 			if (customInstantiate)
-				cb.AppendLine("if (this." + name + " == null) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");");
+				cb.AppendLine("if (Utils.IsNull(this." + name + ")) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");");
 			cb.AppendLine("this." + name + ".Attach();");
 		}
 #endif

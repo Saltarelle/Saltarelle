@@ -3,6 +3,7 @@ using System;
 using ControlDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.IControl>;
 #endif
 #if CLIENT
+using System.DHTML;
 using ControlDictionary = System.Dictionary;
 #endif
 
@@ -13,11 +14,12 @@ namespace Saltarelle
 		string Id { get; set; }
 
 #if CLIENT
-		jQuery Element { get; }
+		DOMElement GetElement();
 #endif
 
 #if SERVER
 		string Html { get; }
+		object ConfigObject { get; }
 #endif
 	}
 	
@@ -39,7 +41,7 @@ namespace Saltarelle
 	{
 		void SetInnerHtml(string values);
 		#if CLIENT
-			jQuery GetInnerElements();
+			DOMElement[] GetInnerElements();
 		#endif
 	}
 }

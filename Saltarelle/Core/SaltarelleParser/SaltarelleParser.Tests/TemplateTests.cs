@@ -77,10 +77,10 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
-			string expected =  "public TestClass(string id) {" + Environment.NewLine
-			                +  "	if (!Script.IsUndefined(id)) {" + Environment.NewLine
-			                +  "		this.id = id;" + Environment.NewLine
-			                +  "		Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery(\"#\" + id).attr(\"__cfg\"));" + Environment.NewLine
+			string expected =  "public TestClass(object config) {" + Environment.NewLine
+			                +  "	if (!Script.IsUndefined(config)) {" + Environment.NewLine
+			                +  "		Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine
+			                +  "		this.id = (string)__cfg[\"id\"];" + Environment.NewLine
 			                +  "		m1 = f2();" + Environment.NewLine
 			                +  "		m2 = g2();" + Environment.NewLine
 			                +  "		Constructed();" + Environment.NewLine
@@ -129,7 +129,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 
 			string expected =  "public void Attach() {" + Environment.NewLine
-			                +  "	if (Script.IsNullOrEmpty(id) || !Utils.IsNull(element)) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
+			                +  "	if (Script.IsNullOrEmpty(id) || isAttached) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
 			                +  "	AttachSelf();" + Environment.NewLine
@@ -157,9 +157,9 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 
 			string expected =  "private void AttachSelf() {" + Environment.NewLine
-			                +  "	this.element = JQueryProxy.jQuery(\"#\" + id);" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
+			                +  "	this.isAttached = true;" + Environment.NewLine
 			                +  "	Attached();" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
@@ -179,8 +179,8 @@ namespace SaltarelleParser.Tests {
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
 
-			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
-			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ServerIdChanging, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ServerIdChanging, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
 
 			mocks.ReplayAll();
 			
@@ -188,11 +188,11 @@ namespace SaltarelleParser.Tests {
 			                +  "public string Id {" + Environment.NewLine
 			                +  "	get { return id; }" + Environment.NewLine
 			                +  "	set {" + Environment.NewLine
-			                +  "		this.id = value;" + Environment.NewLine
 			                +  "		foreach (KeyValuePair<string, IControl> kvp in controls)" + Environment.NewLine
 			                +  "			kvp.Value.Id = value + \"_\" + kvp.Key;" + Environment.NewLine
 			                +  "		[a]" + Environment.NewLine
 			                +  "		[b]" + Environment.NewLine
+			                +  "		this.id = value;" + Environment.NewLine
 			                +  "	}" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
@@ -212,8 +212,8 @@ namespace SaltarelleParser.Tests {
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
 		
-			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
-			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ClientIdChanging, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ClientIdChanging, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
 
 			mocks.ReplayAll();
 			
@@ -221,11 +221,13 @@ namespace SaltarelleParser.Tests {
 			                +  "public string Id {" + Environment.NewLine
 			                +  "	get { return id; }" + Environment.NewLine
 			                +  "	set {" + Environment.NewLine
-			                +  "		this.id = value;" + Environment.NewLine
 			                +  "		foreach (DictionaryEntry kvp in controls)" + Environment.NewLine
 			                +  "			((IControl)kvp.Value).Id = value + \"_\" + kvp.Key;" + Environment.NewLine
 			                +  "		[a]" + Environment.NewLine
 			                +  "		[b]" + Environment.NewLine
+			                +  "		if (isAttached)" + Environment.NewLine
+			                +  "			GetElement().ID = value;" + Environment.NewLine
+			                +  "		this.id = value;" + Environment.NewLine
 			                +  "	}" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
@@ -250,8 +252,8 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(m1.Dependencies).Return(new string[] { });
 			Expect.Call(m2.Dependencies).Return(new string[] { "m1" });
 
-			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb));
-			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb));
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ServerIdChanging, cb));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ServerIdChanging, cb));
 			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb));
 			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb));
 			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ServerDefinition, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
@@ -279,15 +281,18 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	public string Id {" + Environment.NewLine
 			                 + p + "		get { return id; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
-			                 + p + "			this.id = value;" + Environment.NewLine
 			                 + p + "			foreach (KeyValuePair<string, IControl> kvp in controls)" + Environment.NewLine
 			                 + p + "				kvp.Value.Id = value + \"_\" + kvp.Key;" + Environment.NewLine
+			                 + p + "			this.id = value;" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 +     Environment.NewLine
-			                 + p + "	private Dictionary<string, object> GetConfig() {" + Environment.NewLine
-			                 + p + "		Dictionary<string, object> __cfg = new Dictionary<string, object>();" + Environment.NewLine
-			                 + p + "		return __cfg;" + Environment.NewLine
+			                 + p + "	public object ConfigObject {" + Environment.NewLine
+			                 + p + "		get {" + Environment.NewLine
+			                 + p + "			Dictionary<string, object> __cfg = new Dictionary<string, object>();" + Environment.NewLine
+			                 + p + "			__cfg[\"id\"] = id;" + Environment.NewLine
+			                 + p + "			return __cfg;" + Environment.NewLine
+			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private string GetHtml() {" + Environment.NewLine
@@ -360,8 +365,8 @@ namespace SaltarelleParser.Tests {
 			}
 			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.TransferConstructor, cb));
 			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.TransferConstructor, cb));
-			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb));
-			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb));
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ClientIdChanging, cb));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ClientIdChanging, cb));
 			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.AttachSelf, cb));
 			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.AttachSelf, cb));
 
@@ -379,24 +384,26 @@ namespace SaltarelleParser.Tests {
 			                 +     Environment.NewLine
 			                 + p + "	private Position position;" + Environment.NewLine
 			                 + p + "	public Position Position {" + Environment.NewLine
-			                 + p + "		get { return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position; }" + Environment.NewLine
+			                 + p + "		get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
 			                 + p + "			position = value;" + Environment.NewLine
-			                 + p + "			if (!Utils.IsNull(element))" + Environment.NewLine
-			                 + p + "				PositionHelper.ApplyPosition(element, value);" + Environment.NewLine
+			                 + p + "			if (isAttached)" + Environment.NewLine
+			                 + p + "				PositionHelper.ApplyPosition(GetElement(), value);" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 +     Environment.NewLine
-			                 + p + "	private jQuery element;" + Environment.NewLine
-			                 + p + "	public jQuery Element { get { return element; } }" + Environment.NewLine
+			                 + p + "	private bool isAttached = false;" + Environment.NewLine
+			                 + p + "	public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private string id;" + Environment.NewLine
 			                 + p + "	public string Id {" + Environment.NewLine
 			                 + p + "		get { return id; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
-			                 + p + "			this.id = value;" + Environment.NewLine
 			                 + p + "			foreach (DictionaryEntry kvp in controls)" + Environment.NewLine
 			                 + p + "				((IControl)kvp.Value).Id = value + \"_\" + kvp.Key;" + Environment.NewLine
+			                 + p + "			if (isAttached)" + Environment.NewLine
+			                 + p + "				GetElement().ID = value;" + Environment.NewLine
+			                 + p + "			this.id = value;" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
@@ -410,13 +417,13 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	[a]" + Environment.NewLine
 			                 + p + "	[b]" + Environment.NewLine
 			                 + p + "	private void AttachSelf() {" + Environment.NewLine
-			                 + p + "		this.element = JQueryProxy.jQuery(\"#\" + id);" + Environment.NewLine
+			                 + p + "		this.isAttached = true;" + Environment.NewLine
 			                 + p + "		Attached();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
 			                 + (enableClientCreate
 			                 ? p + "	public void Attach() {" + Environment.NewLine
-			                 + p + "		if (Script.IsNullOrEmpty(id) || !Utils.IsNull(element)) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
+			                 + p + "		if (Script.IsNullOrEmpty(id) || isAttached) throw new Exception(\"Must set id before attach and can only attach once.\");" + Environment.NewLine
 			                 + p + "		AttachSelf();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
@@ -431,10 +438,10 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	[AlternateSignature]" + Environment.NewLine
 			                 + p + "	public extern TestClass();" + Environment.NewLine
 			                 : "")
-			                 + p + "	public TestClass(string id) {" + Environment.NewLine
-			                 + p + "		if (!Script.IsUndefined(id)) {" + Environment.NewLine
-			                 + p + "			this.id = id;" + Environment.NewLine
-			                 + p + "			Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery(\"#\" + id).attr(\"__cfg\"));" + Environment.NewLine
+			                 + p + "	public TestClass(object config) {" + Environment.NewLine
+			                 + p + "		if (!Script.IsUndefined(config)) {" + Environment.NewLine
+			                 + p + "			Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine
+			                 + p + "			this.id = (string)__cfg[\"id\"];" + Environment.NewLine
 			                 + p + "			Constructed();" + Environment.NewLine
 			                 + p + "			AttachSelf();" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
@@ -486,11 +493,13 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 
-			string expected =  "private Dictionary<string, object> GetConfig() {" + Environment.NewLine
-			                +  "	Dictionary<string, object> __cfg = new Dictionary<string, object>();" + Environment.NewLine
-			                +  "	[a]" + Environment.NewLine
-			                +  "	[b]" + Environment.NewLine
-			                +  "	return __cfg;" + Environment.NewLine
+			string expected =  "public object ConfigObject {" + Environment.NewLine
+			                +  "	get {" + Environment.NewLine
+			                +  "		Dictionary<string, object> __cfg = new Dictionary<string, object>();" + Environment.NewLine
+			                +  "		[a]" + Environment.NewLine
+			                +  "		[b]" + Environment.NewLine
+			                +  "		return __cfg;" + Environment.NewLine
+			                +  "	}" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
 			Template.WriteGetConfig(cb, tpl, new List<IMember>() { m1, m2 });

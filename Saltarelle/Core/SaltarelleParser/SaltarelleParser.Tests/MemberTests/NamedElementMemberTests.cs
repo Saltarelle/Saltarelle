@@ -42,7 +42,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new NamedElementMember("ElementName").WriteCode(tpl, MemberCodePoint.ClientDefinition, cb);
-			Assert.AreEqual("private jQuery ElementName;" + Environment.NewLine + Environment.NewLine, cb.ToString());
+			Assert.AreEqual("private DOMElement ElementName { get { return Document.GetElementById(id + \"_ElementName\"); } }" + Environment.NewLine + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
 		}
@@ -52,19 +52,9 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
-			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb);
-			Assert.AreEqual("TestId.attr(\"id\", value + \"_TestId\");" + Environment.NewLine, cb.ToString());
+			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.ClientIdChanging, cb);
+			Assert.AreEqual("this.TestId.ID = value + \"_TestId\";" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
-			mocks.VerifyAll();
-		}
-
-		[TestMethod]
-		public void TestWriteAttachSelfCode_Works() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new NamedElementMember("TestId").WriteCode(tpl, MemberCodePoint.AttachSelf, cb);
-			Assert.AreEqual("this.TestId = JQueryProxy.jQuery(\"#\" + id + \"_TestId\");" + Environment.NewLine, cb.ToString());
 			mocks.VerifyAll();
 		}
 
@@ -72,7 +62,7 @@ namespace SaltarelleParser.Tests {
 		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
-			foreach (var cp in new[] { MemberCodePoint.ServerIdChanged, MemberCodePoint.ServerConstructor, MemberCodePoint.ClientConstructor, MemberCodePoint.TransferConstructor, MemberCodePoint.ConfigObjectInit, MemberCodePoint.Attach }) {
+			foreach (var cp in new[] { MemberCodePoint.AttachSelf, MemberCodePoint.ServerIdChanging, MemberCodePoint.ServerConstructor, MemberCodePoint.ClientConstructor, MemberCodePoint.TransferConstructor, MemberCodePoint.ConfigObjectInit, MemberCodePoint.Attach }) {
 				var cb = new CodeBuilder();
 				new NamedElementMember("TestId").WriteCode(tpl, cp, cb);
 				Assert.AreEqual("", cb.ToString());

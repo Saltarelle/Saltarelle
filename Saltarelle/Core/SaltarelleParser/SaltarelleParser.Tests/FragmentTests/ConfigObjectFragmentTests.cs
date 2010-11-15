@@ -14,12 +14,14 @@ namespace SaltarelleParser.Tests {
 		public Position Position { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 		public string Id { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 		public string Html { get { throw new NotImplementedException(); } }
+		public object ConfigObject { get { throw new NotImplementedException(); } }
 	}
 
 	internal class ConfigObjectFragmentTestsTestClass2 : IControl {
 		public Position Position { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 		public string Id { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
 		public string Html { get { throw new NotImplementedException(); } }
+		public object ConfigObject { get { throw new NotImplementedException(); } }
 	}
 
 	[TestClass]

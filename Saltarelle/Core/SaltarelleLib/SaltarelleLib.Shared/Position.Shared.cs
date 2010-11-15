@@ -66,31 +66,30 @@ namespace Saltarelle
 		}
 
 #if CLIENT
-		public static void ApplyPosition(jQuery el, Position pos) {
+		public static void ApplyPosition(DOMElement el, Position pos) {
 			switch (pos.anchor) {
 				case AnchoringEnum.NotPositioned:
-					el.css("position", "");
-					el.css("left", "");
-					el.css("top", "");
+					el.Style.Position = "";
+					el.Style.Left     = "";
+					el.Style.Top      = "";
 					break;
 				case AnchoringEnum.Fixed:
-					el.css("position", "relative");
-					el.css("left", "0px");
-					el.css("top", "0px");
+					el.Style.Position = "relative";
+					el.Style.Left     = "0px";
+					el.Style.Top      = "0px";
 					break;
 				case AnchoringEnum.TopLeft:
-					el.css("position", "absolute");
-					el.css("left", Utils.ToStringInvariantInt(pos.left) + "px");
-					el.css("top", Utils.ToStringInvariantInt(pos.top) + "px");
+					el.Style.Position = "absolute";
+					el.Style.Left     = Utils.ToStringInvariantInt(pos.left) + "px";
+					el.Style.Top      = Utils.ToStringInvariantInt(pos.top) + "px";
 					break;
 			}
 		}
 		
-		public static Position GetPosition(jQuery el) {
-			DOMElement d = el.get(0);
-			switch (d.Style.Position) {
+		public static Position GetPosition(DOMElement el) {
+			switch (el.Style.Position) {
 				case "absolute":
-					return LeftTop(Utils.ParseInt(d.Style.Left.Replace("px", "")), Utils.ParseInt(d.Style.Top.Replace("px", "")));
+					return LeftTop(Utils.ParseInt(el.Style.Left.Replace("px", "")), Utils.ParseInt(el.Style.Top.Replace("px", "")));
 				case "relative":
 					return Fixed;
 				default:

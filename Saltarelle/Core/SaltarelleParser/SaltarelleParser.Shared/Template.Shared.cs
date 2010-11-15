@@ -199,10 +199,10 @@ namespace Saltarelle {
 		}
 		
 		internal static void WriteClientConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
-			cb.AppendLine("public " + tpl.ClassName + "(string id) {").Indent()
-			  .AppendLine("if (!Script.IsUndefined(id)) {").Indent()
-			  .AppendLine("this.id = id;")
-			  .AppendLine("Dictionary " + ParserUtils.ConfigObjectName + " = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery(\"#\" + id).attr(\"" + ParserUtils.ConfigObjectName + "\"));");
+			cb.AppendLine("public " + tpl.ClassName + "(object config) {").Indent()
+			  .AppendLine("if (!Script.IsUndefined(config)) {").Indent()
+			  .AppendLine("Dictionary " + ParserUtils.ConfigObjectName + " = Dictionary.GetDictionary(config);")
+			  .AppendLine("this.id = (string)" + ParserUtils.ConfigObjectName + "[\"id\"];");
 
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
@@ -227,13 +227,16 @@ namespace Saltarelle {
 		}
 		
 		internal static void WriteGetConfig(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
-			cb.AppendLine("private Dictionary<string, object> GetConfig() {").Indent()
-			  .AppendLine("Dictionary<string, object> " + ParserUtils.ConfigObjectName + " = new Dictionary<string, object>();");
+			cb.AppendLine("public object ConfigObject {").Indent()
+			  .AppendLine("get {").Indent()
+			  .AppendLine("Dictionary<string, object> " + ParserUtils.ConfigObjectName + " = new Dictionary<string, object>();")
+			  .AppendLine(ParserUtils.ConfigObjectName + "[\"id\"] = id;");
 			
 			foreach (IMember m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
 
 			cb.AppendLine("return " + ParserUtils.ConfigObjectName + ";")
+			  .Outdent().AppendLine("}")
 			  .Outdent().AppendLine("}");
 		}
 		
@@ -241,16 +244,21 @@ namespace Saltarelle {
 			cb.AppendLine("private string id;")
 			  .AppendLine("public string Id {").Indent()
 			  .AppendLine("get { return id; }")
-			  .AppendLine("set {").Indent()
-			  .AppendLine("this.id = value;");
-			  
+			  .AppendLine("set {").Indent();
+
 			cb.AppendLine("foreach (" + (server ? "KeyValuePair<string, IControl>" : "DictionaryEntry") + " kvp in controls)").Indent()
 			  .AppendLine((server ? "kvp.Value" : "((IControl)kvp.Value)") + ".Id = value + \"_\" + kvp.Key;").Outdent();
 
 			foreach (var m in orderedMembers)
-				m.WriteCode(tpl, server ? MemberCodePoint.ServerIdChanged : MemberCodePoint.ClientIdChanged, cb);
+				m.WriteCode(tpl, server ? MemberCodePoint.ServerIdChanging : MemberCodePoint.ClientIdChanging, cb);
+				
+			if (!server) {
+				cb.AppendLine("if (isAttached)").Indent()
+				  .AppendLine("GetElement().ID = value;").Outdent();
+			}
 
-			cb.Outdent().AppendLine("}")
+			cb.AppendLine("this.id = value;")
+			  .Outdent().AppendLine("}")
 			  .Outdent().AppendLine("}");
 		}
 		
@@ -264,7 +272,7 @@ namespace Saltarelle {
 
 		internal static void WriteAttach(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
 			cb.AppendLine("public void Attach() {").Indent()
-			  .AppendLine("if (Script.IsNullOrEmpty(id) || !Utils.IsNull(element)) throw new Exception(\"Must set id before attach and can only attach once.\");");
+			  .AppendLine("if (Script.IsNullOrEmpty(id) || isAttached) throw new Exception(\"Must set id before attach and can only attach once.\");");
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.Attach, cb);
 			cb.AppendLine("AttachSelf();").Outdent()
@@ -272,11 +280,11 @@ namespace Saltarelle {
 		}
 
 		internal static void WriteAttachSelf(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
-			cb.AppendLine("private void AttachSelf() {").Indent()
-			  .AppendLine("this.element = JQueryProxy.jQuery(\"#\" + id);");
+			cb.AppendLine("private void AttachSelf() {").Indent();
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.AttachSelf, cb);
-			cb.AppendLine("Attached();").Outdent()
+			cb.AppendLine("this.isAttached = true;")
+			  .AppendLine("Attached();").Outdent()
 			  .AppendLine("}");
 		}
 
@@ -351,15 +359,15 @@ namespace Saltarelle {
 			  .AppendLine("private Dictionary controls = new Dictionary();").AppendLine()
 			  .AppendLine("private Position position;")
 			  .AppendLine("public Position Position {").Indent()
-			  .AppendLine("get { return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position; }")
+			  .AppendLine("get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }")
 			  .AppendLine("set {").Indent()
 			  .AppendLine("position = value;")
-			  .AppendLine("if (!Utils.IsNull(element))").Indent()
-			  .AppendLine("PositionHelper.ApplyPosition(element, value);").Outdent()
+			  .AppendLine("if (isAttached)").Indent()
+			  .AppendLine("PositionHelper.ApplyPosition(GetElement(), value);").Outdent()
 			  .Outdent().AppendLine("}")
 			  .Outdent().AppendLine("}").AppendLine()
-			  .AppendLine("private jQuery element;")
-			  .AppendLine("public jQuery Element { get { return element; } }").AppendLine();
+			  .AppendLine("private bool isAttached = false;")
+			  .AppendLine("public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }").AppendLine();
 
 			WriteIdProperty(cb, false, this, orderedMembers);
 			cb.AppendLine();

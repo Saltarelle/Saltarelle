@@ -139,7 +139,7 @@ namespace SaltarelleParser.Tests {
 		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
-			foreach (var cp in new[] { MemberCodePoint.ServerIdChanged, MemberCodePoint.ClientIdChanged, MemberCodePoint.ServerConstructor, MemberCodePoint.ClientConstructor, MemberCodePoint.Attach, MemberCodePoint.AttachSelf }) {
+			foreach (var cp in new[] { MemberCodePoint.ServerIdChanging, MemberCodePoint.ClientIdChanging, MemberCodePoint.ServerConstructor, MemberCodePoint.ClientConstructor, MemberCodePoint.Attach, MemberCodePoint.AttachSelf }) {
 				var cb = new CodeBuilder();
 				new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").WriteCode(tpl, cp, cb);
 				Assert.AreEqual("", cb.ToString());

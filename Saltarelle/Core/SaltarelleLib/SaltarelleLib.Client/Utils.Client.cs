@@ -248,8 +248,9 @@ namespace Saltarelle {
             return (Delegate)Script.Literal("function(){{var x=[this];for(var i=0;i<arguments.length;i++)x.push(arguments[i]);{0}.apply({0},x);}}", d);
         }
 
-		public static void RenderControl(IClientCreateControl c, jQuery parent) {
-			jQuery el = JQueryProxy.jQuery(c.Html).appendTo(parent);
+		public static void RenderControl(IClientCreateControl c, DOMElement parent) {
+			DOMElement newEl = JQueryProxy.jQuery(c.Html).get(0);
+			parent.AppendChild(newEl);
 			c.Attach();
 		}
 

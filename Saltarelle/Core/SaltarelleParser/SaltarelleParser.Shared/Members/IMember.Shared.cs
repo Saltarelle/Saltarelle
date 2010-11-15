@@ -30,8 +30,8 @@ namespace Saltarelle {
 	public enum MemberCodePoint {
 		ServerDefinition    = 0,
 		ClientDefinition    = 1,
-		ServerIdChanged     = 2,
-		ClientIdChanged     = 3,
+		ServerIdChanging    = 2,
+		ClientIdChanging    = 3,
 		ServerConstructor   = 4,
 		ClientConstructor   = 5,
 		TransferConstructor = 6,

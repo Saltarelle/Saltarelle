@@ -80,12 +80,12 @@ namespace SaltarelleParser.Tests {
 			var member = new InstantiatedControlMember("TestId", "Namespace.TestType", false, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]);
 
 			CodeBuilder cb = new CodeBuilder();
-			member.WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb);
+			member.WriteCode(tpl, MemberCodePoint.ServerIdChanging, cb);
 			Assert.AreEqual("", cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 
 			cb = new CodeBuilder();
-			member.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb);
+			member.WriteCode(tpl, MemberCodePoint.ClientIdChanging, cb);
 			Assert.AreEqual("", cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
@@ -98,12 +98,12 @@ namespace SaltarelleParser.Tests {
 			var member = new InstantiatedControlMember("TestId", "Namespace.TestType", true, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]);
 
 			CodeBuilder cb = new CodeBuilder();
-			member.WriteCode(tpl, MemberCodePoint.ServerIdChanged, cb);
+			member.WriteCode(tpl, MemberCodePoint.ServerIdChanging, cb);
 			Assert.AreEqual("", cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 
 			cb = new CodeBuilder();
-			member.WriteCode(tpl, MemberCodePoint.ClientIdChanged, cb);
+			member.WriteCode(tpl, MemberCodePoint.ClientIdChanging, cb);
 			Assert.AreEqual("", cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
@@ -165,7 +165,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "this.controls[\"CtlName\"] = this.CtlName = new Namespace.Type(id + \"_CtlName\");" + Environment.NewLine;
+			string expected = "this.controls[\"CtlName\"] = this.CtlName = new Namespace.Type(__cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", false, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, false, new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -177,8 +177,8 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "Type __CtlNameType = Type.GetType((string)__cfg[\"CtlName\"]);" + Environment.NewLine
-			                + "this.controls[\"CtlName\"] = this.CtlName = Type.CreateInstance(__CtlNameType, id + \"_CtlName\");" + Environment.NewLine;
+			string expected = "Type __CtlNameType = Type.GetType((string)__cfg[\"CtlName$type\"]);" + Environment.NewLine
+			                + "this.controls[\"CtlName\"] = this.CtlName = Type.CreateInstance(__CtlNameType, __cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -186,12 +186,12 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestWriteConfigObjectInitCode_NothingWrittenForNonCustomInstantiate() {
+		public void TestWriteConfigObjectInitCode_CorrectForNonCustomInstantiate() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new InstantiatedControlMember("CtlName", "Namespace.Type", false, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]).WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
-			Assert.AreEqual("", cb.ToString());
+			Assert.AreEqual("__cfg[\"CtlName\"] = this.CtlName.ConfigObject;" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
 		}
@@ -202,7 +202,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]).WriteCode(tpl, MemberCodePoint.ConfigObjectInit, cb);
-			Assert.AreEqual("__cfg[\"CtlName\"] = this.CtlName.GetType().FullName;" + Environment.NewLine, cb.ToString());
+			Assert.AreEqual("__cfg[\"CtlName$type\"] = this.CtlName.GetType().FullName;" + Environment.NewLine + "__cfg[\"CtlName\"] = this.CtlName.ConfigObject;" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
 		}
@@ -292,5 +292,6 @@ namespace SaltarelleParser.Tests {
 		public int[]  ArrayProperty  { get; set; }
 
 		public string Html { get { throw new NotImplementedException(); } }
+		public object ConfigObject { get { throw new NotImplementedException(); } }
 	}
 }

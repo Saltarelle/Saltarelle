@@ -35,13 +35,10 @@ namespace Saltarelle.Members {
 		public void WriteCode(ITemplate tpl, MemberCodePoint point, CodeBuilder cb) {
 			switch (point) {
 				case MemberCodePoint.ClientDefinition:
-					cb.AppendLine("private jQuery " + name + ";").AppendLine();
+					cb.AppendLine("private DOMElement " + name + " { get { return Document.GetElementById(id + \"_" + name + "\"); } }").AppendLine();
 					break;
-				case MemberCodePoint.ClientIdChanged:
-					cb.AppendLine(Name + ".attr(\"id\", value + \"_" + Name + "\");");
-					break;
-				case MemberCodePoint.AttachSelf:
-					cb.AppendLine("this." + name + " = JQueryProxy.jQuery(\"#\" + id + \"_" + name + "\");");
+				case MemberCodePoint.ClientIdChanging:
+					cb.AppendLine("this." + name + ".ID = value + \"_" + name + "\";");
 					break;
 			}
 		}

@@ -3,11 +3,13 @@ using System;
 using ControlDictionary = System.Dictionary;
 using ControlEntry      = System.DictionaryEntry;
 using StringList        = System.ArrayList;
+using System.DHTML;
 #endif
 #if SERVER
 using ControlDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.IControl>;
 using ControlEntry      = System.Collections.Generic.KeyValuePair<string, Saltarelle.IControl>;
 using StringList        = System.Collections.Generic.List<string>;
+using System.Collections.Generic;
 #endif
 namespace Saltarelle {
 	public interface IInstantiatedTemplateControl
@@ -21,7 +23,7 @@ namespace Saltarelle {
 		void AddControl(string name, IControl control);
 		void AddNamedElement(string name);
 		#if CLIENT
-			jQuery GetNamedElement(string name);
+			DOMElement GetNamedElement(string name);
 		#endif
 	}
 
@@ -37,9 +39,9 @@ namespace Saltarelle {
 		private ControlDictionary controls = new ControlDictionary();
 		private StringList namedElements;
 		private InstantiatedTemplateControlGetHtmlDelegate getHtml;
-
+		
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached = false;
 		#endif
 		
 		public void AddControl(string name, IControl control) {
@@ -63,7 +65,7 @@ namespace Saltarelle {
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -71,8 +73,8 @@ namespace Saltarelle {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -84,9 +86,9 @@ namespace Saltarelle {
 				foreach (ControlEntry kvp in controls)
 					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
 						foreach (string s in namedElements)
-							GetNamedElement(s).attr("id", value + "_" + s);
+							GetNamedElement(s).ID = value + "_" + s;
 					}
 				#endif
 			}
@@ -108,25 +110,37 @@ namespace Saltarelle {
 			this.getHtml       = getHtml;
 			this.namedElements = new StringList();
 		}
+		
+		public object ConfigObject {
+			get {
+				if (string.IsNullOrEmpty(id))
+					throw new Exception("Must set ID before render");
+				var controlConfig = new Dictionary<string, object>();
+				foreach (var c in controls)
+					controlConfig[c.Key] = new { type = c.Value.GetType(), cfg = c.Value.ConfigObject };
+				return new { id, controls = controlConfig, namedElements };
+			}
+		}
 #endif
 
 #if CLIENT
-		public jQuery Element { get { return element; } }
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		[AlternateSignature]
 		public extern InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml);
-
-		public InstantiatedTemplateControl(string id) {
+		
+		public InstantiatedTemplateControl(object configObject) {
 			if (Type.GetScriptType(id) == "string") {
-				this.id = id;
-				this.element = JQueryProxy.jQuery("#" + id);
-				Dictionary config = (Dictionary)Utils.EvalJson((string)element.attr("__cfg"));
-				Dictionary controlTypes = (Dictionary)config["controlTypes"];
-				foreach (DictionaryEntry de in controlTypes) {
-					Type tp = Utils.FindType((string)de.Value);
-					this.controls[de.Key] = Type.CreateInstance(tp, id + "_" + de.Key);
+				Dictionary dict = Dictionary.GetDictionary(configObject);
+				this.id = (string)dict["id"];
+				Dictionary controlConfig = (Dictionary)dict["controls"];
+				foreach (DictionaryEntry de in controlConfig) {
+					Dictionary config = (Dictionary)de.Value;
+					Type tp = Utils.FindType((string)config["type"]);
+					this.controls[de.Key] = Type.CreateInstance(tp, config["cfg"]);
 				}
-				this.namedElements = (StringList)config["namedElements"];
+				this.namedElements = (StringList)dict["namedElements"];
+				isAttached = true;
 			}
 			else {
 				this.getHtml       = (InstantiatedTemplateControlGetHtmlDelegate)(object)id;
@@ -134,10 +148,10 @@ namespace Saltarelle {
 			}
 		}
 
-		public jQuery GetNamedElement(string name) {
-			if (Utils.IsNull(element))
+		public DOMElement GetNamedElement(string name) {
+			if (!isAttached)
 				throw new Exception("Must attach first");
-			return JQueryProxy.jQuery("#" + id + "_" + name);
+			return Document.GetElementById(id + "_" + name);
 		}
 		
 		public void Attach() {
@@ -147,6 +161,7 @@ namespace Saltarelle {
 					throw new Exception("The control " + de.Key + " does not implement IClientCreateControl.");
 				cc.Attach();
 			}
+			isAttached = true;
 		}
 #endif
 	}

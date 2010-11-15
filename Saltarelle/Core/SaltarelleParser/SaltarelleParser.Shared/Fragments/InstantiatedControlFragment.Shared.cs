@@ -49,7 +49,7 @@ namespace Saltarelle.Fragments {
 
 		public void WriteCode(ITemplate tpl, FragmentCodePoint point, CodeBuilder cb) {
 			if (CustomInstantiate)
-				cb.AppendLine("if (" + Id + " == null) throw new InvalidOperationException(\"The control instance " + Id + " must be assigned before the control can be rendered.\");");
+				cb.AppendLine("if (Utils.IsNull(" + Id + ")) throw new InvalidOperationException(\"The control instance " + Id + " must be assigned before the control can be rendered.\");");
 
 			if (HasInnerHtml)
 				cb.AppendLine("((IControlHost)" + Id + ").SetInnerHtml(" + Id + "_inner());");
