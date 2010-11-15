@@ -5,6 +5,7 @@ using System.Collections.Generic;
 #endif
 #if CLIENT
 using InvalidOperationException = System.Exception;
+using System.DHTML;
 #endif
 
 namespace Saltarelle.UI {
@@ -16,14 +17,14 @@ namespace Saltarelle.UI {
 		private int width = -1;
 		
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached = false;
 			public event EventHandler ValueChanged;
 		#endif
 	
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -31,8 +32,8 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -42,8 +43,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						GetElement().ID = value;
 				#endif
 			}
 		}
@@ -51,7 +52,7 @@ namespace Saltarelle.UI {
 		public int Width {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? (int)Math.Round(element.width()) : width;
+					return isAttached ? (int)Math.Round(JQueryProxy.jQuery(GetElement()).width()) : width;
 				#else
 					return width;
 				#endif
@@ -59,8 +60,8 @@ namespace Saltarelle.UI {
 			set {
 				width = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.width(value > 0 ? Utils.ToStringInvariantInt(value) : "");
+					if (isAttached)
+						JQueryProxy.jQuery(GetElement()).width(value > 0 ? Utils.ToStringInvariantInt(value) : "");
 				#endif
 			}
 		}
@@ -69,7 +70,8 @@ namespace Saltarelle.UI {
 			get { return cssClass; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
+						jQuery element = JQueryProxy.jQuery(GetElement());
 						if (!string.IsNullOrEmpty(cssClass))
 							element.removeClass(cssClass);
 						if (!string.IsNullOrEmpty(value))
@@ -84,18 +86,14 @@ namespace Saltarelle.UI {
 			get {
 				if (string.IsNullOrEmpty(id))
 					throw new InvalidOperationException("Must assign Id before rendering.");
-				return "<input " + Utils.IdAndStyle(id, position, width, -1, null) + " type=\"text\" class=\"" + (cssClass ?? "") + "\" value=\"" + Utils.HtmlEncode(value ?? "") + "\""
-				#if SERVER
-				     + "__cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
-				#endif
-				     + "/>";
+				return "<input " + Utils.IdAndStyle(id, position, width, -1, null) + " type=\"text\" class=\"" + (cssClass ?? "") + "\" value=\"" + Utils.HtmlEncode(value ?? "") + "\"/>";
 			}
 		}
 		
 		public string Value {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? element.val() : value;
+					return isAttached ? ((InputElement)GetElement()).Value : value;
 				#else
 					return value;
 				#endif
@@ -103,8 +101,8 @@ namespace Saltarelle.UI {
 			set {
 				this.value = value ?? "";
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.val(value);
+					if (isAttached)
+						((InputElement)GetElement()).Value = this.value;
 					OnValueChanged(EventArgs.Empty);
 				#endif
 			}
@@ -122,10 +120,11 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
+			config["id"]       = id;
 			config["cssClass"] = cssClass;
 		}
 
-		private object ConfigObject {
+		public object ConfigObject {
 			get {
 				var config = new Dictionary<string, object>();
 				AddItemsToConfigObject(config);
@@ -138,28 +137,25 @@ namespace Saltarelle.UI {
 		[AlternateSignature]
 		public extern TextInput();
 		
-		public TextInput(string id) {
-			if (!string.IsNullOrEmpty(id)) {
-				this.id = id;
-				Dictionary config = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				Attach();
+		public TextInput(object config) {
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
 		protected virtual void InitConfig(Dictionary config) {
+			id = (string)config["id"];
 			cssClass = (string)config["cssClass"];
 			Attach();
 		}
 
-		public jQuery Element {
-			get { return element; }
-		}
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		public void Attach() {
-			element = JQueryProxy.jQuery("#" + id);
-			element.change(element_Change);
+			isAttached = true;
+			JQueryProxy.jQuery(GetElement()).change(element_Change);
 		}
 		
 		private void element_Change(JQueryEvent e) {

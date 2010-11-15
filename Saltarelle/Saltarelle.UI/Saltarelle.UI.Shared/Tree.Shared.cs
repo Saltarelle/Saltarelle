@@ -111,7 +111,8 @@ namespace Saltarelle.UI {
 		private bool     hasChecks;
 		private string   blankImageUrl;
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached;
+			private jQuery treeElement;
 			private bool rebuilding;
 			
 			private JQueryEventHandlerDelegate checkboxClickHandler;
@@ -121,8 +122,8 @@ namespace Saltarelle.UI {
 		
 		public void BeginRebuild() {
 			#if CLIENT
-				if (!Utils.IsNull(element)) {
-					element.empty();
+				if (isAttached) {
+					treeElement.empty();
 					selectedJQ = null;
 					invisibleRoot = new TreeNode(0, null, null);
 					rebuilding = true;
@@ -136,9 +137,9 @@ namespace Saltarelle.UI {
 		public void EndRebuild() {
 			#if CLIENT
 				rebuilding = false;
-				if (!Utils.IsNull(element)) {
-					element.html(InnerHtml);
-					BringToLife(element, true);
+				if (isAttached) {
+					treeElement.html(InnerHtml);
+					BringToLife(treeElement, true);
 				}
 			#endif
 		}
@@ -146,10 +147,10 @@ namespace Saltarelle.UI {
 		public int AddNode(int parentId, string text, object data, bool expandParent) {
 			int nodeId = nextNodeId++;
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					jQuery list;
 					if (parentId == 0) {
-						list = element;
+						list = treeElement;
 					}
 					else {
 						jQuery parentJQ = FindNodeJQ(parentId);
@@ -183,7 +184,7 @@ namespace Saltarelle.UI {
 		
 		public void RemoveNode(int id) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					if (id == SelectedId) {
 						jQuery newSel = Utils.Next(selectedJQ, "." + NodeClass);
 						if (newSel.size() == 0) {
@@ -218,8 +219,8 @@ namespace Saltarelle.UI {
 		public int[] GetChildNodeIds(int parentId) {
 			#if CLIENT
 				ArrayList l = new ArrayList();
-				if (!Utils.IsNull(element) && !rebuilding) {
-					(parentId == 0 ? element : FindNodeJQ(parentId).children("." + NestedListClass)).children("." + NodeClass)
+				if (isAttached && !rebuilding) {
+					(parentId == 0 ? treeElement : FindNodeJQ(parentId).children("." + NestedListClass)).children("." + NodeClass)
 					     .each(delegate(int index, DOMElement elem) {
 					         l.Add(Utils.ParseInt((string)elem.GetAttribute("__nodeid")));
 						     return true;
@@ -245,7 +246,7 @@ namespace Saltarelle.UI {
 		
 		public string GetNodeText(int id) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding)
+				if (isAttached && !rebuilding)
 					return FindNodeJQ(id).children("." + ItemTextClass).text();
 			#endif
 			return FindNode(id, invisibleRoot).text;
@@ -253,7 +254,7 @@ namespace Saltarelle.UI {
 
 		public void SetNodeText(int id, string text) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					FindNodeJQ(id).children("." + ItemTextClass).text(text);
 					return;
 				}
@@ -263,7 +264,7 @@ namespace Saltarelle.UI {
 		
 		public object GetNodeData(int id) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding)
+				if (isAttached && !rebuilding)
 					return Type.GetField(FindNodeJQ(id).get(0), "__data");
 			#endif
 			return FindNode(id, invisibleRoot).data;
@@ -271,7 +272,7 @@ namespace Saltarelle.UI {
 
 		public void SetNodeData(int id, object data) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					Type.SetField(FindNodeJQ(id).get(0), "__data", data);
 					return;
 				}
@@ -281,7 +282,7 @@ namespace Saltarelle.UI {
 
 		public bool IsNodeChecked(int id) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding)
+				if (isAttached && !rebuilding)
 					return FindNodeJQ(id).find("input:checkbox").isInExpression(":checked");
 			#endif
 			return FindNode(id, invisibleRoot).isChecked;
@@ -289,7 +290,7 @@ namespace Saltarelle.UI {
 
 		public void ExpandNode(int id, bool expanded) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					ExpandNodeJQ(FindNodeJQ(id), expanded);
 					return;
 				}
@@ -301,7 +302,7 @@ namespace Saltarelle.UI {
 			if (!hasChecks)
 				throw new Exception("The tree does not have any checkboxes");
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					FindNodeJQ(id).find("input:checkbox").each(delegate(int _, DOMElement e) {
 						((CheckBoxElement)e).Checked = isChecked;
 						return true;
@@ -317,7 +318,7 @@ namespace Saltarelle.UI {
 		
 		public int GetParentNodeId(int nodeId) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					jQuery q = FindNodeJQ(nodeId);
 					if (q.size() > 0) {
 						jQuery parentJQ = Utils.Parent(q, "." + NodeClass + ",." + ClassName);
@@ -374,15 +375,15 @@ namespace Saltarelle.UI {
 			get { return hasChecks; }
 			set {
 				#if CLIENT
-				if (!Utils.IsNull(element)) {
+				if (isAttached) {
 					if (value && !hasChecks) {
 						// add checkboxes
-						JQueryProxy.jQuery("<input type=\"checkbox\" class=\"checkbox\" tabindex=\"-1\"/>").insertBefore(element.find("." + ItemTextClass));
-						element.find("input:checkbox").click(checkboxClickHandler);
+						JQueryProxy.jQuery("<input type=\"checkbox\" class=\"checkbox\" tabindex=\"-1\"/>").insertBefore(treeElement.find("." + ItemTextClass));
+						treeElement.find("input:checkbox").click(checkboxClickHandler);
 					}
 					else if (!value && hasChecks) {
 						// remove checkboxes
-						element.find("input:checkbox").remove();
+						treeElement.find("input:checkbox").remove();
 					}
 				}
 				#endif
@@ -421,8 +422,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						GetElement().ID = value;
 				#endif
 			}
 		}
@@ -430,7 +431,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -438,8 +439,8 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -449,8 +450,8 @@ namespace Saltarelle.UI {
 			set {
 				width = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.width(value - HorzBorderSize);
+					if (isAttached)
+						treeElement.width(value - HorzBorderSize);
 				#endif
 			}
 		}
@@ -460,8 +461,8 @@ namespace Saltarelle.UI {
 			set {
 				height = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.height(value - 2 * VertBorderSize);
+					if (isAttached)
+						treeElement.height(value - 2 * VertBorderSize);
 				#endif
 			}
 		}
@@ -507,17 +508,13 @@ namespace Saltarelle.UI {
 					throw new Exception("Must set ID before render");
 			
 				string style = PositionHelper.CreateStyle(position, width - HorzBorderSize, height - VertBorderSize);
-				return "<div tabindex=\"0\" id=\"" + id + "\" class=\"ui-widget-content " + ClassName + "\" style=\"" + style + "\""
-				#if SERVER
-					 + " __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
-				#endif
-				     + ">"
+				return "<div tabindex=\"0\" id=\"" + id + "\" class=\"ui-widget-content " + ClassName + "\" style=\"" + style + "\">"
 				     + InnerHtml
 				     + "</div>";
 			}
 		}
 		
-		private void DefaultInit() {
+		private void InitDefault() {
 			width         = 300;
 			height        = 300;
 			position      = PositionHelper.NotPositioned;
@@ -529,35 +526,38 @@ namespace Saltarelle.UI {
 		public Tree() {
 			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
 			GlobalServices.Provider.LoadService<ISaltarelleUIService>();
-			DefaultInit();
+			InitDefault();
 		}
 		
-		private object ConfigObject {
-			get { return new { width, height, nextNodeId, enableDragDrop, hasChecks }; }
+		public object ConfigObject {
+			get { return new { id, width, height, nextNodeId, enableDragDrop, hasChecks }; }
 		}
 #endif
 
 #if CLIENT
 		[AlternateSignature]
 		public extern Tree();
-		public Tree(string id) {
+		public Tree(object config) {
 			nodeHash = new Dictionary();
 			checkboxClickHandler = (JQueryEventHandlerDelegate)Utils.Wrap(new UnwrappedJQueryEventHandlerDelegate(checkbox_Click));
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary config = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				width          = (int)config["width"];
-				height         = (int)config["height"];
-				nextNodeId     = (int)config["nextNodeId"];
-				enableDragDrop = (bool)config["enableDragDrop"];
-				hasChecks      = (bool)config["hasChecks"];
-				blankImageUrl  = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
-				invisibleRoot  = null;
-
-				Attach();
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
-				DefaultInit();
+				InitDefault();
+		}
+		
+		private void InitConfig(Dictionary config) {
+			id             = (string)config["id"];
+			width          = (int)config["width"];
+			height         = (int)config["height"];
+			nextNodeId     = (int)config["nextNodeId"];
+			enableDragDrop = (bool)config["enableDragDrop"];
+			hasChecks      = (bool)config["hasChecks"];
+			blankImageUrl  = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
+			invisibleRoot  = null;
+
+			Attach();
 		}
 
 		public event TreeSelectionChangingEventHandler SelectionChanging;
@@ -588,28 +588,28 @@ namespace Saltarelle.UI {
 		}
 
 		public void Focus() {
-			if (!Utils.IsNull(element))
-				element.focus();
+			if (isAttached)
+				GetElement().Focus();
 		}
 
 		private void EnsureVisible(jQuery n) {
-			DOMElement d = element.get(0);
-			double offsetTop = n.offset().top - element.offset().top, scrollTop = element.scrollTop(), nHeight = n.children("." + ItemTextClass).outerHeight(), treeHeight = d.ClientHeight;
+			DOMElement d = treeElement.get(0);
+			double offsetTop = n.offset().top - treeElement.offset().top, scrollTop = treeElement.scrollTop(), nHeight = n.children("." + ItemTextClass).outerHeight(), treeHeight = d.ClientHeight;
 
 			if (offsetTop < 0) {
-				element.scrollTop(Math.Round(scrollTop + offsetTop));
+				treeElement.scrollTop(Math.Round(scrollTop + offsetTop));
 			}
 			else if (offsetTop + nHeight > treeHeight) {
-				element.scrollTop(Math.Round(scrollTop + offsetTop + nHeight - treeHeight));
+				treeElement.scrollTop(Math.Round(scrollTop + offsetTop + nHeight - treeHeight));
 			}
 		}
 		
 		private void MakeDraggable(jQuery node) {
 			node.children("." + ItemTextClass).draggable(new Dictionary("helper", "clone",
-				                                                          "appendTo", element,
-			                                                              "containment", "parent",
-			                                                              "start", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(NodeContent_DragStart)),
-			                                                              "stop", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(NodeContent_DragStop))
+				                                                        "appendTo", treeElement,
+			                                                            "containment", "parent",
+			                                                            "start", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(NodeContent_DragStart)),
+			                                                            "stop", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(NodeContent_DragStop))
 			                                              ));
 		}
 
@@ -716,7 +716,7 @@ namespace Saltarelle.UI {
 				ExpandNodeJQ(node, true);
 		}
 
-		public jQuery Element { get { return element; } }
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private void BringToLife(jQuery el, bool isBatchAttach) {
 			(isBatchAttach ? el.find("." + NodeClass) : el).each(delegate(int index, DOMElement elem) {
@@ -749,7 +749,7 @@ namespace Saltarelle.UI {
 		private void NodeContent_DragStart(DOMElement _this, JQueryEvent e, DraggableEventObject ui) {
 			SetSelectedJQ(Utils.Parent(JQueryProxy.jQuery(_this), "." + NodeClass));
 			selectedJQ.find(".ui-droppable").droppable("disable");
-			element.focus();
+			treeElement.focus();
 		}
 		
 		private void ChildRemoved(jQuery parentNode) {
@@ -827,12 +827,12 @@ namespace Saltarelle.UI {
 		}
 
 		public void Attach() {
-			if (Utils.IsNull(id) || !Utils.IsNull(element))
+			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
-		
-			element = JQueryProxy.jQuery("#" + id);
+			isAttached = true;
+			treeElement = JQueryProxy.jQuery(GetElement());
 
-			element.bind("selectstart", null, new BasicCallback(delegate { return false; }));
+			treeElement.bind("selectstart", null, new BasicCallback(delegate { return false; }));
 			
 			expandCollapseClickHandler = (JQueryEventHandlerDelegate)Utils.Wrap(new UnwrappedJQueryEventHandlerDelegate(delegate(DOMElement _this, JQueryEvent e) {
 				ToggleNodeExpandedJQ(Utils.Parent(JQueryProxy.jQuery(_this), "." + NodeClass));
@@ -840,18 +840,18 @@ namespace Saltarelle.UI {
 			}));
 
 			nodeClickHandler = (JQueryEventHandlerDelegate)Utils.Wrap(new UnwrappedJQueryEventHandlerDelegate(delegate(DOMElement _this, JQueryEvent e) {
-				element.focus();
+				treeElement.focus();
 				SetSelectedJQ(Utils.Parent(JQueryProxy.jQuery(_this), "." + NodeClass));
 				e.stopPropagation();
 			}));
 
-			BringToLife(element, true);
+			BringToLife(treeElement, true);
 
-			jQuery q = element.children("." + NodeClass + ":first");
+			jQuery q = treeElement.children("." + NodeClass + ":first");
 			if (q.size() > 0)
 				SetSelectedJQ(q);
 
-			UIUtils.AttachKeyPressHandler(element, el_KeyDown);
+			UIUtils.AttachKeyPressHandler(treeElement.get(0), el_KeyDown);
 		}
 		
 		private void el_KeyDown(JQueryEvent e) {

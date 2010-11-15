@@ -2,6 +2,9 @@ using System;
 #if SERVER
 using System.Collections.Generic;
 #endif
+#if CLIENT
+using System.DHTML;
+#endif
 
 namespace Saltarelle.UI {
 	public class GroupBox : IControl, IClientCreateControl, IControlHost {
@@ -13,7 +16,7 @@ namespace Saltarelle.UI {
 		private string innerHtml;
 
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached = false;
 		#endif
 
 		public string Id {
@@ -21,8 +24,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						GetElement().ID = value;
 				#endif
 			}
 		}
@@ -30,7 +33,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -38,8 +41,8 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -48,7 +51,8 @@ namespace Saltarelle.UI {
 			get { return title; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
+						jQuery element = JQueryProxy.jQuery(GetElement());
 						if (string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(value)) {
 							element.prepend(JQueryProxy.jQuery("<legend>" + Utils.HtmlEncode(value) + "</legend>")); // add legend
 							element.children().removeClass(NoLegendChildClassName);
@@ -76,11 +80,7 @@ namespace Saltarelle.UI {
 					throw new Exception("Must set ID before render");
 				string style = PositionHelper.CreateStyle(position, -1, -1);
 
-				return "<fieldset id=\"" + id + "\" class=\"" + ClassName + "\" style=\"" + style + "\""
-				#if SERVER
-					 + " __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
-				#endif
-				     + ">" + (!string.IsNullOrEmpty(title) ? "<legend>" + Utils.HtmlEncode(title) + "</legend>" : "") + (innerHtml ?? "") + "</fieldset>";
+				return "<fieldset id=\"" + id + "\" class=\"" + ClassName + "\" style=\"" + style + "\"" + ">" + (!string.IsNullOrEmpty(title) ? "<legend>" + Utils.HtmlEncode(title) + "</legend>" : "") + (innerHtml ?? "") + "</fieldset>";
 			}
 		}
 
@@ -96,10 +96,11 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
+			config["id"] = id;
 			config["title"] = title;
 		}
 
-		private object ConfigObject {
+		public object ConfigObject {
 			get {
 				var config = new Dictionary<string, object>();
 				AddItemsToConfigObject(config);
@@ -110,35 +111,42 @@ namespace Saltarelle.UI {
 #if CLIENT
 		[AlternateSignature]
 		public extern GroupBox();
-		public GroupBox(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary config = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				InitConfig(config);
+		public GroupBox(object config) {
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
 		protected virtual void InitConfig(Dictionary config) {
+			id    = (string)config["id"];
 			title = (string)config["title"];
 			Attach();
 		}
 
-		public jQuery Element {
-			get { return element; }
+		public DOMElement GetElement() {
+			return isAttached ? Document.GetElementById(id) : null;
 		}
 
 		public void Attach() {
-			if (Utils.IsNull(id) || !Utils.IsNull(element))
+			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
-			element = JQueryProxy.jQuery("#" + id);
+			isAttached = true;
+
+			jQuery element = JQueryProxy.jQuery(GetElement());
 			if (string.IsNullOrEmpty(title))
 				element.children(":not(legend)").addClass(NoLegendChildClassName);
 		}
 		
-		public jQuery GetInnerElements() {
-			return element.children(":not(legend)");
+		public DOMElement[] GetInnerElements() {
+			ArrayList result = new ArrayList();
+			DOMElementCollection children = GetElement().ChildNodes;
+			for (int i = 0; i < children.Length; i++) {
+				if (children[i].NodeType == DOMElementType.Element && children[i].TagName != "LEGEND")
+					result.Add(children[i]);
+			}
+			return (DOMElement[])result;
 		}
 #endif
 	}

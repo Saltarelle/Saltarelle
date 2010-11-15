@@ -94,7 +94,8 @@ namespace Saltarelle.UI {
 		private int selectedRowIndex = -1;
 		
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached = false;
+			private jQuery gridElement;
 			private bool rebuilding;
 			private int headerHeight;
 			
@@ -107,8 +108,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						GetElement().ID = value;
 				#endif
 			}
 		}
@@ -117,8 +118,8 @@ namespace Saltarelle.UI {
 			get { return tabIndex; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element) && enabled)
-						element.attr("tabindex", value);
+					if (isAttached && enabled)
+						GetElement().TabIndex = value;
 				#endif
 				tabIndex = value;
 			}
@@ -127,7 +128,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -135,8 +136,8 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -147,8 +148,8 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
-						element.children("div").andSelf().width(value - 2 * BorderSize);
+					if (isAttached) {
+						gridElement.children("div").andSelf().width(value - 2 * BorderSize);
 					}
 				#endif
 				width = value;
@@ -163,8 +164,8 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.children("div:eq(1)").height(value - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
+					if (isAttached)
+						gridElement.children("div:eq(1)").height(value - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 				#endif
 				height = value;
 			}
@@ -187,8 +188,8 @@ namespace Saltarelle.UI {
 				colTitles = (string[])Utils.ArrayResize(colTitles, value, "");
 				colClasses = (string[])Utils.ArrayResize(colClasses, value, "");
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
-						element.html(InnerHtml);
+					if (isAttached) {
+						gridElement.html(InnerHtml);
 						AttachInner();
 					}
 				#endif
@@ -197,7 +198,7 @@ namespace Saltarelle.UI {
 
 		public void SetColTitle(int col, string title) {
 			#if CLIENT
-				if (!Utils.IsNull(element))
+				if (isAttached)
 					headerTr.children("th:eq(" + col.ToString() + ")").children("div").children("div:eq(0)").text(title);
 			#endif
 			colTitles[col] = title;
@@ -221,9 +222,9 @@ namespace Saltarelle.UI {
 
 		public void SetColWidth(int col, int width) {
 			#if CLIENT
-				if (!Utils.IsNull(element)) {
-					element.children("div").children("table").children("thead,tbody").children("tr").children("th,td").filter(":nth-child(" + (col + 1).ToString() + ")").children("div").width(width);
-					element.children("div:eq(1)").scroll();
+				if (isAttached) {
+					gridElement.children("div").children("table").children("thead,tbody").children("tr").children("th,td").filter(":nth-child(" + (col + 1).ToString() + ")").children("div").width(width);
+					gridElement.children("div:eq(1)").scroll();
 				}
 			#endif
 			colWidths[col] = width;
@@ -250,7 +251,7 @@ namespace Saltarelle.UI {
 		
 		public void SetColClass(int col, string cls) {
 			#if CLIENT
-				if (!Utils.IsNull(element)) {
+				if (isAttached) {
 					jQuery cells = valuesTbody.children("tr").children("td:nth-child(" + (col + 1).ToString() + ")");
 					if (!string.IsNullOrEmpty(colClasses[col]))
 						cells.removeClass(colClasses[col]);
@@ -284,7 +285,7 @@ namespace Saltarelle.UI {
 			get { return enabled; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element) && value != enabled) {
+					if (isAttached && value != enabled) {
 						if (selectedRowIndex != -1) {
 							if (value && enableDragDrop) {
 								MakeDraggable(SelectedRow);
@@ -294,17 +295,17 @@ namespace Saltarelle.UI {
 							else {
 								SelectedRow.draggable("destroy");
 								valuesTbody.children().droppable("destroy");
-								element.children("div:eq(1)").droppable("destroy");
+								gridElement.children("div:eq(1)").droppable("destroy");
 							}
 						}
 
 						if (value) {
-							element.removeClass(DisabledDivClass);
-							element.attr("tabindex", tabIndex);
+							gridElement.removeClass(DisabledDivClass);
+							gridElement.attr("tabindex", tabIndex);
 						}
 						else {
-							element.addClass(DisabledDivClass);
-							element.removeAttr("tabindex");
+							gridElement.addClass(DisabledDivClass);
+							gridElement.removeAttr("tabindex");
 						}
 					}
 				#endif						
@@ -317,9 +318,9 @@ namespace Saltarelle.UI {
 			set {
 				colHeadersVisible = value;
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
-						element.children("div:eq(0)").css("display", colHeadersVisible ? "" : "none");
-						element.children("div:eq(1)").height(height - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
+					if (isAttached) {
+						gridElement.children("div:eq(0)").css("display", colHeadersVisible ? "" : "none");
+						gridElement.children("div:eq(1)").height(height - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 					}
 				#endif
 			}
@@ -331,7 +332,7 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element) && value != enableDragDrop) {
+					if (isAttached && value != enableDragDrop) {
 						if (selectedRowIndex != -1) {
 							if (value && enabled) {
 								MakeDraggable(SelectedRow);
@@ -341,7 +342,7 @@ namespace Saltarelle.UI {
 							else {
 								SelectedRow.draggable("destroy");
 								valuesTbody.children().droppable("destroy");
-								element.children("div:eq(1)").droppable("destroy");
+								gridElement.children("div:eq(1)").droppable("destroy");
 							}
 						}
 					}
@@ -359,7 +360,7 @@ namespace Saltarelle.UI {
 			if (selectedRowIndex >= index)
 				selectedRowIndex++;
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					StringBuilder sb = new StringBuilder();
 					AddRowHtml(sb, cellTexts, (numRows % 2) == 1, false, null);
 					jQuery q = JQueryProxy.jQuery(sb.ToString());
@@ -401,7 +402,7 @@ namespace Saltarelle.UI {
 			#if CLIENT
 				rebuilding = false;
 				
-				if (!Utils.IsNull(element)) {
+				if (isAttached) {
 					int index = 0;
 					StringBuilder sb = new StringBuilder();
 					foreach (GridRowData r in rowsIfNotRendered) {
@@ -419,7 +420,7 @@ namespace Saltarelle.UI {
 			numRows = 0;
 			selectedRowIndex = -1;
 			#if CLIENT
-				if (!Utils.IsNull(element)) {
+				if (isAttached) {
 					valuesTbody.empty();
 					OnSelectionChanged(EventArgs.Empty);
 				}
@@ -429,7 +430,7 @@ namespace Saltarelle.UI {
 		
 		public void UpdateItem(int row, string[] cellTexts, object data) {
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					jQuery q = valuesTbody.children(":eq(" + row.ToString() + ")");
 					Type.SetField(q.get(0), "__data", data);
 					q.children("td").each(delegate(int col, DOMElement e) {
@@ -444,7 +445,7 @@ namespace Saltarelle.UI {
 		public void DeleteItem(int row) {
 			numRows--;
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					int newSelection = SelectedRowIndex;
 					bool changeSelection = false;
 					if (SelectedRowIndex == row) {
@@ -485,7 +486,7 @@ namespace Saltarelle.UI {
 			if (row < 0 || row >= numRows)
 				return null;
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding)
+				if (isAttached && !rebuilding)
 					return Type.GetField(((TableSectionElement)valuesTbody.get(0)).Rows[row], "__data");
 			#endif
 			return ((GridRowData)rowsIfNotRendered[row]).data;
@@ -495,7 +496,7 @@ namespace Saltarelle.UI {
 			if (row < 0 || row >= numRows)
 				return null;
 			#if CLIENT
-				if (!Utils.IsNull(element) && !rebuilding) {
+				if (isAttached && !rebuilding) {
 					jQuery jq = JQueryProxy.jQuery(((TableSectionElement)valuesTbody.get(0)).Rows[row]);
 					string[] result = new string[jq.children().size()];
 					for (int i = 0; i < result.Length; i++)
@@ -546,11 +547,7 @@ namespace Saltarelle.UI {
 					throw new Exception("Must set ID before render");
 				BeforeGetHtml();
 				string style = PositionHelper.CreateStyle(position, width - 2 * BorderSize, -1);
-				return "<div id=\"" + id + "\" class=\"" + DivClass + (enabled ? "" : (" " + DisabledDivClass)) + "\" style=\"" + style + "\"" + (enabled ? " tabindex=\"" + Utils.ToStringInvariantInt(tabIndex) + "\"" : "")
-				#if SERVER
-					 + " __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
-				#endif
-				     + ">"
+				return "<div id=\"" + id + "\" class=\"" + DivClass + (enabled ? "" : (" " + DisabledDivClass)) + "\" style=\"" + style + "\"" + (enabled ? " tabindex=\"" + Utils.ToStringInvariantInt(tabIndex) + "\"" : "") + ">"
 				     +     InnerHtml
 				     + "</div>";
 			}
@@ -569,6 +566,7 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
+			config["id"] = id;
 			config["colTitles"] = colTitles;
 			config["colWidths"] = colWidths;
 			config["width"] = width;
@@ -582,7 +580,7 @@ namespace Saltarelle.UI {
 			config["selectedRowIndex"] = selectedRowIndex;
 		}
 
-		private object ConfigObject {
+		public object ConfigObject {
 			get {
 				var config = new Dictionary<string, object>();
 				AddItemsToConfigObject(config);
@@ -605,10 +603,9 @@ namespace Saltarelle.UI {
 #if CLIENT
 		[AlternateSignature]
 		public extern Grid();
-		public Grid(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				InitConfig((Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg")));
+		public Grid(object config) {
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
@@ -622,6 +619,7 @@ namespace Saltarelle.UI {
 		public event GridDragDropCompletedEventHandler DragDropCompleted;
 		
 		protected virtual void InitConfig(Dictionary config) {
+			id = (string)config["id"];
 			colTitles = (string[])config["colTitles"];
 			colWidths = (int[])config["colWidths"];
 			colClasses = (string[])config["colClasses"];
@@ -639,7 +637,7 @@ namespace Saltarelle.UI {
 		
 		private JQueryEventHandlerDelegate rowClickHandler;
 
-		public jQuery Element { get { return element; } }
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 		
 		private jQuery SelectedRow { get { return valuesTbody.children().eq(selectedRowIndex); } }
 
@@ -674,7 +672,7 @@ namespace Saltarelle.UI {
 		
 		public void EnsureVisible(int rowIndex) {
 			jQuery row = valuesTbody.children("tr:eq(" + Utils.ToStringInvariantInt(rowIndex) + ")");
-			jQuery valuesDiv = element.children("div:eq(1)");
+			jQuery valuesDiv = gridElement.children("div:eq(1)");
 			DOMElement d = valuesDiv.get(0);
 			double offsetTop = row.offset().top - valuesDiv.offset().top, scrollTop = valuesDiv.scrollTop(), rowHeight = row.height(), tblHeight = d.ClientHeight;
 
@@ -688,7 +686,7 @@ namespace Saltarelle.UI {
 		
 		private void MakeDraggable(jQuery row) {
 			row.draggable(new Dictionary("helper", "clone",
-				                         "appendTo", element.children("div:eq(1)").children("table").children("tbody"),
+				                         "appendTo", gridElement.children("div:eq(1)").children("table").children("tbody"),
 				                         "scroll", false,
 			                             "containment", "parent",
 			                             "start", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(delegate(DOMElement d, JQueryEvent evt, DraggableEventObject ui) { JQueryProxy.jQuery(d).addClass(CurrentDraggingRowClass); })),
@@ -719,7 +717,7 @@ namespace Saltarelle.UI {
 		}
 
 		private void EnableDroppableValueDiv() {
-			element.children("div:eq(1)").droppable(new Dictionary("tolerance", "pointer", "greedy", true, "drop", new DroppableEventHandlerDelegate(ValuesDiv_Drop)));
+			gridElement.children("div:eq(1)").droppable(new Dictionary("tolerance", "pointer", "greedy", true, "drop", new DroppableEventHandlerDelegate(ValuesDiv_Drop)));
 		}
 
 		private void Row_Drop(DOMElement targetElem, JQueryEvent evt, DroppableEventObject ui) {
@@ -738,7 +736,7 @@ namespace Saltarelle.UI {
 			valuesTbodyEl.RemoveChild(draggedElem);
 			valuesTbodyEl.InsertBefore(draggedElem, targetElem);
 			selectedRowIndex = newIndex;
-			element.focus();
+			gridElement.focus();
 
 			OnDragDropCompleted(new GridDragDropCompletedEventArgs(selectedRowIndex, newIndex));
 		}
@@ -756,14 +754,14 @@ namespace Saltarelle.UI {
 			valuesTbodyEl.RemoveChild(draggedElem);
 			valuesTbodyEl.AppendChild(draggedElem);
 			selectedRowIndex = NumRows - 1;
-			element.focus();
+			gridElement.focus();
 
 			OnDragDropCompleted(new GridDragDropCompletedEventArgs(selectedRowIndex, NumRows - 1));
 		}
 		
 		private void AttachInner() {
-			headerTr    = element.children("div:eq(0)").children("table").children("thead").children("tr:first-child");
-			valuesTbody = element.children("div:eq(1)").children("table").children("tbody");
+			headerTr    = gridElement.children("div:eq(0)").children("table").children("thead").children("tr:first-child");
+			valuesTbody = gridElement.children("div:eq(1)").children("table").children("tbody");
 
 			AttachToValuesTbody();
 			
@@ -777,19 +775,19 @@ namespace Saltarelle.UI {
 			if (jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 8)
 				headerTr.find(".ui-resizable-e").height(headerHeight);
 
-			jQuery valuesDiv = element.children("div:eq(1)");
+			jQuery valuesDiv = gridElement.children("div:eq(1)");
 			valuesDiv.height(height - 2 * BorderSize - (colHeadersVisible ? headerHeight : 0));
 			valuesDiv.scroll(delegate {
-				element.children("div:eq(0)").scrollLeft(Math.Round(element.children("div:eq(1)").scrollLeft()));
+				gridElement.children("div:eq(0)").scrollLeft(Math.Round(gridElement.children("div:eq(1)").scrollLeft()));
 			});
 		}
 		
 		public void Attach() {
-			if (Utils.IsNull(id) || !Utils.IsNull(element))
+			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
+			isAttached = true;
+			gridElement = JQueryProxy.jQuery(GetElement());
 		
-			element = JQueryProxy.jQuery("#" + id);
-
 			rowClickHandler = (JQueryEventHandlerDelegate)Utils.Wrap(new UnwrappedJQueryEventHandlerDelegate(delegate(DOMElement e, JQueryEvent evt) {
 				if (!enabled)
 					return;
@@ -813,17 +811,17 @@ namespace Saltarelle.UI {
 					SelectedRowIndex = rowIndex;
 			}));
 
-			headerHeight = Math.Round(element.children("div:eq(0)").outerHeight());
+			headerHeight = Math.Round(gridElement.children("div:eq(0)").outerHeight());
 
 			AttachInner();
 
 			if (enableDragDrop && enabled)
 				EnableDroppableValueDiv();
 
-			UIUtils.AttachKeyPressHandler(element, el_KeyDown);
+			UIUtils.AttachKeyPressHandler(gridElement.get(0), el_KeyDown);
             
             if (!colHeadersVisible)
-				element.children("div:eq(0)").css("display", "none");
+				gridElement.children("div:eq(0)").css("display", "none");
 		}
 
 		private void el_KeyDown(JQueryEvent e) {
@@ -894,8 +892,8 @@ namespace Saltarelle.UI {
 		}
 
 		public void Focus() {
-			if (!Utils.IsNull(element))
-				element.focus();
+			if (isAttached)
+				GetElement().Focus();
 		}
 #endif
 	}

@@ -27,7 +27,8 @@ namespace Saltarelle.UI {
 		private bool noPadding;
 
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached;
+			private jQuery dialog;
 			public event EventHandler Opened;
 			public event CancelEventHandler Closing;
 			public event EventHandler Closed;
@@ -39,8 +40,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						GetElement().ID = value;
 				#endif
 			}
 		}
@@ -65,10 +66,10 @@ namespace Saltarelle.UI {
 			set {
 				width = value;
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
-						element.dialog("option", "width", value);
-						element.dialog("option", "minWidth", value);
-						element.dialog("option", "maxWidth", value);
+					if (isAttached) {
+						dialog.dialog("option", "width", value);
+						dialog.dialog("option", "minWidth", value);
+						dialog.dialog("option", "maxWidth", value);
 					}
 				#endif
 			}
@@ -79,10 +80,10 @@ namespace Saltarelle.UI {
 			set {
 				height = value;
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
-						element.dialog("option", "height", value);
-						element.dialog("option", "minHeight", value);
-						element.dialog("option", "maxHeight", value);
+					if (isAttached) {
+						dialog.dialog("option", "height", value);
+						dialog.dialog("option", "minHeight", value);
+						dialog.dialog("option", "maxHeight", value);
 					}
 				#endif
 			}
@@ -92,14 +93,14 @@ namespace Saltarelle.UI {
 			get { return title; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
 						WidthHeight old = GetMyExtraSpace();
 						title = value;
 						WidthHeight nw = GetMyExtraSpace();
 						Width  += Math.Round(nw.width - old.width);
 						Height += Math.Round(nw.height - old.height);
-						element.dialog("option", "dialogClass", EffectiveDialogClass);
-						element.dialog("option", "title", title);
+						dialog.dialog("option", "dialogClass", EffectiveDialogClass);
+						dialog.dialog("option", "title", title);
 						return;
 					}
 				#endif
@@ -112,8 +113,8 @@ namespace Saltarelle.UI {
 			set {
 				className = value;
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
-						element.dialog("option", "dialogClass", EffectiveDialogClass);
+					if (isAttached) {
+						dialog.dialog("option", "dialogClass", EffectiveDialogClass);
 					}
 				#endif
 			}
@@ -125,11 +126,7 @@ namespace Saltarelle.UI {
 			get {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
-				return "<div id=\"" + id + "\""
-				#if SERVER
-				     + " __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
-				#endif
-				     + ">" + InnerHtml + "</div>";
+				return "<div id=\"" + id + "\">" + InnerHtml + "</div>";
 			}
 		}
 		
@@ -137,13 +134,13 @@ namespace Saltarelle.UI {
 			get { return noPadding; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
 						WidthHeight old = GetMyExtraSpace();
 						noPadding = value;
 						WidthHeight nw = GetMyExtraSpace();
 						Width  += Math.Round(nw.width - old.width);
 						Height += Math.Round(nw.height - old.height);
-						element.dialog("option", "dialogClass", EffectiveDialogClass);
+						dialog.dialog("option", "dialogClass", EffectiveDialogClass);
 						return;
 					}
 				#endif
@@ -166,6 +163,7 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
+			config["id"] = id;
 			config["modality"] = modality;
 			config["title"] = title;
 			config["width"] = width;
@@ -175,7 +173,7 @@ namespace Saltarelle.UI {
 			config["noPadding"] = noPadding;
 		}
 
-		private object ConfigObject {
+		public object ConfigObject {
 			get {
 				var config = new Dictionary<string, object>();
 				AddItemsToConfigObject(config);
@@ -208,9 +206,7 @@ namespace Saltarelle.UI {
 			AttachSelf();
 		}
 		
-		public jQuery Element {
-			get { return element; }
-		}
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 		
 		protected WidthHeight GetMyExtraSpace() {
 			return GetExtraSpace(!string.IsNullOrEmpty(title), !noPadding);
@@ -244,34 +240,35 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AttachSelf() {
-			if (Utils.IsNull(id) || !Utils.IsNull(element))
+			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
-			element = JQueryProxy.jQuery("#" + id);
+			isAttached = true;
+			dialog = JQueryProxy.jQuery(GetElement());
 			if (width < 0 || height < 0) {
-				WidthHeight wh = MeasureDialog(element, !string.IsNullOrEmpty(title), !noPadding);
+				WidthHeight wh = MeasureDialog(dialog, !string.IsNullOrEmpty(title), !noPadding);
 				if (width < 0)
 					width = Math.Round(wh.width);
 				if (height < 0)
 					height = Math.Round(wh.height);
 			}
 
-			element.dialog(new Dictionary("modal", modality == DialogModalityEnum.Modal,
-			                         "bgiframe", true,
-			                         "title", title,
-			                         "autoOpen", false,
-			                         "minWidth", width,
-			                         "maxWidth", width,
-			                         "width", width,
-			                         "minHeight", height,
-			                         "maxHeight", height,
-			                         "height", height,
-			                         "resizable", false,
-			                         "dialogClass", EffectiveDialogClass,
-			                         "open", new JQueryEventHandlerDelegate(delegate { Window.SetTimeout(delegate { OnOpened(EventArgs.Empty); }, 0); }),
-			                         "beforeclose", new JQueryEventCancelHandlerDelegate(delegate { CancelEventArgs e = new CancelEventArgs(); OnClosing(e); return !e.Cancel; }),
-			                         "close", new JQueryEventHandlerDelegate(delegate { OnClosed(EventArgs.Empty); })
+			dialog.dialog(new Dictionary("modal", modality == DialogModalityEnum.Modal,
+			                             "bgiframe", true,
+			                             "title", title,
+			                             "autoOpen", false,
+			                             "minWidth", width,
+			                             "maxWidth", width,
+			                             "width", width,
+			                             "minHeight", height,
+			                             "maxHeight", height,
+			                             "height", height,
+			                             "resizable", false,
+			                             "dialogClass", EffectiveDialogClass,
+			                             "open", new JQueryEventHandlerDelegate(delegate { Window.SetTimeout(delegate { OnOpened(EventArgs.Empty); }, 0); }),
+			                             "beforeclose", new JQueryEventCancelHandlerDelegate(delegate { CancelEventArgs e = new CancelEventArgs(); OnClosing(e); return !e.Cancel; }),
+			                             "close", new JQueryEventHandlerDelegate(delegate { OnClosed(EventArgs.Empty); })
 			                         ));
-			Utils.Parent(element, ".ui-dialog").lostfocus(frame_LostFocus);
+			Utils.Parent(dialog, ".ui-dialog").lostfocus(frame_LostFocus);
 		}
 
 		public virtual void Attach() {
@@ -279,8 +276,8 @@ namespace Saltarelle.UI {
 		}
 
 		public void Open() {
-			if ((bool)element.dialog("isOpen"))
-				element.dialog("close");
+			if ((bool)dialog.dialog("isOpen"))
+				dialog.dialog("close");
 				
 			CancelEventArgs e = new CancelEventArgs();
 			OnOpening(e);
@@ -298,16 +295,16 @@ namespace Saltarelle.UI {
 				positionObj[1] = position.top - doc.scrollTop();
 			}
 			
-			element.dialog("option", "position", positionObj);
-			element.dialog("open");
+			dialog.dialog("option", "position", positionObj);
+			dialog.dialog("open");
 		}
 		
 		public bool IsOpen {
-			get { return (bool)element.dialog("isOpen"); }
+			get { return (bool)dialog.dialog("isOpen"); }
 		}
 		
 		public void Close() {
-			element.dialog("close");
+			dialog.dialog("close");
 		}
 
 		protected virtual void OnOpening(CancelEventArgs e) {
@@ -332,7 +329,7 @@ namespace Saltarelle.UI {
 		
 		private void frame_LostFocus(JQueryEvent evt) {
 			if (modality == DialogModalityEnum.HideOnFocusOut)
-				element.dialog("close");
+				dialog.dialog("close");
 		}
 #endif
 	}
@@ -342,7 +339,7 @@ namespace Saltarelle.UI {
 
 		public void SetInnerHtml(string html) {
 			#if CLIENT
-				if (!Utils.IsNull(Element))
+				if (GetElement() != null)
 					throw new Exception("Can't change inner HTML after render.");
 			#endif
 			innerHtml = html;
@@ -363,8 +360,12 @@ namespace Saltarelle.UI {
 		public DialogFrame(string id) : base(id) {
 		}
 
-		public jQuery GetInnerElements() {
-			return Element.children();
+		public DOMElement[] GetInnerElements() {
+			jQuery jq = JQueryProxy.jQuery(GetElement());
+			ArrayList result = new ArrayList();
+			for (int i = 0; i < jq.size(); i++)
+				result.Add(jq.get(i));
+			return (DOMElement[])result;
 		}
 #endif
 	}
@@ -387,6 +388,7 @@ namespace Saltarelle.UI {
 		protected override void AddItemsToConfigObject(Dictionary<string, object> config) {
 			base.AddItemsToConfigObject(config);
 			config.Add("containedControlType", containedControl.GetType().FullName);
+			config.Add("containedControlData", containedControl.ConfigObject);
 		}
 
 		protected ControlDialogBase() {
@@ -409,14 +411,14 @@ namespace Saltarelle.UI {
 
 		protected override void InitConfig(Dictionary config) {
 			Type tp = Type.GetType((string)config["containedControlType"]);
-			containedControl = (IControl)Type.CreateInstance(tp, Id + "_control");
+			containedControl = (IControl)Type.CreateInstance(tp, config["containedControlData"]);
 			base.InitConfig(config);
 		}
 
 		protected override string InnerHtml { get { return ((IClientCreateControl)containedControl).Html; } }
 		
 		protected void SetContainedControlBase(IClientCreateControl control) {
-			if (!Utils.IsNull(((IControl)control).Element))
+			if (!Utils.IsNull(((IControl)control).GetElement()))
 				throw new Exception("The control must not be rendered.");
 			containedControl = (IControl)control;
 			if (!string.IsNullOrEmpty(Id))

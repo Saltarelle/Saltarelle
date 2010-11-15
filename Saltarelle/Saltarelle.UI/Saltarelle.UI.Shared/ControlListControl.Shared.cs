@@ -5,6 +5,7 @@ using StringList = System.ArrayList;
 using ControlList = System.ArrayList;
 using ObjectList = System.ArrayList;
 using ControlDictionary = System.Dictionary;
+using System.DHTML;
 #endif
 #if SERVER
 using StringList  = System.Collections.Generic.List<string>;
@@ -26,7 +27,7 @@ namespace Saltarelle.UI {
 		private ObjectList controlData;
 
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached;
 		#endif
 		
 		public string Id {
@@ -34,8 +35,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						GetElement().ID = value;
 				#endif
 				for (int i = 0; i < Utils.ArrayLength(controls); i++) {
 					((IControl)controls[i]).Id = id + "_" + Utils.ToStringInvariantInt(i);
@@ -46,7 +47,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -54,8 +55,8 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -64,7 +65,8 @@ namespace Saltarelle.UI {
 			get { return className; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
+						jQuery element = JQueryProxy.jQuery(GetElement());
 						if (!string.IsNullOrEmpty(className))
 							element.removeClass(className);
 						if (!string.IsNullOrEmpty(value))
@@ -112,11 +114,7 @@ namespace Saltarelle.UI {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
 				StringBuilder sb = new StringBuilder();
-				sb.Append("<div id=\"" + id + "\"" + (!string.IsNullOrEmpty(className) ? " class=\"" + className + "\"" : "") + " style=\"" + PositionHelper.CreateStyle(position, -1, -1) + "\""
-				#if SERVER
-					    + " __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
-				#endif
-				        + ">");
+				sb.Append("<div id=\"" + id + "\"" + (!string.IsNullOrEmpty(className) ? " class=\"" + className + "\"" : "") + " style=\"" + PositionHelper.CreateStyle(position, -1, -1) + "\">");
 				#if SERVER
 					foreach (IControl c in controls)
 						sb.Append(c.Html);
@@ -144,13 +142,15 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
+			config["id"]           = id;
 			config["className"]    = className;
 			config["controlIds"]   = controlIds;
 			config["controlData"]  = controlData;
 			config["controlTypes"] = controls.Select(c => c.GetType().FullName).ToList();
+			config["controlCfg"]   = controls.Select(c => c.ConfigObject);
 		}
 
-		private object ConfigObject {
+		public object ConfigObject {
 			get {
 				var config = new Dictionary<string, object>();
 				AddItemsToConfigObject(config);
@@ -169,46 +169,47 @@ namespace Saltarelle.UI {
 #if CLIENT
 		[AlternateSignature]
 		public extern ControlListControl();
-		public ControlListControl(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary config = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				InitConfig(config);
+		public ControlListControl(object config) {
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
 		protected virtual void InitConfig(Dictionary config) {
+			id          = (string)config["id"];
 			className   = (string)config["className"];
 			controlIds  = (StringList)config["controlIds"];
 			controlData = (ObjectList)config["controlData"];
 			controls    = new ControlList();
 			
 			StringList controlTypes = (StringList)config["controlTypes"];
+			ArrayList  controlCfg   = (ArrayList)config["controlCfg"];
 			for (int i = 0; i < controlTypes.Length; i++) {
 				Type tp = Type.GetType((string)controlTypes[i]);
-				controls.Add(Type.CreateInstance(tp, id + "_" + Utils.ToStringInvariantInt(i)));
+				controls.Add(Type.CreateInstance(tp, controlCfg[i]));
 			}
 
 			Attach();
 		}
 
-		public jQuery Element { get { return element; } }
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		public void Attach() {
-			if (Utils.IsNull(id) || !Utils.IsNull(element))
+			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
-			element = JQueryProxy.jQuery("#" + id);
+			isAttached = true;
 		}
 
 		public void AddControl(string controlId, IClientCreateControl control, object data) {
-			if (!Utils.IsNull(((IControl)control).Element))
+			if (!Utils.IsNull(((IControl)control).GetElement()))
 				throw new Exception("The control must not be rendered.");
 			if (!Utils.IsNull(id))
 				((IControl)control).Id = id + "_" + Utils.ToStringInvariantInt(Utils.ArrayLength(controls));
-			if (!Utils.IsNull(element))
-				Utils.RenderControl(control, element);
+			if (isAttached) {
+				Utils.RenderControl(control, GetElement());
+			}
 			controlIds.Add(controlId);
 			controls.Add(control);
 			controlData.Add(data);

@@ -3,6 +3,9 @@ using Saltarelle;
 #if SERVER
 using System.Collections.Generic;
 #endif
+#if CLIENT
+using System.DHTML;
+#endif
 
 namespace Saltarelle.UI {
 	public class Label : IControl, IClientCreateControl {
@@ -14,7 +17,7 @@ namespace Saltarelle.UI {
 		private string additionalClass;
 
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached = false;
 		#endif
 		
 		public string Id {
@@ -22,8 +25,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						GetElement().ID = value;
 				#endif
 			}
 		}
@@ -31,15 +34,15 @@ namespace Saltarelle.UI {
 		public string Text {
 			get {
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						return element.text();
+					if (isAttached)
+						return GetElement().InnerText;
 				#endif
 				return text;
 			}
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.text(value);
+					if (isAttached)
+						GetElement().InnerText = value;
 				#endif
 				text = value;
 			}
@@ -49,7 +52,8 @@ namespace Saltarelle.UI {
 			get { return additionalClass; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
+						jQuery element = JQueryProxy.jQuery(GetElement());
 						if (!string.IsNullOrEmpty(additionalClass))
 							element.removeClass(additionalClass);
 						if (!string.IsNullOrEmpty(value))
@@ -65,18 +69,14 @@ namespace Saltarelle.UI {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
 				string style = PositionHelper.CreateStyle(position, -1, -1);
-				return "<span class=\"" + ClassName + (!string.IsNullOrEmpty(additionalClass) ? " " + additionalClass : "") + "\" id=\"" + id + "\" style=\"" + style + "\""
-				#if SERVER
-					 + " __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\""
-				#endif
-				     + ">" + Utils.HtmlEncode(!string.IsNullOrEmpty(text) ? text : "&nbsp") + "</span>";
+				return "<span class=\"" + ClassName + (!string.IsNullOrEmpty(additionalClass) ? " " + additionalClass : "") + "\" id=\"" + id + "\" style=\"" + style + "\">" + Utils.HtmlEncode(!string.IsNullOrEmpty(text) ? text : "&nbsp") + "</span>";
 			}
 		}
 
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -84,8 +84,8 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -101,10 +101,11 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
+			config["id"] = id;
 			config["additionalClass"] = additionalClass;
 		}
 
-		private object ConfigObject {
+		public object ConfigObject {
 			get {
 				var config = new Dictionary<string, object>();
 				AddItemsToConfigObject(config);
@@ -116,28 +117,26 @@ namespace Saltarelle.UI {
 #if CLIENT
 		[AlternateSignature]
 		public extern Label();
-		public Label(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary config = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				InitConfig(config);
+		public Label(object config) {
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
 		protected virtual void InitConfig(Dictionary config) {
+			id = (string)config["id"];
 			additionalClass = (string)config["additionalClass"];
 			Attach();
 		}
 
-		public jQuery Element { get { return element; } }
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		public void Attach() {
-			if (Utils.IsNull(id) || !Utils.IsNull(element))
+			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
-		
-			element = JQueryProxy.jQuery("#" + id);
+			isAttached = true;
 		}
 #endif
 	}

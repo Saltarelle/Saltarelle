@@ -27,7 +27,8 @@ namespace Saltarelle.UI {
 		private bool rightAlignTabs;
 		
 		#if CLIENT
-			private jQuery element;
+			private bool isAttached = false;
+			private jQuery tabs;
 			
 			public event TabControlSelectedTabChangingEventHandler SelectedTabChanging;
 			public event EventHandler SelectedTabChanged;
@@ -38,8 +39,8 @@ namespace Saltarelle.UI {
 			set {
 				id = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.attr("id", value);
+					if (isAttached)
+						tabs.attr("id", value);
 				#endif
 			}
 		}
@@ -47,7 +48,7 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get {
 				#if CLIENT
-					return !Utils.IsNull(element) ? PositionHelper.GetPosition(element) : position;
+					return isAttached ? PositionHelper.GetPosition(GetElement()) : position;
 				#else
 					return position;
 				#endif
@@ -55,8 +56,8 @@ namespace Saltarelle.UI {
 			set {
 				position = value;
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						PositionHelper.ApplyPosition(element, value);
+					if (isAttached)
+						PositionHelper.ApplyPosition(GetElement(), value);
 				#endif
 			}
 		}
@@ -65,14 +66,14 @@ namespace Saltarelle.UI {
 			get { return tabCaptions; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
+					if (isAttached) {
 						// Rendered means no changing number of tabs.
 						int oldNum = tabCaptions.Length;
 						tabCaptions = new string[oldNum];
 						for (int i = 0; i < oldNum; i++)
 							tabCaptions[i] = (i < value.Length ? value[i] : null) ?? "";
 
-						element.children(":eq(0)").children().each(delegate(int i, DOMElement d) {
+						tabs.children(":eq(0)").children().each(delegate(int i, DOMElement d) {
 							string s = tabCaptions[rightAlignTabs ? tabCaptions.Length - i - 1 : i];
 							JQueryProxy.jQuery(d).children().html(!string.IsNullOrEmpty(s) ? Utils.HtmlEncode(s) : "&nbsp;");
 							return true;
@@ -88,11 +89,11 @@ namespace Saltarelle.UI {
 			get { return rightAlignTabs; }
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element) && value != rightAlignTabs) {
+					if (isAttached && value != rightAlignTabs) {
 						selectedTabIfNotRendered = SelectedTab;
-						element.tabs("destroy");
+						tabs.tabs("destroy");
 						rightAlignTabs = value;
-						element.children(":eq(0)").html(TabsInnerHtml);
+						tabs.children(":eq(0)").html(TabsInnerHtml);
 						Tabify();
 						return;
 					}
@@ -108,8 +109,8 @@ namespace Saltarelle.UI {
 		public int SelectedTab {
 			get {
 				#if CLIENT
-					if (!Utils.IsNull(element)) {
-						int s = (int)element.tabs("option", "selected");
+					if (isAttached) {
+						int s = (int)tabs.tabs("option", "selected");
 						return rightAlignTabs ? (tabCaptions.Length - 1 - s) : s;
 					}
 				#endif
@@ -117,8 +118,8 @@ namespace Saltarelle.UI {
 			}
 			set {
 				#if CLIENT
-					if (!Utils.IsNull(element))
-						element.tabs("select", rightAlignTabs ? (tabCaptions.Length - 1 - value) : value);
+					if (isAttached)
+						tabs.tabs("select", rightAlignTabs ? (tabCaptions.Length - 1 - value) : value);
 				#endif
 				selectedTabIfNotRendered = value;
 			}
@@ -167,12 +168,13 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
-			config["tabCaptions"] = tabCaptions;
-			config["selectedTab"] = selectedTabIfNotRendered;
+			config["id"]             = id;
+			config["tabCaptions"]    = tabCaptions;
+			config["selectedTab"]    = selectedTabIfNotRendered;
 			config["rightAlignTabs"] = rightAlignTabs;
 		}
 
-		private object ConfigObject {
+		public object ConfigObject {
 			get {
 				var config = new Dictionary<string, object>();
 				AddItemsToConfigObject(config);
@@ -183,17 +185,16 @@ namespace Saltarelle.UI {
 #if CLIENT
 		[AlternateSignature]
 		public extern TabControl();
-		public TabControl(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary config = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				InitConfig(config);
+		public TabControl(object config) {
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
 		protected virtual void InitConfig(Dictionary config) {
+			id = (string)config["id"];
 			tabCaptions = (string[])config["tabCaptions"];
 			position = (Position)config["position"];
 			selectedTabIfNotRendered = (int)config["selectedTab"];
@@ -202,17 +203,18 @@ namespace Saltarelle.UI {
 		}
 
 		public void Attach() {
-			if (Utils.IsNull(id) || !Utils.IsNull(element))
+			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
-		
-			element = JQueryProxy.jQuery("#" + id);
-			element.children(":gt(0)").wrap("<div style=\"position: relative\"/>");
+			isAttached = true;
+			
+			tabs = JQueryProxy.jQuery(GetElement());
+			tabs.children(":gt(0)").wrap("<div style=\"position: relative\"/>");
 
 			Tabify();
 		}
 		
 		protected void Tabify() {
-			element.children(":gt(0)").each(new EachCallback(delegate(int idx, DOMElement elem) {
+			tabs.children(":gt(0)").each(new EachCallback(delegate(int idx, DOMElement elem) {
 				elem.ID = "_" + id + "-" + Utils.ToStringInvariantInt(idx + 1);
 				jQuery q = JQueryProxy.jQuery(elem);
 				if (jQuery.browser.msie && (jQuery.browser.version == "6.0" || jQuery.browser.version == "7.0")) {
@@ -223,22 +225,24 @@ namespace Saltarelle.UI {
 				return true;
 			}));
 
-			element.tabs(new Dictionary("selected", selectedTabIfNotRendered,
-			                            "select", new TabsSelectEventHandlerDelegate(el_select),
-			                            "show", new TabsEventHandlerDelegate(el_show)
+			tabs.tabs(new Dictionary("selected", selectedTabIfNotRendered,
+			                         "select", new TabsSelectEventHandlerDelegate(el_select),
+			                         "show", new TabsEventHandlerDelegate(el_show)
 			));
 			if (rightAlignTabs) {
 				// JQuery UI has a bug which causes the selected option to not work correctly when we reversed the tabs if we use the "selected" option in this case.
-				element.tabs("select", tabCaptions.Length - 1 - selectedTabIfNotRendered);
+				tabs.tabs("select", tabCaptions.Length - 1 - selectedTabIfNotRendered);
 			}
 		}
 
-		public jQuery Element {
-			get { return element; }
-		}
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 		
-		public jQuery GetInnerElements() {
-			return element.children(":gt(0)").children();
+		public DOMElement[] GetInnerElements() {
+			ArrayList result = new ArrayList();
+			jQuery children = tabs.children(":gt(0)").children();
+			for (int i = 0; i < children.size(); i++)
+				result.Add(children.get(i));
+			return (DOMElement[])result;
 		}
 		
 		private void el_show(JQueryEvent evt, TabsEventObject ui) {
@@ -265,14 +269,14 @@ namespace Saltarelle.UI {
 		}
 		
 		public void AddTab(string title, string html, int position) {
-			if (element != null) {
-				element.tabs("destroy");
+			if (isAttached) {
+				tabs.tabs("destroy");
 
 				tabCaptions = (string[])(position > 0 ? tabCaptions.Extract(0, position) : new string[0]).Concat(title).Concat(tabCaptions.Extract(position));	// Script# bug/misfeature makes Extract() return the whole array if 0 is specified for count
-				element.children().eq(0).html(TabsInnerHtml);
+				tabs.children().eq(0).html(TabsInnerHtml);
 
 				jQuery q = JQueryProxy.jQuery("<div style=\"position: relative\">" + html + "</div>");
-				element.children().eq(position).after(q);	// use this index since we have the tab caption list before everything else.
+				tabs.children().eq(position).after(q);	// use this index since we have the tab caption list before everything else.
 
 				Tabify();
 			}
@@ -285,12 +289,12 @@ namespace Saltarelle.UI {
 		}
 
 		public void RemoveTab(int position) {
-			if (element == null)
+			if (!isAttached)
 				throw new Exception("Cannot remove tab before render.");
-			element.tabs("destroy");
+			tabs.tabs("destroy");
 			tabCaptions = (string[])(position > 0 ? tabCaptions.Extract(0, position) : new string[0]).Concat(tabCaptions.Extract(position + 1));	// Script# bug/misfeature makes Extract() return the whole array if 0 is specified for count
-			element.children().eq(0).html(TabsInnerHtml);
-			element.children().eq(position + 1).remove();
+			tabs.children().eq(0).html(TabsInnerHtml);
+			tabs.children().eq(position + 1).remove();
 			Tabify();
 		}
 #endif
