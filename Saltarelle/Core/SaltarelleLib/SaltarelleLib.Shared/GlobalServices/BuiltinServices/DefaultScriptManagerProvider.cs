@@ -75,6 +75,8 @@ namespace Saltarelle {
 
 		public void RegisterType(Type type) {
 			registeredAssemblies.Add(type.Assembly);
+			foreach (RequiresClientServiceAttribute attr in type.GetCustomAttributes(typeof(RequiresClientServiceAttribute), true))
+				registeredAssemblies.Add(attr.ServiceType.Assembly);
 		}
 
 		public IEnumerable<string> GetAllRequiredIncludes() {
@@ -115,9 +117,6 @@ namespace Saltarelle {
 			lateAdditionalIncludes.AddRange(addScriptsAfterAssemblyScripts);
 		
 			AddStartupScript(() => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + typeof(IScriptManagerService) + ")) Saltarelle.GlobalServices.setService(" + typeof(IScriptManagerService).FullName + ", new " + typeof(DefaultScriptManagerProvider).FullName + "(" + Utils.ToStringInvariantInt(nextUniqueId) + "));");
-		}
-		
-		public void Dispose() {
 		}
 	}
 #endif
