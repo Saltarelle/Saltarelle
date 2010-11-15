@@ -356,7 +356,7 @@ namespace Saltarelle.UI {
 		[AlternateSignature]
 		public extern DialogFrame();
 
-		public DialogFrame(string id) : base(id) {
+		public DialogFrame(object config) : base(config) {
 		}
 
 		public DOMElement[] GetInnerElements() {
@@ -405,7 +405,7 @@ namespace Saltarelle.UI {
 #if CLIENT
 		[AlternateSignature]
 		protected extern ControlDialogBase();
-		protected ControlDialogBase(string id) : base(id) {
+		protected ControlDialogBase(object config) : base(config) {
 		}
 
 		protected override void InitConfig(Dictionary config) {
@@ -449,7 +449,7 @@ namespace Saltarelle.UI {
 		[AlternateSignature]
 		public extern ControlDialog();
 		
-		public ControlDialog(string id) : base(id) {
+		public ControlDialog(object config) : base(config) {
 		}
 
 		public void SetContainedControl(IClientCreateControl control) {
