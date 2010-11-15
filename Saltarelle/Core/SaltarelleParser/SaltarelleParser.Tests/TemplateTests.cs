@@ -496,6 +496,7 @@ namespace SaltarelleParser.Tests {
 			string expected =  "public object ConfigObject {" + Environment.NewLine
 			                +  "	get {" + Environment.NewLine
 			                +  "		Dictionary<string, object> __cfg = new Dictionary<string, object>();" + Environment.NewLine
+			                +  "		__cfg[\"id\"] = id;" + Environment.NewLine
 			                +  "		[a]" + Environment.NewLine
 			                +  "		[b]" + Environment.NewLine
 			                +  "		return __cfg;" + Environment.NewLine

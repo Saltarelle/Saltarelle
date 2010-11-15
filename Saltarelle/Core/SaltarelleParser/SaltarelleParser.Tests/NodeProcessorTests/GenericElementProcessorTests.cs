@@ -181,7 +181,7 @@ namespace SaltarelleParser.Tests {
 		public void TestTryProcess_RootWorks() {
 			mocks.ReplayAll();
 			var actual = new GenericElementProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<div></div>"), true, template, renderFunction);
-			Assert.AreEqual("<div id=\"[ID]\" style=\"[Position]\"[CFG]></div>", ConcatenatedFragments);
+			Assert.AreEqual("<div id=\"[ID]\" style=\"[Position]\"></div>", ConcatenatedFragments);
 			mocks.VerifyAll();
 		}
 
