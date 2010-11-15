@@ -95,7 +95,7 @@ namespace Saltarelle {
 		}
 		
 		public void RegisterTopLevelControl(IControl control) {
-			startupScripts.Add(() => "new " + control.GetType().FullName + "('" + control.Id + "');");
+			startupScripts.Add(() => "new " + control.GetType().FullName + "(" + Utils.InitScript(control.ConfigObject) + ");");
 		}
 		
 		public void AddStartupScript(string script) {
