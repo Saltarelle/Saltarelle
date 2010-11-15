@@ -80,8 +80,6 @@ namespace Saltarelle.NodeProcessors {
 
 			currentRenderFunction.AddFragment(new LiteralFragment("<" + Utils.NodeName(node)));
 			AddAttributeFragments(docProcessor, node, isRoot, template, currentRenderFunction);
-			if (isRoot)
-				currentRenderFunction.AddFragment(new ConfigObjectFragment());
 
 			if (noContentTags.Contains(Utils.NodeName(node))) {
 				if (Utils.GetNumChildNodes(node) > 0)

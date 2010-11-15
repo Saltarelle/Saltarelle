@@ -51,7 +51,6 @@
       <Link>Properties\SaltarelleVersion.cs</Link>
     </Compile>
     <Compile Include="FragmentTests\CodeExpressionFragmentTests.cs" />
-    <Compile Include="FragmentTests\ConfigObjectFragmentTests.cs" />
     <Compile Include="FragmentTests\CodeFragmentTests.cs" />
     <Compile Include="FragmentTests\PositionFragmentTests.cs" />
     <Compile Include="FragmentTests\InstantiatedControlFragmentTests.cs" />

@@ -59,9 +59,6 @@
     <Compile Include="..\SaltarelleParser.Shared\Fragments\CodeFragment.Shared.cs">
       <Link>Fragments\CodeFragment.Shared.cs</Link>
     </Compile>
-    <Compile Include="..\SaltarelleParser.Shared\Fragments\ConfigObjectFragment.Shared.cs">
-      <Link>Fragments\ConfigObjectFragment.Shared.cs</Link>
-    </Compile>
     <Compile Include="..\SaltarelleParser.Shared\Fragments\IdFragment.Shared.cs">
       <Link>Fragments\IdFragment.Shared.cs</Link>
     </Compile>
