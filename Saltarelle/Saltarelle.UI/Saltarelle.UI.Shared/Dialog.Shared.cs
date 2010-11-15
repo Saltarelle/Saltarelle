@@ -185,17 +185,16 @@ namespace Saltarelle.UI {
 		[AlternateSignature]
 		protected extern DialogBase();
 
-		protected DialogBase(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary config = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				InitConfig(config);
+		protected DialogBase(object config) {
+			if (!Script.IsUndefined(config)) {
+				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 		
 		protected virtual void InitConfig(Dictionary config) {
+			id = (string)config["id"];
 			title = (string)config["title"];
 			width = (int)config["width"];
 			height = (int)config["height"];

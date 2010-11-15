@@ -143,11 +143,7 @@ namespace Saltarelle.UI {
 				string style = PositionHelper.CreateStyle(position, -1, -1);
 
 				StringBuilder sb = new StringBuilder();
-				sb.Append("<div id=\"" + id + "\" style=\"" + style + "\"");
-				#if SERVER
-				     sb.Append(" __cfg=\"" + Utils.HtmlEncode(Utils.Json(ConfigObject)) + "\"");
-				#endif
-				sb.Append("><ul>");
+				sb.Append("<div id=\"" + id + "\" style=\"" + style + "\"><ul>");
 				sb.Append(TabsInnerHtml);
 				sb.Append("</ul>");
 				sb.Append(innerHtml ?? "");
