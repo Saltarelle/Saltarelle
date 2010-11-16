@@ -347,6 +347,7 @@ namespace Saltarelle {
 			MemberList orderedMembers = TopologicalSort(members);
 
 			cb.AppendLine("using System;")
+			  .AppendLine("using System.DHTML;")
 			  .AppendLine("using Saltarelle;").AppendLine();
 			
 			if (!string.IsNullOrEmpty(nmspace))
