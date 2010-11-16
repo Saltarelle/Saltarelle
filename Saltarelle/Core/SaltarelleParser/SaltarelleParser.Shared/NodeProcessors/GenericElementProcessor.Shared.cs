@@ -13,10 +13,15 @@ using System.Xml;
 #endif
 
 namespace Saltarelle.NodeProcessors {
+	internal class GenericElementProcessorContext {
+		public string Id;
+		public string Type;
+	}
+
 	internal class GenericElementProcessor : INodeProcessor {
 		private string[] noContentTags = new string[] { "br", "img", "hr", "link", "input", "meta", "col", "frame", "base", "area" };
 
-		internal static void AddSingleAttributeFragments(IDocumentProcessor docProcessor, string attrName, string attrValue, bool isRoot, ITemplate template, IRenderFunction fragments) {
+		internal static void AddSingleAttributeFragments(IDocumentProcessor docProcessor, string attrName, string attrValue, bool isRoot, ITemplate template, IRenderFunction fragments, GenericElementProcessorContext context) {
 			string actualName;
 			if (attrName == "actualName") {
 				// This will translate into "name", but not with our ID prefixed. We need this because for top-level templates we want the names undisturbed to allow for a nice form submission.
@@ -25,26 +30,30 @@ namespace Saltarelle.NodeProcessors {
 			}
 			else
 				actualName = attrName;
-
+			
 			fragments.AddFragment(new LiteralFragment(" " + actualName + "=\""));
 			if (attrName == "id") {
 				if (isRoot)
 					throw ParserUtils.TemplateErrorException("Can't specify an ID for the top level element.");
 				if (template.HasMember(attrValue))
 					throw ParserUtils.TemplateErrorException("Duplicate member " + attrValue);
-				template.AddMember(new NamedElementMember(attrValue));
+				context.Id = attrValue;
 
 				fragments.AddFragment(new IdFragment());
 				fragments.AddFragment(new LiteralFragment("_" + attrValue));
 			}
-			else if (attrName == "for" || attrName == "name") {
+			else if (attrName.ToLowerCase() == "for" || attrName.ToLowerCase() == "name") {
 				fragments.AddFragment(new IdFragment());
 				fragments.AddFragment(new LiteralFragment("_" + attrValue));
 			}
 			else {
 				IFragment f = docProcessor.ParseUntypedMarkup(attrValue);
 				fragments.AddFragment(f);
-				if (isRoot && attrName == "style") {
+				if (attrName.ToLowerCase() == "type") {
+					if (f is LiteralFragment)
+						context.Type = ((LiteralFragment)f).Text;
+				}
+				else if (isRoot && attrName.ToLowerCase() == "style") {
 					if (!(f is LiteralFragment) || !((LiteralFragment)f).Text.Trim().EndsWith(";"))
 						fragments.AddFragment(new LiteralFragment(";"));
 					fragments.AddFragment(new PositionFragment());
@@ -54,10 +63,10 @@ namespace Saltarelle.NodeProcessors {
 			fragments.AddFragment(new LiteralFragment("\""));
 		}
 
-		internal static void AddAttributeFragments(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction fragments) {
+		internal static void AddAttributeFragments(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction fragments, GenericElementProcessorContext context) {
 			bool hasStyle = false;
 			Utils.DoForEachAttribute(node, delegate(XmlAttribute attr) {
-				AddSingleAttributeFragments(docProcessor, attr.Name, attr.Value, isRoot, template, fragments);
+				AddSingleAttributeFragments(docProcessor, attr.Name, attr.Value, isRoot, template, fragments, context);
 				if (attr.Name == "style")
 					hasStyle = true;
 			});
@@ -78,8 +87,17 @@ namespace Saltarelle.NodeProcessors {
 			if (node.NodeType != XmlNodeType.Element)
 				return false;
 
+			GenericElementProcessorContext context = new GenericElementProcessorContext();
+
 			currentRenderFunction.AddFragment(new LiteralFragment("<" + Utils.NodeName(node)));
-			AddAttributeFragments(docProcessor, node, isRoot, template, currentRenderFunction);
+			AddAttributeFragments(docProcessor, node, isRoot, template, currentRenderFunction, context);
+
+			if (context.Id != null) {
+				string tagName = Utils.NodeName(node);
+				if (tagName.ToLowerCase() == "input" && context.Type != null)
+					tagName += "/" + context.Type;
+				template.AddMember(new NamedElementMember(tagName, context.Id));
+			}
 
 			if (noContentTags.Contains(Utils.NodeName(node))) {
 				if (Utils.GetNumChildNodes(node) > 0)
