@@ -12,7 +12,12 @@ namespace DemoWeb {
 	public class DefaultLesson7Provider : ILesson7Service, IGlobalService {
 		public void Setup() {
 			var sm = GlobalServices.Provider.GetService<IScriptManagerService>();
-			sm.AddStartupScript("if (!" + typeof(GlobalServices).FullName + ".hasService(" + typeof(ILesson7Service).FullName + ")) " + typeof(GlobalServices).FullName + ".setService(" + typeof(ILesson7Service).FullName + ", new " + typeof(DefaultLesson7Provider).FullName + "(" + Utils.ScriptStr(Routes.GetDelegateUrlTemplate(typeof(ILesson7Service))) + "));");
+		}
+		
+		public object ConfigObject {
+			get {
+				return new { urlTemplate = Routes.GetDelegateUrlTemplate(typeof(ILesson7Service)) };
+			}
 		}
 
 		public ControlDocumentFragment CreateGrid(int numRows) {
@@ -30,8 +35,9 @@ namespace DemoWeb {
 #if CLIENT
 	public class DefaultLesson7Provider : ILesson7Service {
 		private string urlTemplate;
-		public DefaultLesson7Provider(string urlTemplate) {
-			this.urlTemplate = urlTemplate;
+		public DefaultLesson7Provider(object config) {
+			Dictionary cfg = Dictionary.GetDictionary(config);
+			this.urlTemplate = (string)cfg["urlTemplate"];
 		}
 
 		public void AsyncCreateGrid(int numRows, CreateGridSuccessDelegate success, Callback failure) {
