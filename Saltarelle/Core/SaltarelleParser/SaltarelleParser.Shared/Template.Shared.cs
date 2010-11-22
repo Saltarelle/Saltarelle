@@ -191,7 +191,7 @@ namespace Saltarelle {
 #if SERVER
 		internal static void WriteServerConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
 			cb.AppendLine("public " + tpl.ClassName + "() {").Indent()
-			  .AppendLine("GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());");
+			  .AppendLine("GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());");
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
 			cb.AppendLine("Constructed();").Outdent()

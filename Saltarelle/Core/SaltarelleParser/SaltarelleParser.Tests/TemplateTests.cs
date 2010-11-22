@@ -45,7 +45,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			
 			string expected =  "public TestClass() {" + Environment.NewLine
-			                +  "	GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());" + Environment.NewLine
+			                +  "	GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
 			                +  "	Constructed();" + Environment.NewLine
@@ -595,7 +595,7 @@ namespace SaltarelleParser.Tests {
 			tpl.MainRenderFunction.AddFragment(new LiteralFragment("X"));
 			
 			Globals.RunWithMockedScriptManager(mocks, scr => {
-				Expect.Call(() => scr.RegisterType(typeof(InstantiatedTemplateControl)));
+				Expect.Call(() => scr.RegisterClientType(typeof(InstantiatedTemplateControl)));
 				mocks.ReplayAll();
 
 				tpl.AddMember(m1);

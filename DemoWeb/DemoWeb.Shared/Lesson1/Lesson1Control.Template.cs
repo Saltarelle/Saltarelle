@@ -1,3 +1,4 @@
+#pragma warning disable 1591
 #if SERVER
 using System;
 using System.Collections.Generic;
@@ -15,15 +16,19 @@ namespace DemoWeb {
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
 				foreach (KeyValuePair<string, IControl> kvp in controls)
 					kvp.Value.Id = value + "_" + kvp.Key;
+				this.id = value;
 			}
 		}
 
-		private Dictionary<string, object> GetConfig() {
-			Dictionary<string, object> __cfg = new Dictionary<string, object>();
-			return __cfg;
+		public object ConfigObject {
+			get {
+				Dictionary<string, object> __cfg = new Dictionary<string, object>();
+				__cfg["id"] = id;
+				__cfg["TheText"] = this.TheText.ConfigObject;
+				return __cfg;
+			}
 		}
 
 		private readonly Saltarelle.UI.TextInput TheText;
@@ -34,9 +39,7 @@ namespace DemoWeb {
 			sb.Append(Id);
 			sb.Append(@""" style=""");
 			sb.Append(PositionHelper.CreateStyle(Position, -1, -1));
-			sb.Append(@"""");
-			sb.Append(" __cfg=\"" + Utils.HtmlEncode(Utils.Json(GetConfig())) + "\"");
-			sb.Append(@"> ");
+			sb.Append(@"""> ");
 			sb.Append(((IControl)TheText).Html);
 			sb.Append(@" <button type=""button"" id=""");
 			sb.Append(Id);
@@ -57,7 +60,7 @@ namespace DemoWeb {
 		}
 
 		public Lesson1Control() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput();
 
 			Constructed();
@@ -67,6 +70,7 @@ namespace DemoWeb {
 #endif
 #if CLIENT
 using System;
+using System.DHTML;
 using Saltarelle;
 
 namespace DemoWeb {
@@ -75,51 +79,50 @@ namespace DemoWeb {
 
 		private Position position;
 		public Position Position {
-			get { return element != null ? PositionHelper.GetPosition(element) : position; }
+			get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }
 			set {
 				position = value;
-				if (element != null)
-					PositionHelper.ApplyPosition(element, value);
+				if (isAttached)
+					PositionHelper.ApplyPosition(GetElement(), value);
 			}
 		}
 
-		private jQuery element;
-		public jQuery Element { get { return element; } }
+		private bool isAttached = false;
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private string id;
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
 				foreach (DictionaryEntry kvp in controls)
 					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
-				AddMessageButton.attr("id", value + "_AddMessageButton");
-				CurrentMessageDiv.attr("id", value + "_CurrentMessageDiv");
-				MessageLogDiv.attr("id", value + "_MessageLogDiv");
+				this.AddMessageButton.ID = value + "_AddMessageButton";
+				this.CurrentMessageDiv.ID = value + "_CurrentMessageDiv";
+				this.MessageLogDiv.ID = value + "_MessageLogDiv";
+				if (isAttached)
+					GetElement().ID = value;
+				this.id = value;
 			}
 		}
 
 		private readonly Saltarelle.UI.TextInput TheText;
 
-		private jQuery AddMessageButton;
+		private DOMElement AddMessageButton { get { return (DOMElement)Document.GetElementById(id + "_AddMessageButton"); } }
 
-		private jQuery CurrentMessageDiv;
+		private DOMElement CurrentMessageDiv { get { return (DOMElement)Document.GetElementById(id + "_CurrentMessageDiv"); } }
 
-		private jQuery MessageLogDiv;
+		private DivElement MessageLogDiv { get { return (DivElement)Document.GetElementById(id + "_MessageLogDiv"); } }
 
 		private void AttachSelf() {
-			this.element = JQueryProxy.jQuery("#" + id);
-			this.AddMessageButton = JQueryProxy.jQuery("#" + id + "_AddMessageButton");
-			this.CurrentMessageDiv = JQueryProxy.jQuery("#" + id + "_CurrentMessageDiv");
-			this.MessageLogDiv = JQueryProxy.jQuery("#" + id + "_MessageLogDiv");
+			this.isAttached = true;
 			Attached();
 		}
 
-		public Lesson1Control(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput(id + "_TheText");
+		public Lesson1Control(object config) {
+			if (!Script.IsUndefined(config)) {
+				Dictionary __cfg = Dictionary.GetDictionary(config);
+				this.id = (string)__cfg["id"];
+				this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput(__cfg["TheText"]);
 				Constructed();
 				AttachSelf();
 			}

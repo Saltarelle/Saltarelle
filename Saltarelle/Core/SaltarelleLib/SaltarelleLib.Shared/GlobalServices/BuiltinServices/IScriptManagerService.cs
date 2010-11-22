@@ -16,15 +16,21 @@ namespace Saltarelle {
 
 #if SERVER
 		/// <summary>
-		/// Register a type as being used. This means that the script for this type's assembly,
-		/// and all assemblies it depends on, will be referenced on the client.
-		/// This method should be called in the constructors for all objects that are not decorated with a [Record] attribute.
+		/// Registers a service which should be usable on the client. This will cause an instance of this service to be loaded on the server.
+		/// The <see cref="RequiresClientServiceAttribute"/> attribute can be used to always register a service when a type is registered.
+		/// Registering a service also registers its type.
 		/// </summary>
-		/// <param name="type"></param>
-		void RegisterType(Type type);
+		/// <param name="type">Type of the service. This type must implement the IGlobalService interface</param>
+		void RegisterClientService(Type type);
 
 		/// <summary>
-		/// Instruct the client to include a specific script. This script should not be an assembly script, for those use RegisterType().
+		/// Register that an assembly, and all assemblies it depends on, will be referenced on the client.
+		/// </summary>
+		/// <param name="asm">Type to register</param>
+		void RegisterClientAssembly(Assembly asm);
+
+		/// <summary>
+		/// Instruct the client to include a specific script. This script should not be an assembly script, for those use <see cref="RegisterClientType"/>.
 		/// Calling this method multiple times for the same script does NOT result in the script being included more than once.
 		/// </summary>
 		/// <param name="url">Url of the script to include</param>
@@ -51,12 +57,6 @@ namespace Saltarelle {
 		void AddStartupScript(Func<string> scriptRetriever);
 
 		/// <summary>
-		/// Add a startup script.
-		/// </summary>
-		/// <param name="script">The startup script. This should be a valid JavaScript statement.</param>
-		void AddStartupScript(string script);
-
-		/// <summary>
 		/// Get all registered startup scripts. Each entry is a statement which should be executed on document load.
 		/// </summary>
 		/// <returns>The registered scripts</returns>
@@ -70,4 +70,48 @@ namespace Saltarelle {
 		void EnsureScriptIncluded(string relativeUrl);
 #endif
 	}
+	
+#if SERVER
+	public static class IScriptManagerServiceExtensions {
+		/// <summary>
+		/// Add a startup script.
+		/// </summary>
+		/// <param name="service">Instance to add the script to.</param>
+		/// <param name="script">The startup script. This should be a valid JavaScript statement.</param>
+		public static void AddStartupScript(this IScriptManagerService service, string script) {
+			service.AddStartupScript(() => script);
+		}
+		
+		/// <summary>
+		/// Register a type as being used on the client side. This means that the script for this type's assembly,
+		/// and all assemblies it depends on, will be referenced on the client.
+		/// This method should be called in the constructors for all objects that are to be used on the client side and are not decorated with a [Record] attribute.
+		/// This method will also investigate the [RequiresClientServiceAttribute] attributes for the types and register those services.
+		/// </summary>
+		/// <param name="type">Type to register</param>
+		public static void RegisterClientType(this IScriptManagerService service, Type type) {
+			service.RegisterClientAssembly(type.Assembly);
+			foreach (RequiresClientServiceAttribute attr in type.GetCustomAttributes(typeof(RequiresClientServiceAttribute), true))
+				service.RegisterClientService(attr.ServiceType);
+		}
+
+		/// <summary>
+		/// Generic version of <see cref="IScriptManagerService.RegisterClientType(IScriptManagerService, Type)"/>
+		/// </summary>
+		/// <typeparam name="T">Type to register.</typeparam>
+		/// <param name="service">Instance to register the type for.</param>
+		public static void RegisterClientType<T>(this IScriptManagerService service) {
+			service.RegisterClientType(typeof(T));
+		}
+
+		/// <summary>
+		/// Generic version of <see cref="IScriptManagerService.RegisterClientService"/>
+		/// </summary>
+		/// <typeparam name="T">Service to register.</typeparam>
+		/// <param name="service">Instance to register the service for.</param>
+		public static void RegisterClientService<T>(this IScriptManagerService service) {
+			service.RegisterClientService(typeof(T));
+		}
+	}
+#endif
 }

@@ -9,6 +9,8 @@ namespace Saltarelle {
 		public Type ServiceType { get; private set; }
 		
 		public RequiresClientServiceAttribute(Type serviceType) {
+			if (serviceType == null)
+				throw new ArgumentNullException("serviceType");
 			this.ServiceType = serviceType;
 		}
 	}

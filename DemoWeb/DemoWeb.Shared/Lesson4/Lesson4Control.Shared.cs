@@ -146,8 +146,8 @@ namespace DemoWeb {
 		}
 		
 		private void Attached() {
-			EditEmployeeOKButton.click(EditEmployeeOKButton_Click);
-			EditEmployeeCancelButton.click(delegate { EditEmployeeDialog.Close(); });
+			JQueryProxy.jQuery(EditEmployeeOKButton).click(EditEmployeeOKButton_Click);
+			JQueryProxy.jQuery(EditEmployeeCancelButton).click(delegate { EditEmployeeDialog.Close(); });
 		}
 		
 		private void EmployeesGrid_CellClicked(object sender, GridCellClickedEventArgs e) {
@@ -170,33 +170,33 @@ namespace DemoWeb {
 		}
 
 		private void EditEmployee(Employee e) {
-			FirstNameInput.val((e != null ? e.firstName : null) ?? "");
-			LastNameInput.val((e != null ? e.lastName : null) ?? "");
-			TitleInput.val((e != null ? e.title : null) ?? "");
-			EmailInput.val((e != null ? e.email : null) ?? "");
+			FirstNameInput.Value = ((e != null ? e.firstName : null) ?? "");
+			LastNameInput.Value  = ((e != null ? e.lastName : null) ?? "");
+			TitleInput.Value     = ((e != null ? e.title : null) ?? "");
+			EmailInput.Value     = ((e != null ? e.email : null) ?? "");
 			EditEmployeeDialog.Open();
 		}
 		
 		private void EditEmployeeOKButton_Click(JQueryEvent evt) {
-			string firstName = FirstNameInput.val().Trim(),
-			       lastName  = LastNameInput.val().Trim(),
-			       title     = TitleInput.val().Trim(),
-			       email     = EmailInput.val().Trim();
+			string firstName = FirstNameInput.Value.Trim(),
+			       lastName  = LastNameInput.Value.Trim(),
+			       title     = TitleInput.Value.Trim(),
+			       email     = EmailInput.Value.Trim();
 			if (firstName == "") {
 				Script.Alert("You must enter a first name.");
-				FirstNameInput.focus();
+				FirstNameInput.Focus();
 				return;
 			}
 			if (lastName == "") {
 				Script.Alert("You must enter a last name.");
-				LastNameInput.focus();
+				LastNameInput.Focus();
 				return;
 			}
 			if (title == "")
 				title = null;
 			if (email == "") {
 				Script.Alert("You must enter an email address.");
-				EmailInput.focus();
+				EmailInput.Focus();
 				return;
 			}
 			

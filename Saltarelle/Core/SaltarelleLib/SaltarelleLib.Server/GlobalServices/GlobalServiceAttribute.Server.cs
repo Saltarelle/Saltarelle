@@ -12,11 +12,4 @@ namespace Saltarelle {
 			this.InterfaceType = interfaceType;
 		}
 	}
-	
-	public interface IGlobalService {
-		/// <summary>
-		/// Called after the service is created, but before it is returned to the requester. Do things such as load services that this service depends on, and add client scripts if the server should be available client side.
-		/// </summary>
-		void Setup();
-	}
 }

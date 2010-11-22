@@ -1,3 +1,5 @@
+using System;
+
 namespace Saltarelle.UI {
 #if SERVER
 	[GlobalService(typeof(ISaltarelleUIService))]
@@ -13,15 +15,17 @@ namespace Saltarelle.UI {
 #if SERVER
 		public void Setup() {
 			blankImageUrl = Saltarelle.Mvc.Routes.GetAssemblyResourceUrl(typeof(Saltarelle.UI.Resources).Assembly, Saltarelle.UI.Resources.BlankImage);
-
-			var sm = GlobalServices.Provider.GetService<IScriptManagerService>();
-			sm.AddStartupScript("if (!" + typeof(GlobalServices).FullName + ".hasService(" + typeof(ISaltarelleUIService).FullName + ")) " + typeof(GlobalServices).FullName + ".setService(" + typeof(ISaltarelleUIService).FullName + ", new " + typeof(DefaultSaltarelleUIProvider).FullName + "(" + Utils.ScriptStr(blankImageUrl) + "));");
+		}
+		
+		public object ConfigObject {
+			get { return new { blankImageUrl }; }
 		}
 #endif
 
 #if CLIENT
-		public DefaultSaltarelleUIProvider(string blankImageUrl) {
-			this.blankImageUrl = blankImageUrl;
+		public DefaultSaltarelleUIProvider(object config) {
+			Dictionary cfg = Dictionary.GetDictionary(config);
+			this.blankImageUrl = (string)cfg["blankImageUrl"];
 		}
 #endif
 	}

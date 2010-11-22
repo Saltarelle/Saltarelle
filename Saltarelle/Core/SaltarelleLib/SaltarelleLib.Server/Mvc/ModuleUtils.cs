@@ -8,34 +8,53 @@ using dotless.Core.configuration;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection.Emit;
+using Mono.Cecil;
 
 namespace Saltarelle.Mvc {
 	public static class ModuleUtils {
 		private static object scriptLock = new object();
 		private static object cssLock    = new object();
+		
+		private static IEnumerable<Assembly> GetClientReferencedAssembliesAssumingLock(Assembly asm) {
+			AssemblyDefinition def = GetClientAssemblyAssumingLock(asm);
+			if (def == null)
+				return new Assembly[0];
+				
+			return (  from m in def.Modules.Cast<ModuleDefinition>()
+			          from r in m.AssemblyReferences.Cast<AssemblyNameReference>()
+			        select r
+			       ).Distinct()
+			       .Select(x => Assembly.Load(new AssemblyName(x.FullName)));
+		}
 
 		private static Dictionary<Assembly, ReadOnlyCollection<Assembly>> assemblyDependencies = new Dictionary<Assembly, ReadOnlyCollection<Assembly>>();
 		private static Dictionary<Assembly, string> debugAssemblyScripts = new Dictionary<Assembly, string>();
 		private static Dictionary<Assembly, string> releaseAssemblyScripts = new Dictionary<Assembly, string>();
 		private static Dictionary<Assembly, string> assemblyCss = new Dictionary<Assembly, string>();
-		private static IList<Assembly> GetDependencies(Assembly asm) {
+
+		private static IList<Assembly> GetClientDependencies(Assembly asm) {
 			lock (scriptLock) {
 				ReadOnlyCollection<Assembly> result;
 				if (!assemblyDependencies.TryGetValue(asm, out result)) {
 					var l = new List<Assembly>();
-					foreach (var refName in asm.GetReferencedAssemblies()) {
-						Assembly refAsm = Assembly.Load(refName);
+					foreach (var refAsm in GetClientReferencedAssembliesAssumingLock(asm)) {
 						if (!debugAssemblyScripts.ContainsKey(refAsm)) {
 							debugAssemblyScripts[refAsm] = GetAssemblyScriptAssumingLock(refAsm, true);
 							releaseAssemblyScripts[refAsm] = GetAssemblyScriptAssumingLock(refAsm, false);
 						}
-						if (debugAssemblyScripts[refAsm] != null)
-							l.Add(refAsm);
+						l.Add(refAsm);
 					}
 					assemblyDependencies[asm] = result = l.AsReadOnly();
 				}
 				return result;
 			}
+		}
+		
+		private static AssemblyDefinition GetClientAssemblyAssumingLock(Assembly asm) {
+			if (asm is AssemblyBuilder)
+				return null;
+			string name = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Client.dll"));
+			return !Utils.IsNull(name) ? AssemblyFactory.GetAssembly(asm.GetManifestResourceStream(name)) : null;
 		}
 		
 		private static string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {
@@ -106,7 +125,7 @@ namespace Saltarelle.Mvc {
 		private static void AddAssembliesInCorrectOrder(Assembly asm, IList<Assembly> l) {
 			if (!l.Contains(asm)) {
 				// add all references (recursively) before adding the current one
-				foreach (var dep in ModuleUtils.GetDependencies(asm))
+				foreach (var dep in GetClientDependencies(asm))
 					AddAssembliesInCorrectOrder(dep, l);
 				if (ModuleUtils.GetAssemblyScriptContent(asm, true) != null)
 					l.Add(asm);

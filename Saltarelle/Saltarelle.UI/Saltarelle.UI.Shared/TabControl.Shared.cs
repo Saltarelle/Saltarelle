@@ -159,7 +159,7 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public TabControl() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

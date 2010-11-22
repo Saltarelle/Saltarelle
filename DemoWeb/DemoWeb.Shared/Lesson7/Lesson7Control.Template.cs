@@ -1,3 +1,4 @@
+#pragma warning disable 1591
 #if SERVER
 using System;
 using System.Collections.Generic;
@@ -15,15 +16,18 @@ namespace DemoWeb {
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
 				foreach (KeyValuePair<string, IControl> kvp in controls)
 					kvp.Value.Id = value + "_" + kvp.Key;
+				this.id = value;
 			}
 		}
 
-		private Dictionary<string, object> GetConfig() {
-			Dictionary<string, object> __cfg = new Dictionary<string, object>();
-			return __cfg;
+		public object ConfigObject {
+			get {
+				Dictionary<string, object> __cfg = new Dictionary<string, object>();
+				__cfg["id"] = id;
+				return __cfg;
+			}
 		}
 
 		private string GetHtml() {
@@ -32,9 +36,7 @@ namespace DemoWeb {
 			sb.Append(Id);
 			sb.Append(@""" style=""");
 			sb.Append(PositionHelper.CreateStyle(Position, -1, -1));
-			sb.Append(@"""");
-			sb.Append(" __cfg=\"" + Utils.HtmlEncode(Utils.Json(GetConfig())) + "\"");
-			sb.Append(@"> <div> Enter some markup:<br/> <textarea id=""");
+			sb.Append(@"""> <div> Enter some markup:<br/> <textarea id=""");
 			sb.Append(Id);
 			sb.Append(@"_DynamicMarkupInput"" rows=""10"" cols=""80""> <div style=""background-color: red""> <control type=""Saltarelle.UI.Label"" Text=""str:Label text""/> <div> Some text </div> </div> </textarea> <br/> <button type=""button"" id=""");
 			sb.Append(Id);
@@ -59,7 +61,7 @@ namespace DemoWeb {
 		}
 
 		public Lesson7Control() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			Constructed();
 		}
 	}
@@ -67,6 +69,7 @@ namespace DemoWeb {
 #endif
 #if CLIENT
 using System;
+using System.DHTML;
 using Saltarelle;
 
 namespace DemoWeb {
@@ -75,60 +78,56 @@ namespace DemoWeb {
 
 		private Position position;
 		public Position Position {
-			get { return element != null ? PositionHelper.GetPosition(element) : position; }
+			get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }
 			set {
 				position = value;
-				if (element != null)
-					PositionHelper.ApplyPosition(element, value);
+				if (isAttached)
+					PositionHelper.ApplyPosition(GetElement(), value);
 			}
 		}
 
-		private jQuery element;
-		public jQuery Element { get { return element; } }
+		private bool isAttached = false;
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private string id;
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
 				foreach (DictionaryEntry kvp in controls)
 					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
-				DynamicMarkupInput.attr("id", value + "_DynamicMarkupInput");
-				InsertDynamicControlButton.attr("id", value + "_InsertDynamicControlButton");
-				DynamicControlContainer.attr("id", value + "_DynamicControlContainer");
-				NumRowsInput.attr("id", value + "_NumRowsInput");
-				AjaxButton.attr("id", value + "_AjaxButton");
-				AjaxControlContainer.attr("id", value + "_AjaxControlContainer");
+				this.DynamicMarkupInput.ID = value + "_DynamicMarkupInput";
+				this.InsertDynamicControlButton.ID = value + "_InsertDynamicControlButton";
+				this.DynamicControlContainer.ID = value + "_DynamicControlContainer";
+				this.NumRowsInput.ID = value + "_NumRowsInput";
+				this.AjaxButton.ID = value + "_AjaxButton";
+				this.AjaxControlContainer.ID = value + "_AjaxControlContainer";
+				if (isAttached)
+					GetElement().ID = value;
+				this.id = value;
 			}
 		}
 
-		private jQuery DynamicMarkupInput;
+		private TextAreaElement DynamicMarkupInput { get { return (TextAreaElement)Document.GetElementById(id + "_DynamicMarkupInput"); } }
 
-		private jQuery InsertDynamicControlButton;
+		private DOMElement InsertDynamicControlButton { get { return (DOMElement)Document.GetElementById(id + "_InsertDynamicControlButton"); } }
 
-		private jQuery DynamicControlContainer;
+		private DivElement DynamicControlContainer { get { return (DivElement)Document.GetElementById(id + "_DynamicControlContainer"); } }
 
-		private jQuery NumRowsInput;
+		private TextElement NumRowsInput { get { return (TextElement)Document.GetElementById(id + "_NumRowsInput"); } }
 
-		private jQuery AjaxButton;
+		private DOMElement AjaxButton { get { return (DOMElement)Document.GetElementById(id + "_AjaxButton"); } }
 
-		private jQuery AjaxControlContainer;
+		private DivElement AjaxControlContainer { get { return (DivElement)Document.GetElementById(id + "_AjaxControlContainer"); } }
 
 		private void AttachSelf() {
-			this.element = JQueryProxy.jQuery("#" + id);
-			this.DynamicMarkupInput = JQueryProxy.jQuery("#" + id + "_DynamicMarkupInput");
-			this.InsertDynamicControlButton = JQueryProxy.jQuery("#" + id + "_InsertDynamicControlButton");
-			this.DynamicControlContainer = JQueryProxy.jQuery("#" + id + "_DynamicControlContainer");
-			this.NumRowsInput = JQueryProxy.jQuery("#" + id + "_NumRowsInput");
-			this.AjaxButton = JQueryProxy.jQuery("#" + id + "_AjaxButton");
-			this.AjaxControlContainer = JQueryProxy.jQuery("#" + id + "_AjaxControlContainer");
+			this.isAttached = true;
 			Attached();
 		}
 
-		public Lesson7Control(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
+		public Lesson7Control(object config) {
+			if (!Script.IsUndefined(config)) {
+				Dictionary __cfg = Dictionary.GetDictionary(config);
+				this.id = (string)__cfg["id"];
 				Constructed();
 				AttachSelf();
 			}

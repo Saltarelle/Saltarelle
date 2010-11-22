@@ -115,7 +115,7 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public TextInput() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

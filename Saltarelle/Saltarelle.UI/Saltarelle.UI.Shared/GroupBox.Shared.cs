@@ -91,7 +91,7 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public GroupBox() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

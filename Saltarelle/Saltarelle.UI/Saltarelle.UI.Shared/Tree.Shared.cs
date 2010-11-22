@@ -80,6 +80,9 @@ namespace Saltarelle.UI {
 	public delegate void TreeDragDropCompletedEventHandler(object sender, TreeDragDropCompletedEventArgs e);
 #endif
 	
+	#if SERVER
+	[RequiresClientService(typeof(ISaltarelleUIService))]
+	#endif
 	public class Tree : IControl, IClientCreateControl, IResizableX, IResizableY {
 		public const string ClassName = "Tree";
 		
@@ -524,8 +527,7 @@ namespace Saltarelle.UI {
 		}
 #if SERVER
 		public Tree() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
-			GlobalServices.Provider.LoadService<ISaltarelleUIService>();
+			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 		

@@ -106,7 +106,7 @@ namespace Saltarelle {
 
 #if SERVER
 		public InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml) {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			this.getHtml       = getHtml;
 			this.namedElements = new StringList();
 		}

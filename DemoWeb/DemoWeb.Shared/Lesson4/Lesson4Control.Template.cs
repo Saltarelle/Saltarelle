@@ -1,3 +1,4 @@
+#pragma warning disable 1591
 #if SERVER
 using System;
 using System.Collections.Generic;
@@ -15,15 +16,21 @@ namespace DemoWeb {
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
 				foreach (KeyValuePair<string, IControl> kvp in controls)
 					kvp.Value.Id = value + "_" + kvp.Key;
+				this.id = value;
 			}
 		}
 
-		private Dictionary<string, object> GetConfig() {
-			Dictionary<string, object> __cfg = new Dictionary<string, object>();
-			return __cfg;
+		public object ConfigObject {
+			get {
+				Dictionary<string, object> __cfg = new Dictionary<string, object>();
+				__cfg["id"] = id;
+				__cfg["DepartmentsTree"] = this.DepartmentsTree.ConfigObject;
+				__cfg["EmployeesGrid"] = this.EmployeesGrid.ConfigObject;
+				__cfg["EditEmployeeDialog"] = this.EditEmployeeDialog.ConfigObject;
+				return __cfg;
+			}
 		}
 
 		private readonly Saltarelle.UI.Tree DepartmentsTree;
@@ -56,9 +63,7 @@ namespace DemoWeb {
 			sb.Append(Id);
 			sb.Append(@""" style=""");
 			sb.Append(PositionHelper.CreateStyle(Position, -1, -1));
-			sb.Append(@"""");
-			sb.Append(" __cfg=\"" + Utils.HtmlEncode(Utils.Json(GetConfig())) + "\"");
-			sb.Append(@"> <table> <tr> <td style=""padding-right: 20px""> ");
+			sb.Append(@"""> <table> <tr> <td style=""padding-right: 20px""> ");
 			sb.Append(((IControl)DepartmentsTree).Html);
 			sb.Append(@" </td> <td> ");
 			sb.Append(((IControl)EmployeesGrid).Html);
@@ -78,7 +83,7 @@ namespace DemoWeb {
 		}
 
 		public Lesson4Control() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			this.controls["DepartmentsTree"] = this.DepartmentsTree = new Saltarelle.UI.Tree();
 			this.DepartmentsTree.Width = 300;
 			this.DepartmentsTree.Height = 300;
@@ -101,6 +106,7 @@ namespace DemoWeb {
 #endif
 #if CLIENT
 using System;
+using System.DHTML;
 using Saltarelle;
 
 namespace DemoWeb {
@@ -109,30 +115,32 @@ namespace DemoWeb {
 
 		private Position position;
 		public Position Position {
-			get { return element != null ? PositionHelper.GetPosition(element) : position; }
+			get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }
 			set {
 				position = value;
-				if (element != null)
-					PositionHelper.ApplyPosition(element, value);
+				if (isAttached)
+					PositionHelper.ApplyPosition(GetElement(), value);
 			}
 		}
 
-		private jQuery element;
-		public jQuery Element { get { return element; } }
+		private bool isAttached = false;
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private string id;
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
 				foreach (DictionaryEntry kvp in controls)
 					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
-				FirstNameInput.attr("id", value + "_FirstNameInput");
-				LastNameInput.attr("id", value + "_LastNameInput");
-				TitleInput.attr("id", value + "_TitleInput");
-				EmailInput.attr("id", value + "_EmailInput");
-				EditEmployeeOKButton.attr("id", value + "_EditEmployeeOKButton");
-				EditEmployeeCancelButton.attr("id", value + "_EditEmployeeCancelButton");
+				this.FirstNameInput.ID = value + "_FirstNameInput";
+				this.LastNameInput.ID = value + "_LastNameInput";
+				this.TitleInput.ID = value + "_TitleInput";
+				this.EmailInput.ID = value + "_EmailInput";
+				this.EditEmployeeOKButton.ID = value + "_EditEmployeeOKButton";
+				this.EditEmployeeCancelButton.ID = value + "_EditEmployeeCancelButton";
+				if (isAttached)
+					GetElement().ID = value;
+				this.id = value;
 			}
 		}
 
@@ -140,38 +148,32 @@ namespace DemoWeb {
 
 		private readonly Saltarelle.UI.Grid EmployeesGrid;
 
-		private jQuery FirstNameInput;
+		private TextElement FirstNameInput { get { return (TextElement)Document.GetElementById(id + "_FirstNameInput"); } }
 
-		private jQuery LastNameInput;
+		private TextElement LastNameInput { get { return (TextElement)Document.GetElementById(id + "_LastNameInput"); } }
 
-		private jQuery TitleInput;
+		private TextElement TitleInput { get { return (TextElement)Document.GetElementById(id + "_TitleInput"); } }
 
-		private jQuery EmailInput;
+		private TextElement EmailInput { get { return (TextElement)Document.GetElementById(id + "_EmailInput"); } }
 
-		private jQuery EditEmployeeOKButton;
+		private DOMElement EditEmployeeOKButton { get { return (DOMElement)Document.GetElementById(id + "_EditEmployeeOKButton"); } }
 
-		private jQuery EditEmployeeCancelButton;
+		private DOMElement EditEmployeeCancelButton { get { return (DOMElement)Document.GetElementById(id + "_EditEmployeeCancelButton"); } }
 
 		private readonly Saltarelle.UI.DialogFrame EditEmployeeDialog;
 
 		private void AttachSelf() {
-			this.element = JQueryProxy.jQuery("#" + id);
-			this.FirstNameInput = JQueryProxy.jQuery("#" + id + "_FirstNameInput");
-			this.LastNameInput = JQueryProxy.jQuery("#" + id + "_LastNameInput");
-			this.TitleInput = JQueryProxy.jQuery("#" + id + "_TitleInput");
-			this.EmailInput = JQueryProxy.jQuery("#" + id + "_EmailInput");
-			this.EditEmployeeOKButton = JQueryProxy.jQuery("#" + id + "_EditEmployeeOKButton");
-			this.EditEmployeeCancelButton = JQueryProxy.jQuery("#" + id + "_EditEmployeeCancelButton");
+			this.isAttached = true;
 			Attached();
 		}
 
-		public Lesson4Control(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				this.controls["DepartmentsTree"] = this.DepartmentsTree = new Saltarelle.UI.Tree(id + "_DepartmentsTree");
-				this.controls["EmployeesGrid"] = this.EmployeesGrid = new Saltarelle.UI.Grid(id + "_EmployeesGrid");
-				this.controls["EditEmployeeDialog"] = this.EditEmployeeDialog = new Saltarelle.UI.DialogFrame(id + "_EditEmployeeDialog");
+		public Lesson4Control(object config) {
+			if (!Script.IsUndefined(config)) {
+				Dictionary __cfg = Dictionary.GetDictionary(config);
+				this.id = (string)__cfg["id"];
+				this.controls["DepartmentsTree"] = this.DepartmentsTree = new Saltarelle.UI.Tree(__cfg["DepartmentsTree"]);
+				this.controls["EmployeesGrid"] = this.EmployeesGrid = new Saltarelle.UI.Grid(__cfg["EmployeesGrid"]);
+				this.controls["EditEmployeeDialog"] = this.EditEmployeeDialog = new Saltarelle.UI.DialogFrame(__cfg["EditEmployeeDialog"]);
 				Constructed();
 				AttachSelf();
 			}

@@ -157,7 +157,7 @@ namespace Saltarelle.UI {
 #if SERVER
 		protected DialogBase() {
 			#if SERVER
-				GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
+				GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			#endif
 			InitDefault();
 		}
@@ -348,7 +348,7 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public DialogFrame() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 		}
 #endif
 
@@ -391,7 +391,7 @@ namespace Saltarelle.UI {
 		}
 
 		protected ControlDialogBase() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 		}
 
 		protected override string InnerHtml { get { return containedControl.Html; } }
@@ -438,7 +438,7 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public ControlDialog() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 		}
 
 		public void SetContainedControl(IControl value) {

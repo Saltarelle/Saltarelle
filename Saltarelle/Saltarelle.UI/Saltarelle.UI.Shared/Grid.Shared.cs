@@ -561,7 +561,7 @@ namespace Saltarelle.UI {
 		
 #if SERVER
 		public Grid() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterType(GetType());
+			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

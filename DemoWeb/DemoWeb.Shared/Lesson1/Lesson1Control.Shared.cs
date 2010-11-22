@@ -20,19 +20,19 @@ namespace DemoWeb {
 		}
 		
 		private void Attached() {
-			AddMessageButton.click(AddMessageButton_Click);
+			JQueryProxy.jQuery(AddMessageButton).click(AddMessageButton_Click);
 			TheText_ValueChanged(TheText, EventArgs.Empty);	// Since the current message text is not set by the server, we need to set it during initialization.
 		}
 
 		private void TheText_ValueChanged(object sender, System.EventArgs e) {
-			CurrentMessageDiv.text(TheText.Value);
+			CurrentMessageDiv.InnerText = TheText.Value;
 		}
 		
 		private void AddMessageButton_Click(JQueryEvent evt) {
 			string msg = TheText.Value.Trim();
 			if (string.IsNullOrEmpty(msg)) {
 				Script.Alert("The value is empty");
-				TheText.Element.focus();
+				TheText.GetElement().Focus();
 				return;
 			}
 			Label label = new Label();

@@ -95,6 +95,7 @@
     <Content Include="bin\DemoWeb.dll" />
     <Content Include="bin\DemoWeb.pdb" />
     <Content Include="bin\Saltarelle.UI.dll" />
+    <Content Include="bin\Saltarelle.UI.pdb" />
     <Content Include="Content\blank.gif" />
     <Content Include="Content\folder_closed.gif" />
     <Content Include="Content\folder_open.gif" />

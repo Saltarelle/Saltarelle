@@ -24,9 +24,9 @@ namespace Saltarelle {
 		private int nextUniqueId = 1;
 
 		private static bool debugScripts;
-		private static List<string> addScriptsBeforeCoreScripts;
-		private static List<string> addScriptsBeforeAssemblyScripts;
-		private static List<string> addScriptsAfterAssemblyScripts;
+		private static ReadOnlyCollection<string> addScriptsBeforeCoreScripts;
+		private static ReadOnlyCollection<string> addScriptsBeforeAssemblyScripts;
+		private static ReadOnlyCollection<string> addScriptsAfterAssemblyScripts;
 
 		static DefaultScriptManagerProvider() {
 			var cfg = (SaltarelleConfigSection)WebConfigurationManager.GetSection("saltarelle");
@@ -63,20 +63,26 @@ namespace Saltarelle {
 				return new { elem.Position, Url = url };
 			}).ToList();
 
-			addScriptsBeforeCoreScripts     = (from x in allScripts where x.Position == ScriptPosition.BeforeCoreScripts select x.Url).ToList();
-			addScriptsBeforeAssemblyScripts = (from x in allScripts where x.Position == ScriptPosition.BeforeAssemblyScripts select x.Url).ToList();
-			addScriptsAfterAssemblyScripts  = (from x in allScripts where x.Position == ScriptPosition.AfterAssemblyScripts select x.Url).ToList();
+			addScriptsBeforeCoreScripts     = (from x in allScripts where x.Position == ScriptPosition.BeforeCoreScripts select x.Url).ToList().AsReadOnly();
+			addScriptsBeforeAssemblyScripts = (from x in allScripts where x.Position == ScriptPosition.BeforeAssemblyScripts select x.Url).ToList().AsReadOnly();
+			addScriptsAfterAssemblyScripts  = (from x in allScripts where x.Position == ScriptPosition.AfterAssemblyScripts select x.Url).ToList().AsReadOnly();
 		}
 	
-		private HashSet<Assembly> registeredAssemblies = new HashSet<Assembly>();
-		private List<string> earlyAdditionalIncludes = new List<string>();
-		private List<string> lateAdditionalIncludes = new List<string>();
-		private List<Func<string>> startupScripts = new List<Func<string>>();
+		private HashSet<Assembly>  registeredAssemblies    = new HashSet<Assembly>();
+		private HashSet<Type>      registeredServices      = new HashSet<Type>();
+		private List<string>       earlyAdditionalIncludes = new List<string>();
+		private List<string>       lateAdditionalIncludes  = new List<string>();
+		private List<Func<string>> startupScripts          = new List<Func<string>>();
 
-		public void RegisterType(Type type) {
-			registeredAssemblies.Add(type.Assembly);
-			foreach (RequiresClientServiceAttribute attr in type.GetCustomAttributes(typeof(RequiresClientServiceAttribute), true))
-				registeredAssemblies.Add(attr.ServiceType.Assembly);
+		public void RegisterClientAssembly(Assembly asm) {
+			registeredAssemblies.Add(asm);
+		}
+		
+		public void RegisterClientService(Type serviceType) {
+			if (serviceType == null)
+				throw new ArgumentNullException("serviceType");
+			this.RegisterClientType(serviceType);
+			registeredServices.Add(serviceType);
 		}
 
 		public IEnumerable<string> GetAllRequiredIncludes() {
@@ -90,6 +96,7 @@ namespace Saltarelle {
 				l.Add(url);
 		}
 		
+		[Obsolete("Just a marker")]
 		public void AddStartupScript(Func<string> scriptRetriever) {
 			startupScripts.Add(scriptRetriever);
 		}
@@ -98,16 +105,17 @@ namespace Saltarelle {
 			startupScripts.Add(() => "new " + control.GetType().FullName + "(" + Utils.InitScript(control.ConfigObject) + ");");
 		}
 		
-		public void AddStartupScript(string script) {
-			startupScripts.Add(() => script);
-		}
-		
 		public IEnumerable<string> GetStartupScripts() {
-			return startupScripts.Select(f => f()).Where(s => !string.IsNullOrEmpty(s));
+			return         registeredServices.Select(t => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + t.FullName + ")) Saltarelle.GlobalServices.setService(" + t.FullName + ", new " + t.FullName + "(" + Utils.InitScript(((IGlobalService)GlobalServices.GetService(t)).ConfigObject) + "));")
+			       .Concat(startupScripts.Select(f => f()).Where(s => !string.IsNullOrEmpty(s)));
 		}
 		
 		public string GetUniqueId() {
 			return "id" + Utils.ToStringInvariantInt(nextUniqueId++);
+		}
+		
+		public object ConfigObject {
+			get { return new { nextUniqueId }; }
 		}
 		
 		public void Setup() {
@@ -115,8 +123,6 @@ namespace Saltarelle {
 			earlyAdditionalIncludes.AddRange((debugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => Routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
 			earlyAdditionalIncludes.AddRange(addScriptsBeforeAssemblyScripts);
 			lateAdditionalIncludes.AddRange(addScriptsAfterAssemblyScripts);
-		
-			AddStartupScript(() => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + typeof(IScriptManagerService) + ")) Saltarelle.GlobalServices.setService(" + typeof(IScriptManagerService).FullName + ", new " + typeof(DefaultScriptManagerProvider).FullName + "(" + Utils.ToStringInvariantInt(nextUniqueId) + "));");
 		}
 	}
 #endif
@@ -125,8 +131,9 @@ namespace Saltarelle {
 		private int nextUniqueId;
 		private ArrayList includedScripts;
 		
-		public DefaultScriptManagerProvider(int nextUniqueId) {
-			this.nextUniqueId = nextUniqueId;
+		public DefaultScriptManagerProvider(object config) {
+			Dictionary cfg = Dictionary.GetDictionary(config);
+			this.nextUniqueId = (int)cfg["nextUniqueId"];
 
 			includedScripts = new ArrayList();
 			JQueryProxy.jQuery("script").each(delegate(int _, DOMElement el) {

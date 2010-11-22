@@ -30,11 +30,11 @@ namespace Saltarelle {
 
 #if CLIENT
 	public static class DocumentFragmentHelper {
-		public static IControl Inject(ControlDocumentFragment f, string newId, jQuery parent) {
+		public static IControl Inject(ControlDocumentFragment f, string newId, DOMElement parent) {
 			for (int i = 0; i < f.scriptReferences.Length; i++)
 				((IScriptManagerService)GlobalServices.Provider.GetService(typeof(IScriptManagerService))).EnsureScriptIncluded(f.scriptReferences[i]);
 
-			parent.html(f.html);
+			JQueryProxy.jQuery(parent).html(f.html);
 			foreach (string s in f.startupScripts)
 				Script.Eval(s);
 
