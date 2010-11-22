@@ -106,7 +106,9 @@ namespace Saltarelle {
 		}
 		
 		public IEnumerable<string> GetStartupScripts() {
-			return         registeredServices.Select(t => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + t.FullName + ")) Saltarelle.GlobalServices.setService(" + t.FullName + ", new " + t.FullName + "(" + Utils.InitScript(((IGlobalService)GlobalServices.GetService(t)).ConfigObject) + "));")
+			return          registeredServices
+			               .Select(svc => new { svc, impl = (IGlobalService)GlobalServices.GetService(svc) })
+			               .Select(x => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + x.svc.FullName + ")) Saltarelle.GlobalServices.setService(" + x.svc.FullName + ", new " + x.impl.GetType().FullName + "(" + Utils.InitScript(x.impl.ConfigObject) + "));")
 			       .Concat(startupScripts.Select(f => f()).Where(s => !string.IsNullOrEmpty(s)));
 		}
 		
