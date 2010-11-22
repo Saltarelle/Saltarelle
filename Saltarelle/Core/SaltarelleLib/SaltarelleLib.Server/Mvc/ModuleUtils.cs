@@ -23,8 +23,9 @@ namespace Saltarelle.Mvc {
 			return (  from m in def.Modules.Cast<ModuleDefinition>()
 			          from r in m.AssemblyReferences.Cast<AssemblyNameReference>()
 			        select r
-			       ).Distinct()
-			       .Select(x => Assembly.Load(new AssemblyName(x.FullName)));
+			       ).Distinct()	// If the assembly name does not end with .Client, we assume we don't have to handle the dependency. sscorlib is a prime example
+			       .Where(x => x.Name.EndsWith(".Client"))
+			       .Select(x => Assembly.Load(new AssemblyName(x.FullName) { Name = x.Name.Substring(0, x.Name.Length - 7) }));
 		}
 
 		private static Dictionary<Assembly, ReadOnlyCollection<Assembly>> assemblyDependencies = new Dictionary<Assembly, ReadOnlyCollection<Assembly>>();

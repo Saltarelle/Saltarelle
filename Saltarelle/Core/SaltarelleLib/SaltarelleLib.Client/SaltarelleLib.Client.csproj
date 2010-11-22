@@ -32,9 +32,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -56,6 +55,9 @@
     <Reference Include="sscorlib" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\Saltarelle.snk">
+			<Link>Saltarelle.snk</Link>
+    </None>
     <Content Include="Properties\Script.jst" />
     <Compile Include="..\..\..\SaltarelleVersion.cs">
       <Link>Properties\SaltarelleVersion.cs</Link>
