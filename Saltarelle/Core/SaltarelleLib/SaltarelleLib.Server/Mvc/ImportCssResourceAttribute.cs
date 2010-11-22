@@ -26,7 +26,8 @@ namespace Saltarelle.Mvc {
 		/// Constructor
 		/// </summary>
 		/// <param name="typeInAssembly">A type in the assembly containing the resource.</param>
-		/// <param name="resourceName">PublicResourceName of the resource to import.</param>
+		/// <param name="publicResourceName">PublicResourceName of the resource to import.</param>
+		/// <param name="cssVariableName">Name of the CSS variable that retrieves the URL for the resource.</param>
 		public ImportCssResourceAttribute(Type typeInAssembly, string publicResourceName, string cssVariableName) {
 			this.ResourceAssembly = typeInAssembly.Assembly;
 			WebResourceAttribute attr = this.ResourceAssembly.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == publicResourceName);

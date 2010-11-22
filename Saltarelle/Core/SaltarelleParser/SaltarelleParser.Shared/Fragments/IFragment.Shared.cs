@@ -31,7 +31,8 @@ namespace Saltarelle {
 			/// <summary>
 			/// Write the code necessary for rendering this fragment inside a rendering method.
 			/// </summary>
-			/// <param name="serverSide">True to generate code for server side, false for client side</param>
+			/// <param name="tpl">The template for which code is being generated.</param>
+			/// <param name="point">Type of code to generate.</param>
 			/// <param name="cb">The CodeBuilder to write the code to.</param>
 			void WriteCode(ITemplate tpl, FragmentCodePoint point, CodeBuilder cb);
 		#endif

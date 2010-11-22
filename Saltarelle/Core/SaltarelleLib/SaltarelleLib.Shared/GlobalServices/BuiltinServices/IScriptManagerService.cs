@@ -30,7 +30,7 @@ namespace Saltarelle {
 		void RegisterClientAssembly(Assembly asm);
 
 		/// <summary>
-		/// Instruct the client to include a specific script. This script should not be an assembly script, for those use <see cref="RegisterClientType"/>.
+		/// Instruct the client to include a specific script. This script should not be an assembly script, for those use <see cref="RegisterClientAssembly"/> (or one of the extension methods that delegate to it).
 		/// Calling this method multiple times for the same script does NOT result in the script being included more than once.
 		/// </summary>
 		/// <param name="url">Url of the script to include</param>
@@ -53,7 +53,7 @@ namespace Saltarelle {
 		/// Add a startup script with lazy evaluation. The script will be retrieved just before it is actually rendered, allowing
 		/// the use of startup scripts that depend on the final state of a control, as opposed to when the script is added.
 		/// </summary>
-		/// <param name="script">The startup script. This should be a valid JavaScript statement.</param>
+		/// <param name="scriptRetriever">Function to invoke to return the startup script. The returned script should be a valid JavaScript statement.</param>
 		void AddStartupScript(Func<string> scriptRetriever);
 
 		/// <summary>
@@ -88,6 +88,7 @@ namespace Saltarelle {
 		/// This method should be called in the constructors for all objects that are to be used on the client side and are not decorated with a [Record] attribute.
 		/// This method will also investigate the [RequiresClientServiceAttribute] attributes for the types and register those services.
 		/// </summary>
+		/// <param name="service">Instance to register the type for.</param>
 		/// <param name="type">Type to register</param>
 		public static void RegisterClientType(this IScriptManagerService service, Type type) {
 			service.RegisterClientAssembly(type.Assembly);
@@ -96,7 +97,7 @@ namespace Saltarelle {
 		}
 
 		/// <summary>
-		/// Generic version of <see cref="IScriptManagerService.RegisterClientType(IScriptManagerService, Type)"/>
+		/// Generic version of <see cref="RegisterClientType(IScriptManagerService,Type)"/>
 		/// </summary>
 		/// <typeparam name="T">Type to register.</typeparam>
 		/// <param name="service">Instance to register the type for.</param>

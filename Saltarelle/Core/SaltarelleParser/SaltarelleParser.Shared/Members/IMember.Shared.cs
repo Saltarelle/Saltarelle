@@ -63,7 +63,8 @@ namespace Saltarelle {
 			/// <summary>
 			/// Write code for the member
 			/// </summary>
-			/// <param name="point">which type of code to write.</param>
+			/// <param name="tpl">Template for which code is being generated.</param>
+			/// <param name="point">Which type of code to write.</param>
 			/// <param name="cb">The CodeBuilder instance to write to.</param>
 			void WriteCode(ITemplate tpl, MemberCodePoint point, CodeBuilder cb);
 		#endif
