@@ -129,22 +129,25 @@ namespace Saltarelle {
 		[AlternateSignature]
 		public extern InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml);
 		
-		public InstantiatedTemplateControl(object configObject) {
-			if (Type.GetScriptType(id) == "string") {
-				Dictionary dict = Dictionary.GetDictionary(configObject);
+		/// <summary>
+		/// This constructor should only be used for initialization on load
+		/// </summary>
+		public InstantiatedTemplateControl(object config) {
+			if (Type.GetScriptType(config) == "function") {
+				this.getHtml       = (InstantiatedTemplateControlGetHtmlDelegate)config;
+				this.namedElements = new StringList();
+			}
+			else {
+				Dictionary dict = Dictionary.GetDictionary(config);
 				this.id = (string)dict["id"];
 				Dictionary controlConfig = (Dictionary)dict["controls"];
 				foreach (DictionaryEntry de in controlConfig) {
-					Dictionary config = (Dictionary)de.Value;
-					Type tp = Utils.FindType((string)config["type"]);
-					this.controls[de.Key] = Type.CreateInstance(tp, config["cfg"]);
+					Dictionary ncfg = (Dictionary)de.Value;
+					Type tp = Utils.FindType((string)ncfg["type"]);
+					this.controls[de.Key] = Type.CreateInstance(tp, ncfg["cfg"]);
 				}
 				this.namedElements = (StringList)dict["namedElements"];
 				isAttached = true;
-			}
-			else {
-				this.getHtml       = (InstantiatedTemplateControlGetHtmlDelegate)(object)id;
-				this.namedElements = new StringList();
 			}
 		}
 
