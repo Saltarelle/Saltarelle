@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Saltarelle.snk">
-			<Link>Saltarelle.snk</Link>
+      <Link>Saltarelle.snk</Link>
     </None>
     <Content Include="Properties\Script.jst" />
     <Compile Include="..\..\..\SaltarelleVersion.cs">
@@ -136,6 +136,9 @@
     </Compile>
     <Compile Include="..\saltarelleparser.shared\nodeprocessors\LeafNodeProcessor.Shared.cs">
       <Link>NodeProcessors\LeafNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs</Link>
     </Compile>
     <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs">
       <Link>NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs</Link>

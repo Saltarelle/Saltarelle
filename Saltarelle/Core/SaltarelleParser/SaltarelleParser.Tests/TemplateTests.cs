@@ -45,7 +45,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			
 			string expected =  "public TestClass() {" + Environment.NewLine
-			                +  "	GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());" + Environment.NewLine
+			                +  "	IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
 			                +  "	Constructed();" + Environment.NewLine
@@ -244,6 +244,8 @@ namespace SaltarelleParser.Tests {
 			tpl.ClassName = "TestClass";
 			tpl.Nmspace   = withNamespace ? "TestNamespace" : null;
 			tpl.EnableClientCreate = enableClientCreate;
+			tpl.AddClientUsingDirective("AddedNamespace.Client");
+			tpl.AddServerUsingDirective("AddedNamespace.Server");
 
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
@@ -269,6 +271,7 @@ namespace SaltarelleParser.Tests {
 			                 +     "using System.Collections.Generic;" + Environment.NewLine
 			                 +     "using System.Text;" + Environment.NewLine
 			                 +     "using Saltarelle;" + Environment.NewLine
+			                 +     "using AddedNamespace.Server;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
@@ -311,7 +314,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
 			                 + p + "	public TestClass() {" + Environment.NewLine
-			                 + p + "		GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());" + Environment.NewLine
+			                 + p + "		IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                 + p + "		Constructed();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + p + "}" + Environment.NewLine
@@ -347,6 +350,8 @@ namespace SaltarelleParser.Tests {
 			tpl.ClassName = "TestClass";
 			tpl.Nmspace   = withNamespace ? "TestNamespace" : null;
 			tpl.EnableClientCreate = enableClientCreate;
+			tpl.AddClientUsingDirective("AddedNamespace.Client");
+			tpl.AddServerUsingDirective("AddedNamespace.Server");
 
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
@@ -378,6 +383,7 @@ namespace SaltarelleParser.Tests {
 			string expected  =     "using System;" + Environment.NewLine
 			                 +     "using System.DHTML;" + Environment.NewLine
 			                 +     "using Saltarelle;" + Environment.NewLine
+			                 +     "using AddedNamespace.Client;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine

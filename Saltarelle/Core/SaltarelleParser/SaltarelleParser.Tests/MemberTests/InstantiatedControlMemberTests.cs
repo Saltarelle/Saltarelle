@@ -30,7 +30,10 @@ namespace SaltarelleParser.Tests {
 		public void TestWriteDefinition_NonCustomInstantiateWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
-			string expected = "private readonly Namespace.TestType TestId;" + Environment.NewLine + Environment.NewLine;
+			string expected = "private Namespace.TestType TestId {" + Environment.NewLine
+			                + "	get { return (Namespace.TestType)controls[\"TestId\"]; }" + Environment.NewLine
+			                + "}" + Environment.NewLine + Environment.NewLine;
+
 			var member = new InstantiatedControlMember("TestId", "Namespace.TestType", false, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]);
 
 			CodeBuilder cb = new CodeBuilder();
@@ -49,11 +52,10 @@ namespace SaltarelleParser.Tests {
 		public void TestWriteDefinition_CustomInstantiateWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
-			string expected = "private Namespace.TestType _TestId;" + Environment.NewLine
-			                + "private Namespace.TestType TestId {" + Environment.NewLine
-			                + "	get { return _TestId; }" + Environment.NewLine
+			string expected = "private Namespace.TestType TestId {" + Environment.NewLine
+			                + "	get { return (Namespace.TestType)controls[\"TestId\"]; }" + Environment.NewLine
 			                + "	set {" + Environment.NewLine
-			                + "		controls[\"TestId\"] = _TestId = value;" + Environment.NewLine
+			                + "		controls[\"TestId\"] = value;" + Environment.NewLine
 			                + "		if (!string.IsNullOrEmpty(id))" + Environment.NewLine
 			                + "			((IControl)_TestId).Id = id + \"_TestId\";" + Environment.NewLine
 			                + "	}" + Environment.NewLine
@@ -114,9 +116,12 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
 
-			string expected = "this.controls[\"CtlName\"] = this.CtlName = new Namespace.Type();" + Environment.NewLine
-			                + "this.CtlName.Prop1 = value1;" + Environment.NewLine
-			                + "this.CtlName.Prop2 = value2;" + Environment.NewLine + Environment.NewLine;
+			string expected = "{" + Environment.NewLine
+			                + "Namespace.Type c = new Namespace.Type();" + Environment.NewLine
+			                + "c.Prop1 = value1;" + Environment.NewLine
+			                + "c.Prop2 = value2;" + Environment.NewLine
+			                + "this.controls[\"CtlName\"] = c;" + Environment.NewLine
+			                + "}" + Environment.NewLine;
 
 			var member = new InstantiatedControlMember("CtlName", "Namespace.Type", false, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, false, new IMember[0]);
 			if (server)
@@ -165,7 +170,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "this.controls[\"CtlName\"] = this.CtlName = new Namespace.Type(__cfg[\"CtlName\"]);" + Environment.NewLine;
+			string expected = "this.controls[\"CtlName\"] = new Namespace.Type(__cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", false, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, false, new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -178,7 +183,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
 			string expected = "Type __CtlNameType = Type.GetType((string)__cfg[\"CtlName$type\"]);" + Environment.NewLine
-			                + "this.controls[\"CtlName\"] = this.CtlName = Type.CreateInstance(__CtlNameType, __cfg[\"CtlName\"]);" + Environment.NewLine;
+			                + "this.controls[\"CtlName\"] = Type.CreateInstance(__CtlNameType, __cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), false, new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);

@@ -115,38 +115,38 @@ namespace Saltarelle.Members {
 		}
 
 		private void WriteDefinition(CodeBuilder cb) {
+			cb.AppendFormat("private {0} {1} {{", typeName, name).AppendLine().Indent()
+			  .AppendFormat("get {{ return ({0})controls[\"{1}\"]; }}", typeName, name).AppendLine();
+
 			if (customInstantiate) {
-				cb.AppendFormat("private {0} _{1};", typeName, name).AppendLine()
-				  .AppendFormat("private {0} {1} {{", typeName, name).AppendLine().Indent()
-				  .AppendFormat("get {{ return _{0}; }}", name).AppendLine()
-				  .AppendLine("set {").Indent()
-				  .AppendFormat("controls[\"{0}\"] = _{0} = value;", name).AppendLine()
+				cb.AppendLine("set {").Indent()
+				  .AppendFormat("controls[\"{0}\"] = value;", name).AppendLine()
 				  .AppendLine("if (!string.IsNullOrEmpty(id))").Indent()
-				  .AppendFormat("((IControl)_{0}).Id = id + \"_{0}\";", name).AppendLine().Outdent()
-				  .Outdent().AppendLine("}")
+				  .AppendFormat("((IControl)_{0}).Id = id + \"_{0}\";", name).Outdent().AppendLine()
 				  .Outdent().AppendLine("}");
 			}
-			else
-				cb.AppendFormat("private readonly {0} {1};", typeName, name).AppendLine();
-			cb.AppendLine();
+			
+			cb.Outdent().AppendLine("}").AppendLine();
 		}
 		
 		private void WriteNonTransferConstructorCode(CodeBuilder cb) {
 			if (!customInstantiate) {
-				cb.AppendLine("this.controls[\"" + name + "\"] = this." + name + " = new " + typeName + "();");
+				cb.AppendLine("{");
+				cb.AppendLine(typeName + " c = new " + typeName + "();");
 				foreach (var kvp in additionalProperties)	
-					cb.AppendLine("this." + name + "." + kvp.Key + " = " + kvp.Value.InitializerString + ";");
-				cb.AppendLine();
+					cb.AppendLine("c." + kvp.Key + " = " + kvp.Value.InitializerString + ";");
+				cb.AppendLine("this.controls[\"" + name + "\"] = c;");
+				cb.AppendLine("}");
 			}
 		}
 		
 		private void WriteTransferConstructorCode(CodeBuilder cb) {
 			if (customInstantiate) {
 				cb.AppendLine("Type __" + name + "Type" + " = Type.GetType((string)" + ParserUtils.ConfigObjectName + "[\"" + name + "$type\"]);")
-				  .AppendLine("this.controls[\"" + name + "\"] = this." + name + " = Type.CreateInstance(__" + name + "Type, " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
+				  .AppendLine("this.controls[\"" + name + "\"] = Type.CreateInstance(__" + name + "Type, " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 			else {
-				cb.AppendLine("this.controls[\"" + name + "\"] = this." + name + " = new " + typeName + "(" + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
+				cb.AppendLine("this.controls[\"" + name + "\"] = new " + typeName + "(" + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 		}
 

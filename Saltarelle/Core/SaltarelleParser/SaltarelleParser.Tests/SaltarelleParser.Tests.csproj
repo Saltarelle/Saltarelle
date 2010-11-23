@@ -63,6 +63,7 @@
     <Compile Include="MemberTests\FieldMemberTests.cs" />
     <Compile Include="NodeProcessorTests\ControlInstantiationNodeProcessorTests.cs" />
     <Compile Include="NodeProcessorTests\ControlFlowTagProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\UsingDirectiveNodeProcessorTests.cs" />
     <Compile Include="NodeProcessorTests\FunctionDefinitionAndCallNodeProcessorTests.cs" />
     <Compile Include="NodeProcessorTests\DirectiveNodeProcessorTests.cs" />
     <Compile Include="NodeProcessorTests\EmbeddedCodeNodeProcessorTests.cs" />

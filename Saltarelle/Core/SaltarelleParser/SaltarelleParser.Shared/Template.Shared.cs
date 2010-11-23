@@ -39,7 +39,10 @@ namespace Saltarelle {
 		void AddServerInterface(string interfaceName);
 		bool ImplementsClientInterface(string interfaceName);		
 		void AddClientInterface(string interfaceName);
-		
+
+		void AddServerUsingDirective(string nmspace);
+		void AddClientUsingDirective(string nmspace);
+
 		string GetUniqueId();
 		
 		InstantiatedTemplateControl Instantiate();
@@ -57,7 +60,9 @@ namespace Saltarelle {
 		public const string MainRenderFunctionName = "GetHtml";
 	
 		private readonly MemberDictionary members = new MemberDictionary();
-
+		
+		private readonly HashMapDictionary serverUsings     = new HashMapDictionary();
+		private readonly HashMapDictionary clientUsings     = new HashMapDictionary();
 		private readonly HashMapDictionary serverInterfaces = new HashMapDictionary();
 		private readonly HashMapDictionary clientInterfaces = new HashMapDictionary();
 		private string serverInherits;
@@ -70,6 +75,16 @@ namespace Saltarelle {
 		
 		public Template() {
 			members[MainRenderFunctionName] = new RenderFunctionMember(MainRenderFunctionName, "");
+			#if SERVER
+				serverUsings["System"] = null;
+				serverUsings["System.Collections.Generic"] = null;
+				serverUsings["System.Text"] = null;
+				serverUsings["Saltarelle"] = null;
+
+				clientUsings["System"] = null;
+				clientUsings["System.DHTML"] = null;
+				clientUsings["Saltarelle"] = null;
+			#endif
 		}
 		
 		public bool EnableClientCreate { get { return enableClientCreate; } set { enableClientCreate = value; } }
@@ -140,7 +155,15 @@ namespace Saltarelle {
 			if (string.IsNullOrEmpty(interfaceName) || clientInterfaces.ContainsKey(interfaceName)) throw Utils.ArgumentException("interfaceName");
 			clientInterfaces[interfaceName] = null;
 		}
-		
+
+		public void AddServerUsingDirective(string nmspace) {
+			this.serverUsings[nmspace] = null;
+		}
+
+		public void AddClientUsingDirective(string nmspace) {
+			this.clientUsings[nmspace] = null;
+		}
+
 		public string GetUniqueId() {
 			return "_ctl" + Utils.ToStringInvariantInt(nextUniqueId++);
 		}
@@ -191,7 +214,7 @@ namespace Saltarelle {
 #if SERVER
 		internal static void WriteServerConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
 			cb.AppendLine("public " + tpl.ClassName + "() {").Indent()
-			  .AppendLine("GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());");
+			  .AppendLine("IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());");
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
 			cb.AppendLine("Constructed();").Outdent()
@@ -303,12 +326,11 @@ namespace Saltarelle {
 		
 		public void WriteServerCode(CodeBuilder cb) {
 			MemberList orderedMembers = TopologicalSort(members);
-		
-			cb.AppendLine("using System;")
-			  .AppendLine("using System.Collections.Generic;")
-			  .AppendLine("using System.Text;")
-			  .AppendLine("using Saltarelle;").AppendLine();
-			
+
+			foreach (var us in serverUsings)
+				cb.AppendLine("using " + us.Key + ";");
+			cb.AppendLine();
+
 			if (!string.IsNullOrEmpty(nmspace))
 				cb.AppendFormat("namespace {0} {{", nmspace).Indent().AppendLine();
 				
@@ -346,9 +368,9 @@ namespace Saltarelle {
 		public void WriteClientCode(CodeBuilder cb) {
 			MemberList orderedMembers = TopologicalSort(members);
 
-			cb.AppendLine("using System;")
-			  .AppendLine("using System.DHTML;")
-			  .AppendLine("using Saltarelle;").AppendLine();
+			foreach (var us in clientUsings)
+				cb.AppendLine("using " + us.Key + ";");
+			cb.AppendLine();
 			
 			if (!string.IsNullOrEmpty(nmspace))
 				cb.AppendFormat("namespace {0} {{", nmspace).Indent().AppendLine();

@@ -129,6 +129,9 @@
     <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\LeafNodeProcessor.Shared.cs">
       <Link>NodeProcessors\LeafNodeProcessor.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs">
       <Link>NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs</Link>
     </Compile>
