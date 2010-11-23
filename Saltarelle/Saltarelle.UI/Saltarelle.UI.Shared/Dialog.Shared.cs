@@ -131,7 +131,7 @@ namespace Saltarelle.UI {
 			get {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
-				return "<div id=\"" + Utils.HtmlEncode(id) + "\" style=\"position: absolute; width: auto; height: auto; *width: 1px; *height: 1px\" class=\"" + EffectiveDialogClass + "\" unselectable=\"on\">"
+				return "<div id=\"" + Utils.HtmlEncode(id) + "\" style=\"position: absolute; width: auto; height: auto; *width: 1px; *height: 1px\" class=\"" + EffectiveDialogClass + "\" tabindex=\"-1\" unselectable=\"on\">"
 				     +    TitlebarHtml
 				     +    "<div class=\"ui-dialog-content ui-widget-content\">"
 				     +        InnerHtml
@@ -378,7 +378,9 @@ namespace Saltarelle.UI {
 				Closed(this, e);
 		}
 		
-		private void ModalFocusOut(DOMElement toElement) {
+		private void ModalFocusOut() {
+			DOMElement activeElem = Document.ActiveElement;
+
 			bool ok = false;
 			int i;
 			for (i = 0; i < currentShownDialogs.Length; i++) {
@@ -387,7 +389,7 @@ namespace Saltarelle.UI {
 			}
 			if (i < currentShownDialogs.Length) {
 				for (i = i + 1; i < currentShownDialogs.Length; i++) {	// allow focus to go to a later dialog
-					if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(toElement)) {
+					if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(activeElem)) {
 						ok = true;
 						break;
 					}
@@ -397,10 +399,12 @@ namespace Saltarelle.UI {
 				ok = true;	// the dialog is no longer on the stack - it is being hidden
 
 			if (!ok)
-				Window.SetTimeout(delegate() { Focus(); }, 0);
+				Focus();
 		}
 		
-		private void VolatileFocusOut(DOMElement toElement) {
+		private void VolatileFocusOut() {
+			DOMElement activeElem = Document.ActiveElement;
+
 			// find out whether it's a child of ours or of a dialog later in the dialog stack
 			int i = 0;
 			for (i = 0; i < currentShownDialogs.Length; i++) {
@@ -408,7 +412,7 @@ namespace Saltarelle.UI {
 					break;
 			}
 			for (; i < currentShownDialogs.Length; i++) {
-				if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(toElement))
+				if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(activeElem))
 					return;
 			}
 			
@@ -421,10 +425,10 @@ namespace Saltarelle.UI {
 		private void Element_LostFocus(JQueryEvent evt) {
 			switch (modality) {
 				case DialogModalityEnum.Modal:
-					ModalFocusOut((DOMElement)Type.GetField(evt, "toElement"));
+					Window.SetTimeout(ModalFocusOut, 0);
 					break;
 				case DialogModalityEnum.HideOnFocusOut:
-					VolatileFocusOut((DOMElement)Type.GetField(evt, "toElement"));
+					Window.SetTimeout(VolatileFocusOut, 0);
 					break;
 			}
 		}
