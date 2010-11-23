@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="7341942A-29B9-45AA-BF92-E29139900E7D" Name="Saltarelle" Language="1033" Version="0.6.0" Manufacturer="Saltarelle" UpgradeCode="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
+	<Product Id="7341942A-29B9-45AA-BF92-E29139900E7D" Name="Saltarelle" Language="1033" Version="0.7.1" Manufacturer="Saltarelle" UpgradeCode="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
 		<Package InstallerVersion="200" Compressed="yes" Id="*" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
@@ -42,19 +42,19 @@
 
 			<Component Id="VSCustomToolComponentGAC" Guid="627A2006-9753-481E-9DA8-24FAE0781517">
 				<File Id="VSCustomToolDllGAC" Name="Saltarelle.VSCustomTool.dll" Assembly=".net" Source="..\Core\Executables\VSCustomTool\bin\Release\Saltarelle.VSCustomTool.dll" KeyPath="yes" DiskId="1" />
-        <Class Id="{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}" Context="InprocServer32" Description="Saltarelle.SalgenCustomTool" ThreadingModel="both" ForeignServer="mscoree.dll">
-            <ProgId Id="Saltarelle.SalgenCustomTool" Description="Saltarelle.SalgenCustomTool" />
-        </Class>
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Value="" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.6.1.0" Name="Class" Value="Saltarelle.SalgenCustomTool" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.6.1.0" Name="Assembly" Value="Saltarelle.VSCustomTool, Version=0.6.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.6.1.0" Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.6.1.0" Name="CodeBase" Value="file:///[#VSCustomToolDllGAC]" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="Class" Value="Saltarelle.SalgenCustomTool" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="Assembly" Value="Saltarelle.VSCustomTool, Version=0.6.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="CodeBase" Value="file:///[#VSCustomToolDllGAC]" Type="string" Action="write" />
-        <RegistryValue Root="HKCR" Key="Component Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Name="0" Value=".NET Category" Type="string" Action="write" />
+				<Class Id="{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}" Context="InprocServer32" Description="Saltarelle.SalgenCustomTool" ThreadingModel="both" ForeignServer="mscoree.dll">
+					<ProgId Id="Saltarelle.SalgenCustomTool" Description="Saltarelle.SalgenCustomTool" />
+				</Class>
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\Implemented Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Value="" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.7.1.0" Name="Class" Value="Saltarelle.SalgenCustomTool" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.7.1.0" Name="Assembly" Value="Saltarelle.VSCustomTool, Version=0.7.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.7.1.0" Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32\0.7.1.0" Name="CodeBase" Value="file:///[#VSCustomToolDllGAC]" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="Class" Value="Saltarelle.SalgenCustomTool" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="Assembly" Value="Saltarelle.VSCustomTool, Version=0.7.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="RuntimeVersion" Value="v2.0.50727" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="CLSID\{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}\InprocServer32" Name="CodeBase" Value="file:///[#VSCustomToolDllGAC]" Type="string" Action="write" />
+				<RegistryValue Root="HKCR" Key="Component Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Name="0" Value=".NET Category" Type="string" Action="write" />
 			</Component>
 
 			<Component Id="SalgenTaskComponentGAC" Guid="0EE6125B-CCD0-4EBC-8EAF-E52A278ACF6A">
@@ -212,11 +212,11 @@
 <!--		<UIRef Id="WixUI_Mondo"/>-->
 		
 		<Upgrade Id="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
-			<UpgradeVersion OnlyDetect="yes" Property="SELFFOUND" Minimum="0.6.0" IncludeMinimum="yes" Maximum="0.6.0" IncludeMaximum="yes"/>
-			<UpgradeVersion OnlyDetect="yes" Property="NEWERFOUND" Minimum="0.6.0" IncludeMinimum="no" />
+			<UpgradeVersion OnlyDetect="yes" Property="SELFFOUND" Minimum="0.5.0" IncludeMinimum="yes" Maximum="0.7.1" IncludeMaximum="yes"/>
+			<UpgradeVersion OnlyDetect="yes" Property="NEWERFOUND" Minimum="0.7.1" IncludeMinimum="no" />
 		</Upgrade>
 
-		<CustomAction Id='AlreadyUpdated' Error='Saltarelle 0.6.0 is alreaday installed.' />
+		<CustomAction Id='AlreadyUpdated' Error='Saltarelle 0.7.1 is alreaday installed.' />
 		<CustomAction Id='NoDowngrade' Error='A later version of [ProductName] is already installed.' />
 
 		<InstallExecuteSequence>
