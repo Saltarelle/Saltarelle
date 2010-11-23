@@ -14,25 +14,26 @@ namespace Saltarelle.UI {
 	}
 	
 	public abstract class DialogBase : IControl, IClientCreateControl {
-		public const string NoPaddingClassName = "NoPaddingDialog";
-		public const string NoTitlebarClassName = "NoTitlebarDialog";
+		private const string NoPaddingClassName = "NoPaddingDialog";
+		private const short  FirstDialogZIndex  = 10000;
+		private const string ModalCoverId       = "DialogModalCoverDiv";
 	
 		private string id;
-		private int width;
-		private int height;
 		private string title;
 		private DialogModalityEnum modality;
 		private Position position = PositionHelper.NotPositioned;
 		private string className;
-		private bool noPadding;
+		private bool hasPadding;
 
 		#if CLIENT
+			private bool hasBgiframe = false;
 			private bool isAttached;
-			private jQuery dialog;
 			public event EventHandler Opened;
 			public event CancelEventHandler Closing;
 			public event EventHandler Closed;
 			public event CancelEventHandler Opening;
+			
+			private static ArrayList currentShownDialogs = new ArrayList();
 		#endif
 
 		public virtual string Id {
@@ -61,116 +62,116 @@ namespace Saltarelle.UI {
 			set { modality = (DialogModalityEnum)value; }
 		}
 
-		public virtual int Width {
-			get {return width; }
-			set {
-				width = value;
-				#if CLIENT
-					if (isAttached) {
-						dialog.dialog("option", "width", value);
-						dialog.dialog("option", "minWidth", value);
-						dialog.dialog("option", "maxWidth", value);
-					}
-				#endif
-			}
-		}
-		
-		public virtual int Height {
-			get { return height; }
-			set {
-				height = value;
-				#if CLIENT
-					if (isAttached) {
-						dialog.dialog("option", "height", value);
-						dialog.dialog("option", "minHeight", value);
-						dialog.dialog("option", "maxHeight", value);
-					}
-				#endif
-			}
-		}
-		
 		public string Title {
 			get { return title; }
 			set {
 				#if CLIENT
+					string oldTitle = title;
+					title = (value ?? "").Trim();
+
 					if (isAttached) {
-						WidthHeight old = GetMyExtraSpace();
-						title = value;
-						WidthHeight nw = GetMyExtraSpace();
-						Width  += Math.Round(nw.width - old.width);
-						Height += Math.Round(nw.height - old.height);
-						dialog.dialog("option", "dialogClass", EffectiveDialogClass);
-						dialog.dialog("option", "title", title);
-						return;
+						DOMElement elem = GetElement();
+						if (string.IsNullOrEmpty(oldTitle) && !string.IsNullOrEmpty(title)) {
+							// Add the titlebar.
+							jQuery tb = JQueryProxy.jQuery(TitlebarHtml);
+							tb.insertBefore(JQueryProxy.jQuery(elem.Children[hasBgiframe ? 1 : 0]));
+							tb.find("a").click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
+						}
+						else if (!string.IsNullOrEmpty(oldTitle) && string.IsNullOrEmpty(title)) {
+							// Remove the titlebar.
+							JQueryProxy.jQuery(elem.Children[hasBgiframe ? 1 : 0]).remove();
+						}
+						else if (!string.IsNullOrEmpty(title)) {
+							elem.Children[hasBgiframe ? 1 : 0].Children[0].InnerText = title;
+						}
 					}
+				#else
+					title = (value ?? "").Trim();
 				#endif
-				title = value;
 			}
 		}
-		
+
 		public string ClassName {
 			get { return className; }
 			set {
-				className = value;
 				#if CLIENT
+					string oldClassName = className;
+					className = (value ?? "").Trim();
 					if (isAttached) {
-						dialog.dialog("option", "dialogClass", EffectiveDialogClass);
+						GetElement().ClassName = EffectiveDialogClass;
 					}
+				#else
+					className = (value ?? "").Trim();
 				#endif
 			}
 		}
-		
+
 		protected abstract string InnerHtml { get; }
+		
+		private string EffectiveDialogClass {
+			get {
+				return "ui-dialog ui-widget ui-widget-content ui-corner-all"
+				     + (!hasPadding ? " " + NoPaddingClassName : "")
+				     + (!string.IsNullOrEmpty(className) ? " " + className : "");
+			}
+		}
+		
+		private string TitlebarHtml {
+			get {
+				if (string.IsNullOrEmpty(title))
+					return null;
+				return "<div style=\"MozUserSelect: none; *width: expression(this.nextSibling.clientWidth + 'px')\" class=\"ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix\" unselectable=\"on\">"
+				     +     "<span style=\"MozUserSelect: none\" class=\"ui-dialog-title\" unselectable=\"on\">" + title + "</span>"
+				     +     "<a style=\"MozUserSelect: none\" class=\"ui-dialog-titlebar-close ui-corner-all\" href=\"#\"><span style=\"MozUserSelect: none\" class=\"ui-icon ui-icon-closethick\" unselectable=\"on\">close</span></a>"
+				     + "</div>";
+			}
+		}
 
 		public string Html {
 			get {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
-				return "<div id=\"" + id + "\">" + InnerHtml + "</div>";
+				return "<div id=\"" + Utils.HtmlEncode(id) + "\" style=\"position: absolute; width: auto; height: auto; *width: 1px; *height: 1px\" class=\"" + EffectiveDialogClass + "\" unselectable=\"on\">"
+				     +    TitlebarHtml
+				     +    "<div class=\"ui-dialog-content ui-widget-content\">"
+				     +        InnerHtml
+				     +    "</div>"
+				     + "</div>";
 			}
 		}
 		
-		public bool NoPadding {
-			get { return noPadding; }
+		public bool HasPadding {
+			get { return hasPadding; }
 			set {
+				hasPadding = value;
 				#if CLIENT
 					if (isAttached) {
-						WidthHeight old = GetMyExtraSpace();
-						noPadding = value;
-						WidthHeight nw = GetMyExtraSpace();
-						Width  += Math.Round(nw.width - old.width);
-						Height += Math.Round(nw.height - old.height);
-						dialog.dialog("option", "dialogClass", EffectiveDialogClass);
-						return;
+						GetElement().ClassName = EffectiveDialogClass;
 					}
 				#endif
-				noPadding = value;
 			}
 		}
 		
 		protected virtual void InitDefault() {
-			title = "";
-			width = -1;
-			height = -1;
+			title      = "";
+			className  = "";
+			modality   = DialogModalityEnum.Modeless;
+			hasPadding = true;
 		}
 
 #if SERVER
 		protected DialogBase() {
-			#if SERVER
-				GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
-			#endif
+			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 		
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
-			config["id"] = id;
-			config["modality"] = modality;
-			config["title"] = title;
-			config["width"] = width;
-			config["height"] = height;
-			config["position"] = position;
-			config["className"] = className;
-			config["noPadding"] = noPadding;
+			config["id"]         = id;
+			config["modality"]   = modality;
+			config["title"]      = title;
+			config["position"]   = position;
+			config["hasPadding"] = hasPadding;
+			config["className"]  = className;
 		}
 
 		public object ConfigObject {
@@ -182,6 +183,36 @@ namespace Saltarelle.UI {
 		}
 #endif
 #if CLIENT
+		private static void RepositionCover(DOMElement cover) {
+			cover.Style.Top    = Math.Max(Document.Body.ScrollTop,  Document.DocumentElement.ScrollTop).ToString() + "px";
+			cover.Style.Left   = Math.Max(Document.Body.ScrollLeft, Document.DocumentElement.ScrollLeft).ToString() + "px";
+   			cover.Style.Width  = Document.DocumentElement.ClientWidth.ToString()  + "px";
+			cover.Style.Height = Document.DocumentElement.ClientHeight.ToString() + "px";
+		}
+
+		private static DOMElement GetModalCover(bool createIfMissing) {
+			DOMElement elem = Document.GetElementById(ModalCoverId);
+			if (elem != null || !createIfMissing)
+				return elem;
+			
+			jQuery jq = JQueryProxy.jQuery("<div id=\"" + ModalCoverId + "\" class=\"ui-widget-overlay\" style=\"display: none\">&nbsp;</div>");
+			if (jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 7.0) {
+				jq.bgiframe();
+				// Need to position the cover in JavaScript. In all other browsers, this is done in CSS.
+				jQuery wnd = JQueryProxy.jQuery((DOMElement)Script.Literal("window"));
+				wnd.scroll(delegate(JQueryEvent evt) {
+					RepositionCover(GetModalCover(false));
+				});
+				wnd.resize(delegate(JQueryEvent evt) {
+					RepositionCover(GetModalCover(false));
+				});
+				RepositionCover(jq.get(0));
+			}
+
+			jq.appendTo(Document.Body);
+			return jq.get(0);
+		}
+
 		[AlternateSignature]
 		protected extern DialogBase();
 
@@ -194,80 +225,32 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void InitConfig(Dictionary config) {
-			id = (string)config["id"];
-			title = (string)config["title"];
-			width = (int)config["width"];
-			height = (int)config["height"];
-			modality = (DialogModalityEnum)config["modality"];
-			position = (Position)config["position"];
-			className = (string)config["className"];
-			noPadding = (bool)config["noPadding"];
+			id         = (string)config["id"];
+			title      = (string)config["title"];
+			modality   = (DialogModalityEnum)config["modality"];
+			position   = (Position)config["position"];
+			hasPadding = (bool)config["hasPadding"];
+			className  = (string)config["className"];
 			AttachSelf();
 		}
-		
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
-		
-		protected WidthHeight GetMyExtraSpace() {
-			return GetExtraSpace(!string.IsNullOrEmpty(title), !noPadding);
-		}
-		
-		private static WidthHeight GetExtraSpace(bool hasCaption, bool hasPadding) {
-			if (hasCaption)
-				if (hasPadding)
-					return new WidthHeight(28, 35);
-				else
-					return new WidthHeight(0, jQuery.browser.msie && (jQuery.browser.version == "6.0" || jQuery.browser.version == "7.0") ? 21 : 24);
-			else
-				if (hasPadding)
-					return new WidthHeight(28, 14);
-				else
-					return new WidthHeight(0, 0);
-		}
-		
-		public static WidthHeight MeasureDialog(jQuery el, bool hasCaption, bool hasPadding) {
-			el.css("float", "left");
-			el.addClass("ui-dialog-content");
-			WidthHeight extra = GetExtraSpace(hasCaption, hasPadding);
-			WidthHeight result = new WidthHeight(el.width() + extra.width, el.height() + extra.height);
-			el.css("float", "none");
-			el.removeClass("ui-dialog-content");
-			return result;
-		}
 
-		private string EffectiveDialogClass {
-			get { return (className ?? "") + (string.IsNullOrEmpty(title) ? " " + NoTitlebarClassName : "") + (noPadding ? " " + NoPaddingClassName : ""); }
-		}
+		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		protected virtual void AttachSelf() {
 			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
-			dialog = JQueryProxy.jQuery(GetElement());
-			if (width < 0 || height < 0) {
-				WidthHeight wh = MeasureDialog(dialog, !string.IsNullOrEmpty(title), !noPadding);
-				if (width < 0)
-					width = Math.Round(wh.width);
-				if (height < 0)
-					height = Math.Round(wh.height);
-			}
 
-			dialog.dialog(new Dictionary("modal", modality == DialogModalityEnum.Modal,
-			                             "bgiframe", true,
-			                             "title", title,
-			                             "autoOpen", false,
-			                             "minWidth", width,
-			                             "maxWidth", width,
-			                             "width", width,
-			                             "minHeight", height,
-			                             "maxHeight", height,
-			                             "height", height,
-			                             "resizable", false,
-			                             "dialogClass", EffectiveDialogClass,
-			                             "open", new JQueryEventHandlerDelegate(delegate { Window.SetTimeout(delegate { OnOpened(EventArgs.Empty); }, 0); }),
-			                             "beforeclose", new JQueryEventCancelHandlerDelegate(delegate { CancelEventArgs e = new CancelEventArgs(); OnClosing(e); return !e.Cancel; }),
-			                             "close", new JQueryEventHandlerDelegate(delegate { OnClosed(EventArgs.Empty); })
-			                         ));
-			Utils.Parent(dialog, ".ui-dialog").lostfocus(frame_LostFocus);
+			// Move the dialog to the end of the body.
+			DOMElement element = GetElement();
+			element.ParentNode.RemoveChild(element);
+			Document.Body.AppendChild(element);
+			element.Style.Display = "none";
+
+			JQueryProxy.jQuery(element).lostfocus(Element_LostFocus);
+			if (!string.IsNullOrEmpty(title)) {
+				JQueryProxy.jQuery(element.Children[0].GetElementsByTagName("a")[0]).click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
+			}
 		}
 
 		public virtual void Attach() {
@@ -275,35 +258,104 @@ namespace Saltarelle.UI {
 		}
 
 		public void Open() {
-			if ((bool)dialog.dialog("isOpen"))
-				dialog.dialog("close");
-				
+			if (IsOpen)
+				Close();
+			if (IsOpen)
+				return;	// Apparantly a Closing handler prevented us from closing.
+
+			if (!isAttached)
+				throw new Exception("Cannot open dialog before attach");
+
 			CancelEventArgs e = new CancelEventArgs();
 			OnOpening(e);
 			if (e.Cancel)
 				return;
 
-			object[] positionObj = new object[2];
-			if (position.anchor == AnchoringEnum.NotPositioned) {
-				positionObj[0] = "center";
-				positionObj[1] = "middle";
-			}
-			else {
-				jQuery doc = JQueryProxy.jQuery(Window.Document);
-				positionObj[0] = position.left - doc.scrollLeft();
-				positionObj[1] = position.top - doc.scrollTop();
+			DOMElement elem = GetElement();
+
+			// Defer the bgiframe until opening to save load time.
+			if (!hasBgiframe && jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 7) {
+				JQueryProxy.jQuery(elem).bgiframe();
+				hasBgiframe = true;
 			}
 			
-			dialog.dialog("option", "position", positionObj);
-			dialog.dialog("open");
+			short zIndex = FirstDialogZIndex;
+			if (currentShownDialogs.Length > 0) {
+				DialogBase tail = (DialogBase)currentShownDialogs[currentShownDialogs.Length - 1];
+				zIndex = (short)(tail.GetElement().Style.ZIndex + 2);
+			}
+
+			// Move the element to the correct position, or to (0, 0) if it is to be centered later.
+			elem.Style.Left    = (position.anchor == AnchoringEnum.TopLeft ? position.left : 0).ToString() + "px";
+			elem.Style.Top     = (position.anchor == AnchoringEnum.TopLeft ? position.top  : 0).ToString() + "px";
+			elem.Style.ZIndex  = zIndex;
+			// Show the dialog.
+			elem.Style.Display = "";
+
+			if (position.anchor != AnchoringEnum.TopLeft) {
+				// Center the dialog
+				jQuery wnd = JQueryProxy.jQuery((DOMElement)(object)Window.Self), el = JQueryProxy.jQuery(elem);
+				elem.Style.Left = Math.Round(Document.Body.ScrollLeft + (wnd.width()  - el.width() ) / 2).ToString() + "px";
+				elem.Style.Top  = Math.Round(Document.Body.ScrollTop  + (wnd.height() - el.height()) / 2).ToString() + "px";
+			}
+			
+			if (modality == DialogModalityEnum.Modal) {
+				DOMElement cover = GetModalCover(true);
+				cover.Style.ZIndex  = (short)(zIndex - 1);
+				cover.Style.Display = "";
+			}
+
+			currentShownDialogs.Add(this);
+
+			elem.Focus();
+			OnOpened(EventArgs.Empty);
 		}
 		
 		public bool IsOpen {
-			get { return (bool)dialog.dialog("isOpen"); }
+			get { return isAttached ? GetElement().Style.Display != "none" : false; }
 		}
 		
 		public void Close() {
-			dialog.dialog("close");
+			if (!IsOpen)
+				return;
+		
+			CancelEventArgs e = new CancelEventArgs();
+			OnClosing(e);
+			if (e.Cancel)
+				return;
+
+			// remove this dialog from the shown list
+			for (int i = 0; i < currentShownDialogs.Length; i++) {
+				if (currentShownDialogs[i] == this) {
+					currentShownDialogs.RemoveAt(i);
+					break;
+				}
+			}
+
+			// find the topmost modal dialog
+			int modalIndex = -1;
+			for (int i = currentShownDialogs.Length - 1; i >= 0; i--) {
+				if (((DialogBase)currentShownDialogs[i]).Modality == DialogModalityEnum.Modal) {
+					modalIndex = i;
+					break;
+				}
+			}
+
+			// handle the modal cover
+			DOMElement cover = GetModalCover(false);
+			if (modalIndex == -1) {
+				if (cover != null)
+					cover.Style.Display = "none";
+			}
+			else {
+				cover.Style.ZIndex = (short)(((DialogBase)currentShownDialogs[modalIndex]).GetElement().Style.ZIndex - 1);
+			}
+
+			GetElement().Style.Display = "none";
+			if (currentShownDialogs.Length > 0)
+				((DialogBase)currentShownDialogs[currentShownDialogs.Length - 1]).Focus();
+
+			OnClosed(EventArgs.Empty);
 		}
 
 		protected virtual void OnOpening(CancelEventArgs e) {
@@ -326,13 +378,63 @@ namespace Saltarelle.UI {
 				Closed(this, e);
 		}
 		
-		private void frame_LostFocus(JQueryEvent evt) {
-			if (modality == DialogModalityEnum.HideOnFocusOut)
-				dialog.dialog("close");
+		private void ModalFocusOut(DOMElement toElement) {
+			bool ok = false;
+			int i;
+			for (i = 0; i < currentShownDialogs.Length; i++) {
+				if (currentShownDialogs[i] == this)
+					break;
+			}
+			if (i < currentShownDialogs.Length) {
+				for (i = i + 1; i < currentShownDialogs.Length; i++) {	// allow focus to go to a later dialog
+					if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(toElement)) {
+						ok = true;
+						break;
+					}
+				}
+			}
+			else
+				ok = true;	// the dialog is no longer on the stack - it is being hidden
+
+			if (!ok)
+				Window.SetTimeout(delegate() { Focus(); }, 0);
+		}
+		
+		private void VolatileFocusOut(DOMElement toElement) {
+			// find out whether it's a child of ours or of a dialog later in the dialog stack
+			int i = 0;
+			for (i = 0; i < currentShownDialogs.Length; i++) {
+				if (currentShownDialogs[i] == this)
+					break;
+			}
+			for (; i < currentShownDialogs.Length; i++) {
+				if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(toElement))
+					return;
+			}
+			
+			// Focus left us - hide.
+			Close();
+			if (IsOpen)
+				Focus();	// Just in case a Closing handler prevented the close.
+		}
+		
+		private void Element_LostFocus(JQueryEvent evt) {
+			switch (modality) {
+				case DialogModalityEnum.Modal:
+					ModalFocusOut((DOMElement)Type.GetField(evt, "toElement"));
+					break;
+				case DialogModalityEnum.HideOnFocusOut:
+					VolatileFocusOut((DOMElement)Type.GetField(evt, "toElement"));
+					break;
+			}
+		}
+		
+		public virtual void Focus() {
+			GetElement().Focus();
 		}
 #endif
 	}
-	
+
 	public sealed class DialogFrame : DialogBase, IControlHost {
 		private string innerHtml;
 
