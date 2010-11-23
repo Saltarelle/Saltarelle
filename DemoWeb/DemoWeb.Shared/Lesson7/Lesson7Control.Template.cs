@@ -61,7 +61,7 @@ namespace DemoWeb {
 		}
 
 		public Lesson7Control() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
+			IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());
 			Constructed();
 		}
 	}

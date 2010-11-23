@@ -33,13 +33,17 @@ namespace DemoWeb {
 			}
 		}
 
-		private readonly Saltarelle.UI.Tree DepartmentsTree;
+		private Saltarelle.UI.Tree DepartmentsTree {
+			get { return (Saltarelle.UI.Tree)controls["DepartmentsTree"]; }
+		}
 
-		private readonly Saltarelle.UI.Grid EmployeesGrid;
+		private Saltarelle.UI.Grid EmployeesGrid {
+			get { return (Saltarelle.UI.Grid)controls["EmployeesGrid"]; }
+		}
 
-		private string EditEmployeeDialog_inner() {
+		private string EditEmployeeDialog_inner1() {
 			StringBuilder sb = new StringBuilder();
-			sb.Append(@" <table> <tr> <td style=""text-align: right; padding-bottom: 4px; padding-right: 4px; white-space: nowrap"">First Name:</td> <td style=""padding-bottom: 4px""><input type=""text"" id=""");
+			sb.Append(@"<table> <tr> <td style=""text-align: right; padding-bottom: 4px; padding-right: 4px; white-space: nowrap"">First Name:</td> <td style=""padding-bottom: 4px""><input type=""text"" id=""");
 			sb.Append(Id);
 			sb.Append(@"_FirstNameInput"" style=""width: 200px""/></td> </tr> <tr> <td style=""text-align: right; padding-bottom: 4px; padding-right: 4px; white-space: nowrap"">Last Name:</td> <td style=""padding-bottom: 4px""><input type=""text"" id=""");
 			sb.Append(Id);
@@ -51,11 +55,13 @@ namespace DemoWeb {
 			sb.Append(Id);
 			sb.Append(@"_EditEmployeeOKButton"">OK</button> <button type=""button"" style=""width: 80px"" id=""");
 			sb.Append(Id);
-			sb.Append(@"_EditEmployeeCancelButton"">Cancel</button> </td> </tr> </table> ");
+			sb.Append(@"_EditEmployeeCancelButton"">Cancel</button> </td> </tr> </table>");
 			return sb.ToString();
 		}
 
-		private readonly Saltarelle.UI.DialogFrame EditEmployeeDialog;
+		private Saltarelle.UI.DialogFrame EditEmployeeDialog {
+			get { return (Saltarelle.UI.DialogFrame)controls["EditEmployeeDialog"]; }
+		}
 
 		private string GetHtml() {
 			StringBuilder sb = new StringBuilder();
@@ -68,7 +74,7 @@ namespace DemoWeb {
 			sb.Append(@" </td> <td> ");
 			sb.Append(((IControl)EmployeesGrid).Html);
 			sb.Append(@" </td> </tr> </table> ");
-			((IControlHost)EditEmployeeDialog).SetInnerHtml(EditEmployeeDialog_inner());
+			((IControlHost)EditEmployeeDialog).SetInnerFragments(new string[] { EditEmployeeDialog_inner1() });
 			sb.Append(((IControl)EditEmployeeDialog).Html);
 			sb.Append(@" </div>");
 			return sb.ToString();
@@ -83,22 +89,28 @@ namespace DemoWeb {
 		}
 
 		public Lesson4Control() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
-			this.controls["DepartmentsTree"] = this.DepartmentsTree = new Saltarelle.UI.Tree();
-			this.DepartmentsTree.Width = 300;
-			this.DepartmentsTree.Height = 300;
-
-			this.controls["EmployeesGrid"] = this.EmployeesGrid = new Saltarelle.UI.Grid();
-			this.EmployeesGrid.ColTitles = new string[] { @"First Name", @"Last Name", @"" };
-			this.EmployeesGrid.ColWidths = new int[] { 200, 200, 50 };
-			this.EmployeesGrid.ColClasses = new string[] { @"", @"", @"ActionCol" };
-			this.EmployeesGrid.Width = 500;
-			this.EmployeesGrid.Height = 200;
-
-			this.controls["EditEmployeeDialog"] = this.EditEmployeeDialog = new Saltarelle.UI.DialogFrame();
-			this.EditEmployeeDialog.ModalityInt = 1;
-			this.EditEmployeeDialog.Title = @"Employee Details";
-
+			IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());
+			{
+			Saltarelle.UI.Tree c = new Saltarelle.UI.Tree();
+			c.Width = 300;
+			c.Height = 300;
+			this.controls["DepartmentsTree"] = c;
+			}
+			{
+			Saltarelle.UI.Grid c = new Saltarelle.UI.Grid();
+			c.ColTitles = new string[] { @"First Name", @"Last Name", @"" };
+			c.ColWidths = new int[] { 200, 200, 50 };
+			c.ColClasses = new string[] { @"", @"", @"ActionCol" };
+			c.Width = 500;
+			c.Height = 200;
+			this.controls["EmployeesGrid"] = c;
+			}
+			{
+			Saltarelle.UI.DialogFrame c = new Saltarelle.UI.DialogFrame();
+			c.ModalityInt = 1;
+			c.Title = @"Employee Details";
+			this.controls["EditEmployeeDialog"] = c;
+			}
 			Constructed();
 		}
 	}
@@ -144,9 +156,13 @@ namespace DemoWeb {
 			}
 		}
 
-		private readonly Saltarelle.UI.Tree DepartmentsTree;
+		private Saltarelle.UI.Tree DepartmentsTree {
+			get { return (Saltarelle.UI.Tree)controls["DepartmentsTree"]; }
+		}
 
-		private readonly Saltarelle.UI.Grid EmployeesGrid;
+		private Saltarelle.UI.Grid EmployeesGrid {
+			get { return (Saltarelle.UI.Grid)controls["EmployeesGrid"]; }
+		}
 
 		private TextElement FirstNameInput { get { return (TextElement)Document.GetElementById(id + "_FirstNameInput"); } }
 
@@ -160,7 +176,9 @@ namespace DemoWeb {
 
 		private DOMElement EditEmployeeCancelButton { get { return (DOMElement)Document.GetElementById(id + "_EditEmployeeCancelButton"); } }
 
-		private readonly Saltarelle.UI.DialogFrame EditEmployeeDialog;
+		private Saltarelle.UI.DialogFrame EditEmployeeDialog {
+			get { return (Saltarelle.UI.DialogFrame)controls["EditEmployeeDialog"]; }
+		}
 
 		private void AttachSelf() {
 			this.isAttached = true;
@@ -171,9 +189,9 @@ namespace DemoWeb {
 			if (!Script.IsUndefined(config)) {
 				Dictionary __cfg = Dictionary.GetDictionary(config);
 				this.id = (string)__cfg["id"];
-				this.controls["DepartmentsTree"] = this.DepartmentsTree = new Saltarelle.UI.Tree(__cfg["DepartmentsTree"]);
-				this.controls["EmployeesGrid"] = this.EmployeesGrid = new Saltarelle.UI.Grid(__cfg["EmployeesGrid"]);
-				this.controls["EditEmployeeDialog"] = this.EditEmployeeDialog = new Saltarelle.UI.DialogFrame(__cfg["EditEmployeeDialog"]);
+				this.controls["DepartmentsTree"] = new Saltarelle.UI.Tree(__cfg["DepartmentsTree"]);
+				this.controls["EmployeesGrid"] = new Saltarelle.UI.Grid(__cfg["EmployeesGrid"]);
+				this.controls["EditEmployeeDialog"] = new Saltarelle.UI.DialogFrame(__cfg["EditEmployeeDialog"]);
 				Constructed();
 				AttachSelf();
 			}

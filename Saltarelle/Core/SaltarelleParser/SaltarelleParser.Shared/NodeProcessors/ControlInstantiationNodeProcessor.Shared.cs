@@ -59,29 +59,27 @@ namespace Saltarelle.NodeProcessors {
 				throw ParserUtils.TemplateErrorException("Duplicate definition of member " + id);
 
 			IMember[] dependencies = new IMember[0];
-			bool hasInnerHtml = false;
+			int numInnerFragments = 0;
 			if (Utils.GetNumChildNodes(node) > 0) {
-				IRenderFunction innerFunction = new RenderFunctionMember(id + "_inner", "");
-
 				Utils.DoForEachChild(node, delegate(XmlNode n) {
-					docProcessor.ProcessRecursive(n, template, innerFunction);
+					if (Utils.NodeOuterXml(n).Trim() != "") {
+						numInnerFragments++;
+						string innerName = id + "_inner" + Utils.ToStringInvariantInt(numInnerFragments);
+						if (template.HasMember(innerName))
+							throw ParserUtils.TemplateErrorException("The internal name " + innerName + " is already in use.");
+						IRenderFunction innerFunction = new RenderFunctionMember(innerName, "");
+						template.AddMember((IMember)innerFunction);
+						docProcessor.ProcessRecursive(n, template, innerFunction);
+						dependencies = (IMember[])Utils.ArrayAppend(dependencies, innerFunction);
+					}
 				});
-				
-				if (!innerFunction.IsEmpty) {
-					if (template.HasMember(((IMember)innerFunction).Name))
-						throw ParserUtils.TemplateErrorException("The internal name " + ((IMember)innerFunction).Name + " is already in use.");
-					template.AddMember((IMember)innerFunction);
-
-					dependencies = new IMember[] { (IMember)innerFunction };
-					hasInnerHtml = true;
-				}
 			}
 			
-			IMember controlMember = new InstantiatedControlMember(id, type, customInstantiate, additionalProperties, hasInnerHtml, dependencies);
+			IMember controlMember = new InstantiatedControlMember(id, type, customInstantiate, additionalProperties, dependencies);
 
 			template.AddMember(controlMember);
 
-			currentRenderFunction.AddFragment(new InstantiatedControlFragment(id, customInstantiate, hasInnerHtml));
+			currentRenderFunction.AddFragment(new InstantiatedControlFragment(id, customInstantiate, numInnerFragments));
 			currentRenderFunction.AddDependency(controlMember);
 
 			return true;

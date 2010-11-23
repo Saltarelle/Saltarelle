@@ -70,8 +70,8 @@ namespace Saltarelle.UI {
 			}
 		}
 
-		public void SetInnerHtml(string values) {
-			innerHtml = values;
+		public void SetInnerFragments(string[] fragments) {
+			innerHtml = Utils.JoinStrings("", fragments);
 		}
 
 		public string Html {

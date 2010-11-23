@@ -442,12 +442,12 @@ namespace Saltarelle.UI {
 	public sealed class DialogFrame : DialogBase, IControlHost {
 		private string innerHtml;
 
-		public void SetInnerHtml(string html) {
+		public void SetInnerFragments(string[] fragments) {
 			#if CLIENT
 				if (GetElement() != null)
 					throw new Exception("Can't change inner HTML after render.");
 			#endif
-			innerHtml = html;
+			innerHtml = Utils.JoinStrings("", fragments);
 		}
 
 		protected override string InnerHtml { get { return innerHtml ?? ""; } }

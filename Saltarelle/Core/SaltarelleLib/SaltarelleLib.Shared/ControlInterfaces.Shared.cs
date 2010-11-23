@@ -39,7 +39,7 @@ namespace Saltarelle
 		: IControl
 	#endif
 	{
-		void SetInnerHtml(string values);
+		void SetInnerFragments(string[] innerFragments);
 		#if CLIENT
 			DOMElement[] GetInnerElements();
 		#endif

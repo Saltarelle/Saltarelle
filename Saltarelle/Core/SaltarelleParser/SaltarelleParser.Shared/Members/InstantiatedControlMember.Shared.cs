@@ -14,7 +14,6 @@ namespace Saltarelle.Members {
 		private readonly string typeName;
 		private readonly bool customInstantiate;
 		private readonly AdditionalPropertiesDictionary additionalProperties;
-		private readonly bool hasInnerHtml;
 		private readonly string[] dependencies;
 		
 		public string Name { get { return name; } }
@@ -22,9 +21,8 @@ namespace Saltarelle.Members {
 		internal string TypeName { get { return typeName; } }
 		internal bool CustomInstantiate { get { return customInstantiate; } }
 		internal AdditionalPropertiesDictionary AdditionalProperties { get { return additionalProperties; } }
-		internal bool HasInnerHtml { get { return hasInnerHtml; } }
 		
-		public InstantiatedControlMember(string name, string typeName, bool customInstantiate, AdditionalPropertiesDictionary additionalProperties, bool hasInnerHtml, IMember[] dependencies) {
+		public InstantiatedControlMember(string name, string typeName, bool customInstantiate, AdditionalPropertiesDictionary additionalProperties, IMember[] dependencies) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("id");
 			if (string.IsNullOrEmpty(typeName)) throw Utils.ArgumentException("type");
 			if (Utils.IsNull(additionalProperties)) throw Utils.ArgumentNullException("additionalProperties");
@@ -33,7 +31,6 @@ namespace Saltarelle.Members {
 			this.typeName = typeName;
 			this.customInstantiate = customInstantiate;
 			this.additionalProperties = additionalProperties;
-			this.hasInnerHtml = hasInnerHtml;
 			this.dependencies = new string[dependencies.Length];
 			for (int i = 0; i < dependencies.Length; i++)
 				this.dependencies[i] = dependencies[i].Name;
@@ -61,7 +58,7 @@ namespace Saltarelle.Members {
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = obj as InstantiatedControlMember;
-			if (Utils.IsNull(other) || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || other.hasInnerHtml != hasInnerHtml || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Length != dependencies.Length)
+			if (Utils.IsNull(other) || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Length != dependencies.Length)
 				return false;
 			foreach (var kvp in additionalProperties) {
 				if (!other.additionalProperties.ContainsKey(kvp.Key) || other.additionalProperties[kvp.Key].InitializerString != kvp.Value.InitializerString)
@@ -75,7 +72,7 @@ namespace Saltarelle.Members {
 		}
 		
 		public override int GetHashCode() {
-			return name.GetHashCode() ^ typeName.GetHashCode() ^ (customInstantiate ? 0x8000 : 0) ^ (hasInnerHtml ? 1 : 0);
+			return name.GetHashCode() ^ typeName.GetHashCode() ^ (customInstantiate ? 0x8000 : 0);
 		}
 
 		public override string ToString() {
@@ -88,7 +85,6 @@ namespace Saltarelle.Members {
 				sb.Append(kvp.Key + ":" + kvp.Value);
 				first = false;
 			}
-			sb.Append(" numInnerFragments=" + hasInnerHtml);
 			return sb.ToString();
 		}
 		

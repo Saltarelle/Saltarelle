@@ -8,6 +8,7 @@ using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Fragments;
+using Rhino.Mocks.Constraints;
 
 namespace SaltarelleParser.Tests {
 	[TestClass]
@@ -29,7 +30,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
-			new InstantiatedControlFragment("CtlId", false, false).WriteCode(tpl, point, cb);
+			new InstantiatedControlFragment("CtlId", false, 0).WriteCode(tpl, point, cb);
 			Assert.AreEqual("sb.Append(((IControl)CtlId).Html);" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
@@ -39,7 +40,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
-			new InstantiatedControlFragment("CtlId", true, false).WriteCode(tpl, point, cb);
+			new InstantiatedControlFragment("CtlId", true, 0).WriteCode(tpl, point, cb);
 			Assert.AreEqual("if (Utils.IsNull(CtlId)) throw new InvalidOperationException(\"The control instance CtlId must be assigned before the control can be rendered.\");" + Environment.NewLine
 			              + "sb.Append(((IControl)CtlId).Html);" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -50,8 +51,8 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
-			new InstantiatedControlFragment("CtlId", false, true).WriteCode(tpl, point, cb);
-			Assert.AreEqual("((IControlHost)CtlId).SetInnerHtml(CtlId_inner());" + Environment.NewLine
+			new InstantiatedControlFragment("CtlId", false, 1).WriteCode(tpl, point, cb);
+			Assert.AreEqual("((IControlHost)CtlId).SetInnerFragments(new string[] { CtlId_inner1() });" + Environment.NewLine
 			              + "sb.Append(((IControl)CtlId).Html);" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
@@ -61,8 +62,8 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
-			new InstantiatedControlFragment("CtlId", false, true).WriteCode(tpl, point, cb);
-			Assert.AreEqual("((IControlHost)CtlId).SetInnerHtml(CtlId_inner());" + Environment.NewLine
+			new InstantiatedControlFragment("CtlId", false, 2).WriteCode(tpl, point, cb);
+			Assert.AreEqual("((IControlHost)CtlId).SetInnerFragments(new string[] { CtlId_inner1(), CtlId_inner2() });" + Environment.NewLine
 			              + "sb.Append(((IControl)CtlId).Html);" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();
@@ -118,7 +119,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 
 			StringBuilder sb = new StringBuilder();
-			new InstantiatedControlFragment("CtlId", false, false).Render(tpl, ctl, sb);
+			new InstantiatedControlFragment("CtlId", false, 0).Render(tpl, ctl, sb);
 			
 			Assert.AreEqual("[x]", sb.ToString());
 			
@@ -126,20 +127,44 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[TestMethod]
-		public void TestRender_WorksWithInnerFragments() {
-			var rf = mocks.StrictMock<IRenderFunction>();
+		public void TestRender_WorksWithOneInnerFragments() {
+			var rf  = mocks.StrictMock<IRenderFunction>();
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
 			var me  = mocks.StrictMock<IControlHost>();
 			Expect.Call(ctl.Controls).Return(new Dictionary<string, IControl>() {{ "CtlId", me }});
-			Expect.Call(tpl.GetMember("CtlId_inner")).Return(rf);
+			Expect.Call(tpl.GetMember("CtlId_inner1")).Return(rf);
 			Expect.Call(rf.Render(tpl, ctl)).Return("[x]");
-			Expect.Call(() => me.SetInnerHtml("[x]"));
+			Expect.Call(() => me.SetInnerFragments(null)).IgnoreArguments().Constraints(Is.Matching<string[]>(x => x.Length == 1 && x[0] == "[x]"));
 			Expect.Call(me.Html).Return("[z]");
 			mocks.ReplayAll();
 
 			StringBuilder sb = new StringBuilder();
-			new InstantiatedControlFragment("CtlId", false, true).Render(tpl, ctl, sb);
+			new InstantiatedControlFragment("CtlId", false, 1).Render(tpl, ctl, sb);
+			
+			Assert.AreEqual("[z]", sb.ToString());
+			
+			mocks.VerifyAll();
+		}
+
+		[TestMethod]
+		public void TestRender_WorksWithTwoInnerFragments() {
+			var rf1 = mocks.StrictMock<IRenderFunction>();
+			var rf2 = mocks.StrictMock<IRenderFunction>();
+			var tpl = mocks.StrictMock<ITemplate>();
+			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
+			var me  = mocks.StrictMock<IControlHost>();
+			Expect.Call(ctl.Controls).Return(new Dictionary<string, IControl>() {{ "CtlId", me }});
+			Expect.Call(tpl.GetMember("CtlId_inner1")).Return(rf1);
+			Expect.Call(tpl.GetMember("CtlId_inner2")).Return(rf2);
+			Expect.Call(rf1.Render(tpl, ctl)).Return("[x]");
+			Expect.Call(rf2.Render(tpl, ctl)).Return("[y]");
+			Expect.Call(() => me.SetInnerFragments(null)).IgnoreArguments().Constraints(Is.Matching<string[]>(x => x.Length == 2 && x[0] == "[x]" && x[1] == "[y]"));
+			Expect.Call(me.Html).Return("[z]");
+			mocks.ReplayAll();
+
+			StringBuilder sb = new StringBuilder();
+			new InstantiatedControlFragment("CtlId", false, 2).Render(tpl, ctl, sb);
 			
 			Assert.AreEqual("[z]", sb.ToString());
 			

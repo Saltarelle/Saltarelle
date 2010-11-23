@@ -31,7 +31,9 @@ namespace DemoWeb {
 			}
 		}
 
-		private readonly Saltarelle.UI.TextInput TheText;
+		private Saltarelle.UI.TextInput TheText {
+			get { return (Saltarelle.UI.TextInput)controls["TheText"]; }
+		}
 
 		private string GetHtml() {
 			StringBuilder sb = new StringBuilder();
@@ -60,9 +62,11 @@ namespace DemoWeb {
 		}
 
 		public Lesson1Control() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
-			this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput();
-
+			IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());
+			{
+			Saltarelle.UI.TextInput c = new Saltarelle.UI.TextInput();
+			this.controls["TheText"] = c;
+			}
 			Constructed();
 		}
 	}
@@ -105,7 +109,9 @@ namespace DemoWeb {
 			}
 		}
 
-		private readonly Saltarelle.UI.TextInput TheText;
+		private Saltarelle.UI.TextInput TheText {
+			get { return (Saltarelle.UI.TextInput)controls["TheText"]; }
+		}
 
 		private DOMElement AddMessageButton { get { return (DOMElement)Document.GetElementById(id + "_AddMessageButton"); } }
 
@@ -122,7 +128,7 @@ namespace DemoWeb {
 			if (!Script.IsUndefined(config)) {
 				Dictionary __cfg = Dictionary.GetDictionary(config);
 				this.id = (string)__cfg["id"];
-				this.controls["TheText"] = this.TheText = new Saltarelle.UI.TextInput(__cfg["TheText"]);
+				this.controls["TheText"] = new Saltarelle.UI.TextInput(__cfg["TheText"]);
 				Constructed();
 				AttachSelf();
 			}

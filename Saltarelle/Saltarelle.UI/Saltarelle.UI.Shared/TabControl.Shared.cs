@@ -23,7 +23,7 @@ namespace Saltarelle.UI {
 		private Position position;
 		private string[] tabCaptions;
 		private int selectedTabIfNotRendered;
-		private string innerHtml;
+		private string[] innerFragments;
 		private bool rightAlignTabs;
 		
 		#if CLIENT
@@ -102,8 +102,8 @@ namespace Saltarelle.UI {
 			}
 		}
 		
-		public void SetInnerHtml(string html) {
-			innerHtml = html;
+		public void SetInnerFragments(string[] fragments) {
+			innerFragments = fragments;
 		}
 		
 		public int SelectedTab {
@@ -146,7 +146,10 @@ namespace Saltarelle.UI {
 				sb.Append("<div id=\"" + id + "\" style=\"" + style + "\"><ul>");
 				sb.Append(TabsInnerHtml);
 				sb.Append("</ul>");
-				sb.Append(innerHtml ?? "");
+				if (innerFragments != null) {
+					for (int i = 0; i < innerFragments.Length; i++)
+						sb.Append(innerFragments[i]);
+				}
 				sb.Append("</div>");
 				return sb.ToString();
 			}
@@ -280,7 +283,7 @@ namespace Saltarelle.UI {
 				if (position != tabCaptions.Length)
 					throw Utils.ArgumentException("When adding a tab before render, the new tab must be the last one.");
 				tabCaptions = (string[])Utils.ArrayAppend(tabCaptions, title);
-				innerHtml += html;
+				innerFragments = (string[])Utils.ArrayAppend(innerFragments ?? new string[0], html);
 			}
 		}
 
