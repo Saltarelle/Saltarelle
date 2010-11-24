@@ -407,7 +407,6 @@ namespace Saltarelle.UI {
 					StringBuilder sb = new StringBuilder();
 					for (int i = 0; i < rowTextsIfNotRendered.Length; i++) {
 						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
-						i++;
 					}
 					JQueryProxy.jQuery(GetValuesTBody()).html(sb.ToString());
 
