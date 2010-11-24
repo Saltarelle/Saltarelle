@@ -1486,13 +1486,5 @@ namespace Saltarelle
         // bgiframe
         [PreserveCase]
         public jQuery bgiframe() { return null; }
-        
-        // Own small extentions
-        [PreserveCase]
-        public jQuery check(bool isChecked) { return null; }
-        [PreserveCase]
-        public bool check() { return false; }
-        [PreserveCase]
-        public jQuery disable(bool disabled) { return null; }
     }
 }
