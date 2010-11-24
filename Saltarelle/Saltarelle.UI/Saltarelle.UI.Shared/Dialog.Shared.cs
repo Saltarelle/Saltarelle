@@ -235,6 +235,11 @@ namespace Saltarelle.UI {
 		}
 
 		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		
+		private void MoveElementToEnd(DOMElement elem) {
+			elem.ParentNode.RemoveChild(elem);
+			Document.Body.AppendChild(elem);
+		}
 
 		protected virtual void AttachSelf() {
 			if (Utils.IsNull(id) || isAttached)
@@ -243,8 +248,7 @@ namespace Saltarelle.UI {
 
 			// Move the dialog to the end of the body.
 			DOMElement element = GetElement();
-			element.ParentNode.RemoveChild(element);
-			Document.Body.AppendChild(element);
+			MoveElementToEnd(element);
 			element.Style.Display = "none";
 
 			JQueryProxy.jQuery(element).lostfocus(Element_LostFocus);
