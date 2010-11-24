@@ -24,6 +24,7 @@ namespace Saltarelle.UI {
 		private Position position = PositionHelper.NotPositioned;
 		private string className;
 		private bool hasPadding;
+		private bool removeOnClose;
 
 		#if CLIENT
 			private bool hasBgiframe = false;
@@ -50,6 +51,11 @@ namespace Saltarelle.UI {
 		public Position Position {
 			get { return position; }
 			set { position = value; }
+		}
+
+		public bool RemoveOnClose {
+			get { return removeOnClose; }
+			set { removeOnClose = value; }
 		}
 		
 		public DialogModalityEnum Modality {
@@ -153,10 +159,11 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void InitDefault() {
-			title      = "";
-			className  = "";
-			modality   = DialogModalityEnum.Modeless;
-			hasPadding = true;
+			title         = "";
+			className     = "";
+			modality      = DialogModalityEnum.Modeless;
+			hasPadding    = true;
+			removeOnClose = false;
 		}
 
 #if SERVER
@@ -166,12 +173,13 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
-			config["id"]         = id;
-			config["modality"]   = modality;
-			config["title"]      = title;
-			config["position"]   = position;
-			config["hasPadding"] = hasPadding;
-			config["className"]  = className;
+			config["id"]            = id;
+			config["modality"]      = modality;
+			config["title"]         = title;
+			config["position"]      = position;
+			config["hasPadding"]    = hasPadding;
+			config["className"]     = className;
+			config["removeOnClose"] = removeOnClose;
 		}
 
 		public object ConfigObject {
@@ -225,12 +233,13 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void InitConfig(Dictionary config) {
-			id         = (string)config["id"];
-			title      = (string)config["title"];
-			modality   = (DialogModalityEnum)config["modality"];
-			position   = (Position)config["position"];
-			hasPadding = (bool)config["hasPadding"];
-			className  = (string)config["className"];
+			id            = (string)config["id"];
+			title         = (string)config["title"];
+			modality      = (DialogModalityEnum)config["modality"];
+			position      = (Position)config["position"];
+			hasPadding    = (bool)config["hasPadding"];
+			className     = (string)config["className"];
+			removeOnClose = (bool)config["removeOnClose"];
 			AttachSelf();
 		}
 
@@ -380,6 +389,11 @@ namespace Saltarelle.UI {
 		protected virtual void OnClosed(EventArgs e) {
 			if (!Utils.IsNull(Closed))
 				Closed(this, e);
+
+			if (removeOnClose) {
+				JQueryProxy.jQuery(GetElement()).remove();
+				isAttached = false;
+			}
 		}
 		
 		private void ModalFocusOut() {
