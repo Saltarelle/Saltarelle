@@ -10,6 +10,8 @@ namespace Saltarelle.Mvc {
 			var writer = helper.ViewContext.HttpContext.Response.Output;
 
 			var sm = GlobalServices.GetService<IScriptManagerService>();
+			
+			sm.ExecuteBeforeRenderCallbacks();
 
 			foreach (var script in sm.GetAllRequiredIncludes()) {
 				writer.WriteLine("<script language=\"javascript\" type=\"text/javascript\" src=\"" + script + "\"></script>");

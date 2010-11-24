@@ -73,6 +73,7 @@ namespace Saltarelle {
 		private List<string>       earlyAdditionalIncludes = new List<string>();
 		private List<string>       lateAdditionalIncludes  = new List<string>();
 		private List<Func<string>> startupScripts          = new List<Func<string>>();
+		private List<Action>       beforeRenderCallbacks   = new List<Action>();
 
 		public void RegisterClientAssembly(Assembly asm) {
 			registeredAssemblies.Add(asm);
@@ -83,6 +84,10 @@ namespace Saltarelle {
 				throw new ArgumentNullException("serviceType");
 			this.RegisterClientType(serviceType);
 			registeredServices.Add(serviceType);
+		}
+		
+		public bool IsClientServiceRegistered(Type serviceType) {
+			return registeredServices.Contains(serviceType);
 		}
 
 		public IEnumerable<string> GetAllRequiredIncludes() {
@@ -113,6 +118,20 @@ namespace Saltarelle {
 		
 		public string GetUniqueId() {
 			return "id" + Utils.ToStringInvariantInt(nextUniqueId++);
+		}
+		
+		public void RegisterBeforeRenderCallback(Action action) {
+			beforeRenderCallbacks.Add(action);
+		}
+		
+		public void ExecuteBeforeRenderCallbacks() {
+			// The callback might register new callbacks, so make sure we handle that.
+			while (beforeRenderCallbacks.Count > 0) {
+				var oldCallbacks = beforeRenderCallbacks;
+				beforeRenderCallbacks = new List<Action>();
+				foreach (var a in oldCallbacks)
+					a();
+			}
 		}
 		
 		public object ConfigObject {

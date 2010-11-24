@@ -24,6 +24,12 @@ namespace Saltarelle {
 		void RegisterClientService(Type type);
 
 		/// <summary>
+		/// Determines whether a service is registered (by the <see cref="RegisterClientService"/> method).
+		/// </summary>
+		/// <param name="type">Type of the service. This type must implement the IGlobalService interface</param>
+		bool IsClientServiceRegistered(Type type);
+
+		/// <summary>
 		/// Register that an assembly, and all assemblies it depends on, will be referenced on the client.
 		/// </summary>
 		/// <param name="asm">Type to register</param>
@@ -61,6 +67,17 @@ namespace Saltarelle {
 		/// </summary>
 		/// <returns>The registered scripts</returns>
 		IEnumerable<string> GetStartupScripts();
+		
+		/// <summary>
+		/// Registers an actio nto be executed just before the script manager content is rendered. This callback can access the script manager.
+		/// </summary>
+		/// <param name="action">Action to execute just before the content is rendered.</param>
+		void RegisterBeforeRenderCallback(Action action);
+		
+		/// <summary>
+		/// Executes all the actions that have been added with the <see cref="RegisterBeforeRenderCallback"/> method.
+		/// </summary>
+		void ExecuteBeforeRenderCallbacks();
 #endif
 #if CLIENT
 		/// <summary>
