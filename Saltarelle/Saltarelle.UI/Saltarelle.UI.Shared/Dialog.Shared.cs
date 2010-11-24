@@ -447,7 +447,7 @@ namespace Saltarelle.UI {
 				if (GetElement() != null)
 					throw new Exception("Can't change inner HTML after render.");
 			#endif
-			innerHtml = Utils.JoinStrings("", fragments);
+			innerHtml = Utils.JoinStrings("", fragments ?? new string[0]);
 		}
 
 		protected override string InnerHtml { get { return innerHtml ?? ""; } }
