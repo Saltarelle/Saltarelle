@@ -871,7 +871,7 @@ namespace Saltarelle.UI {
 			GridCellClickedEventArgs ea = new GridCellClickedEventArgs();
 			ea.Row = rowIndex;
 			ea.PreventRowSelect = false;
-			ea.Col = (int)Type.GetField(cell, "cellIndex"); // missing property from Script#
+			ea.Col = (int)Type.GetField(cell.get(0), "cellIndex"); // missing property from Script#
 
 			OnCellClicked(ea);
 			if (!ea.PreventRowSelect)
