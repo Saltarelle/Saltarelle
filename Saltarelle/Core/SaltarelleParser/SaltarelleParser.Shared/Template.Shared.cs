@@ -18,6 +18,7 @@ using TopSortWorkingSet      = System.Collections.Generic.Dictionary<string, Sys
 using TopSortWorkingSetEntry = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<string>>;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 #endif
 namespace Saltarelle {
 	public interface ITemplate {
@@ -206,8 +207,22 @@ namespace Saltarelle {
 		public InstantiatedTemplateControl Instantiate() {
 			MemberList orderedMembers = TopologicalSort(members);
 			InstantiatedTemplateControl ctl = new InstantiatedTemplateControl(delegate(IInstantiatedTemplateControl x) { return MainRenderFunction.Render(this, x); });
-			foreach (IMember m in orderedMembers)
-				m.Instantiate(this, ctl);
+			foreach (IMember m in orderedMembers) {
+				try {
+					m.Instantiate(this, ctl);
+				}
+#if SERVER
+				catch (Exception ex) {
+					if (ex is TargetInvocationException)
+						ex = ex.InnerException;
+					throw new Exception("Error instantiating member " + m.Name + ": " + ex.Message, ex);
+				}
+#else
+				catch (Exception ex) {
+					throw new Exception("Error instantiating member " + m.Name + ": " + ex.Message);
+				}
+#endif
+			}
 			return ctl;
 		}
 
