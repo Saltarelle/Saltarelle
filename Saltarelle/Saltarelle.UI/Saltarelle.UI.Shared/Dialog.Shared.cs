@@ -29,6 +29,7 @@ namespace Saltarelle.UI {
 		#if CLIENT
 			private bool hasBgiframe = false;
 			private bool isAttached;
+			private bool areEventsBound = false;
 			public event EventHandler Opened;
 			public event CancelEventHandler Closing;
 			public event EventHandler Closed;
@@ -81,7 +82,8 @@ namespace Saltarelle.UI {
 							// Add the titlebar.
 							jQuery tb = JQueryProxy.jQuery(TitlebarHtml);
 							tb.insertBefore(JQueryProxy.jQuery(elem.Children[hasBgiframe ? 1 : 0]));
-							tb.find("a").click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
+							if (areEventsBound)
+								tb.find("a").click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
 						}
 						else if (!string.IsNullOrEmpty(oldTitle) && string.IsNullOrEmpty(title)) {
 							// Remove the titlebar.
@@ -259,11 +261,6 @@ namespace Saltarelle.UI {
 			DOMElement element = GetElement();
 			MoveElementToEnd(element);
 			element.Style.Display = "none";
-
-			JQueryProxy.jQuery(element).lostfocus(Element_LostFocus);
-			if (!string.IsNullOrEmpty(title)) {
-				JQueryProxy.jQuery(element.Children[0].GetElementsByTagName("a")[0]).click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
-			}
 		}
 
 		public virtual void Attach() {
@@ -285,6 +282,14 @@ namespace Saltarelle.UI {
 				return;
 
 			DOMElement elem = GetElement();
+			
+			if (!areEventsBound) {
+				JQueryProxy.jQuery(elem).lostfocus(Element_LostFocus);
+				if (!string.IsNullOrEmpty(title)) {
+					JQueryProxy.jQuery(elem.Children[0].GetElementsByTagName("a")[0]).click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
+				}
+				areEventsBound = true;
+			}
 
 			// Defer the bgiframe until opening to save load time.
 			if (!hasBgiframe && jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 7) {
