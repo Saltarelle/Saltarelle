@@ -96,7 +96,6 @@ namespace Saltarelle {
 				l.Add(url);
 		}
 		
-		[Obsolete("Just a marker")]
 		public void AddStartupScript(Func<string> scriptRetriever) {
 			startupScripts.Add(scriptRetriever);
 		}
@@ -125,6 +124,8 @@ namespace Saltarelle {
 			earlyAdditionalIncludes.AddRange((debugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => Routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
 			earlyAdditionalIncludes.AddRange(addScriptsBeforeAssemblyScripts);
 			lateAdditionalIncludes.AddRange(addScriptsAfterAssemblyScripts);
+
+			this.RegisterClientService<IScriptManagerService>();
 		}
 	}
 #endif
