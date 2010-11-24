@@ -125,10 +125,12 @@ namespace Saltarelle.Mvc
 		}
 
 		protected override void OnException(ExceptionContext filterContext) {
-			foreach (var f in methodFilters.ExceptionFilters) {
-				f.OnException(filterContext);
-				if (!Utils.IsNull(filterContext.Result))
-					return;
+			if (methodFilters != null) {	// If we are unlucky, we get the exception before we initialize the methodFilters member.
+				foreach (var f in methodFilters.ExceptionFilters) {
+					f.OnException(filterContext);
+					if (!Utils.IsNull(filterContext.Result))
+						return;
+				}
 			}
 			base.OnException(filterContext);
 		}
