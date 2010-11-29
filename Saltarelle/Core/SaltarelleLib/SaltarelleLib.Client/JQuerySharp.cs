@@ -153,9 +153,9 @@ namespace Saltarelle
 		[PreserveCase]
 		public DOMElement currentTarget;
 		[PreserveCase]
-		public string pageX; // is a string according to jquery.com. Perhaps not?
+		public int pageX;
 		[PreserveCase]
-		public string pageY;
+		public int pageY;
 		[PreserveCase]
 		public object result;
 		[PreserveCase]

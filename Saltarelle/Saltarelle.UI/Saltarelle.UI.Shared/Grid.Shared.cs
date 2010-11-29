@@ -388,7 +388,6 @@ namespace Saltarelle.UI {
 			#endif
 			rowTextsIfNotRendered.Insert(index, cellTexts);
 		}
-		
 
 		public void BeginRebuild() {
 			#if CLIENT
@@ -536,14 +535,10 @@ namespace Saltarelle.UI {
 			}
 		}
 		
-		protected virtual void BeforeGetHtml() {
-		}
-
-		public string Html {
+		public virtual string Html {
 			get {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
-				BeforeGetHtml();
 				string style = PositionHelper.CreateStyle(position, width - 2 * BorderSize, -1);
 				return "<div id=\"" + id + "\" class=\"" + DivClass + (enabled ? "" : (" " + DisabledDivClass)) + "\" style=\"" + style + "\"" + (enabled ? " tabindex=\"" + Utils.ToStringInvariantInt(tabIndex) + "\"" : "") + ">"
 				     +     InnerHtml
@@ -651,7 +646,6 @@ namespace Saltarelle.UI {
 			set {
 				if (selectedRowIndex == value)
 					return;
-				
 				if (!RaiseSelectionChanging(value))
 					return;
 					
@@ -699,20 +693,13 @@ namespace Saltarelle.UI {
 		
 		private void ValuesDiv_DragFeedback(JQueryEvent evt) {
 			DOMElement valuesDiv = GetElement().Children[1], newDropTarget = null;
-			int pageY;
-			if (!Script.IsUndefined(Type.GetField(evt, "pageY"))) {
-				pageY = (int)Type.GetField(evt, "pageY");
-			}
-			else {
-				pageY = (int)Type.GetField(evt, "clientY") + Document.Body.ScrollTop + Document.DocumentElement.ScrollTop;
-			}
-			
+
 			int valuesDivTop = (int)JQueryProxy.jQuery(valuesDiv).offset().top;
-			int offset = pageY - valuesDivTop + valuesDiv.ScrollTop;
-			
+			int offset = evt.pageY - valuesDivTop + valuesDiv.ScrollTop;
 			int rowIndex = Math.Truncate(offset / (float)rowHeight);	// Need to do this because Script# doesn't do integer division correctly.
 			if (rowIndex > selectedRowIndex)
 				rowIndex++;
+
 			if (rowIndex >= 0 && rowIndex < numRows)
 				newDropTarget = ((TableElement)valuesDiv.Children[0]).Rows[rowIndex];
 			else
@@ -726,6 +713,8 @@ namespace Saltarelle.UI {
 				DragEnded();
 				return;
 			}
+			
+			int draggingIndex = selectedRowIndex;
 
 			DOMElement valuesDiv = GetElement().Children[1];
 			DOMElement draggedElem = ui.draggable.get(0);
@@ -738,7 +727,7 @@ namespace Saltarelle.UI {
 					return;
 				}
 
-				GridDragDropCompletingEventArgs e = new GridDragDropCompletingEventArgs(selectedRowIndex, NumRows - 1);
+				GridDragDropCompletingEventArgs e = new GridDragDropCompletingEventArgs(draggingIndex, NumRows - 1);
 				OnDragDropCompleting(e);
 				if (e.Cancel) {
 					DragEnded();
@@ -747,10 +736,13 @@ namespace Saltarelle.UI {
 
 				valuesTbodyEl.RemoveChild(draggedElem);
 				valuesTbodyEl.AppendChild(draggedElem);
+				object data = rowData[draggingIndex];
+				rowData.RemoveAt(draggingIndex);
+				rowData.Add(data);
 				selectedRowIndex = NumRows - 1;
 				GetElement().Focus();
 
-				OnDragDropCompleted(new GridDragDropCompletedEventArgs(selectedRowIndex, NumRows - 1));
+				OnDragDropCompleted(new GridDragDropCompletedEventArgs(draggingIndex, NumRows - 1));
 			}
 			else {
 				// Dropping on a row
@@ -759,7 +751,7 @@ namespace Saltarelle.UI {
 				if (newIndex == selectedRowIndex)
 					return;
 
-				GridDragDropCompletingEventArgs e = new GridDragDropCompletingEventArgs(selectedRowIndex, newIndex);
+				GridDragDropCompletingEventArgs e = new GridDragDropCompletingEventArgs(draggingIndex, newIndex);
 				OnDragDropCompleting(e);
 				if (e.Cancel) {
 					DragEnded();
@@ -768,24 +760,27 @@ namespace Saltarelle.UI {
 
 				valuesTbodyEl.RemoveChild(draggedElem);
 				valuesTbodyEl.InsertBefore(draggedElem, currentDropTarget);
+				object data = rowData[draggingIndex];
+				rowData.RemoveAt(draggingIndex);
+				rowData.Insert(newIndex, data);
 				selectedRowIndex = newIndex;
 				GetElement().Focus();
 
-				OnDragDropCompleted(new GridDragDropCompletedEventArgs(selectedRowIndex, newIndex));
+				OnDragDropCompleted(new GridDragDropCompletedEventArgs(draggingIndex, newIndex));
 			}
-			
+
 			DragEnded();
 		}
 		
 		private void DragEnded() {
-             ChangeDropTarget(null);
-             JQueryProxy.jQuery(Window.Document).unbind("mousemove", dragFeedbackHandler);
+			ChangeDropTarget(null);
+			JQueryProxy.jQuery(Window.Document).unbind("mousemove", dragFeedbackHandler);
 		}
 		
 		private void MakeDraggable(jQuery row) {
 			row.draggable(new Dictionary("helper", "clone",
 				                         "appendTo", row.parent(),
-				                         "scroll", false,
+				                         "scroll", true,
 			                             "containment", "parent",
 			                             "start", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(delegate(DOMElement d, JQueryEvent evt, DraggableEventObject ui) { JQueryProxy.jQuery(d).addClass(CurrentDraggingRowClass); })),
 			                             "stop", Utils.Wrap(new UnwrappedDraggableEventHandlerDelegate(delegate(DOMElement d, JQueryEvent evt, DraggableEventObject ui) { JQueryProxy.jQuery(d).removeClass(CurrentDraggingRowClass); }))
@@ -811,7 +806,7 @@ namespace Saltarelle.UI {
 				                            "greedy",    true,
 				                            "over",      (Callback)delegate() {
 				                                             TableRowElement[] rows = GetAllRows();
-				                                             rowHeight = (rows.Length > 0 ? rows[0].OffsetHeight : 1);
+				                                             rowHeight = (rows.Length > 1 ? Math.Max(rows[0].OffsetHeight, rows[1].OffsetHeight) : (Number)1);	// We need to take the maximum of two rows because one of them might be the currently dragged one, which is hidden.
 				                                             currentDropTarget = null;
 				                                             JQueryProxy.jQuery(Window.Document).mousemove(dragFeedbackHandler);
 				                                         },
@@ -862,7 +857,7 @@ namespace Saltarelle.UI {
 		private void ValueTable_Click(JQueryEvent evt) {
 			if (!enabled)
 				return;
-			
+
 			jQuery cell = Utils.Parent(JQueryProxy.jQuery(evt.target), "td"),
 			       row  = Utils.Parent(cell, "tr");
 
@@ -905,7 +900,7 @@ namespace Saltarelle.UI {
 			switch (e.keyCode) {
 				case 38:
 					// key up
-					if (NumRows > 0 && selectedRowIndex  > 0)
+					if (NumRows > 0 && selectedRowIndex > 0)
 						SelectedRowIndex = (selectedRowIndex == -1 ? 0 : SelectedRowIndex - 1);
 					e.preventDefault();
 					break;

@@ -40,13 +40,13 @@ namespace Saltarelle.UI {
 		}
 
 		public static void AttachKeyPressHandler(DOMElement el, JQueryEventHandlerDelegate handler) {
-			// delete, end, enter, escape, home, insert, page up, page down, tab, F1-F12
+			// return, escape, F1-F12
 			// http://www.quirksmode.org/js/keys.html.
 			jQuery jq = JQueryProxy.jQuery(el);
             jq.keydown(handler);
             if (jQuery.browser.msie && (jQuery.browser.version == "6.0" || jQuery.browser.version == "7.0")) {
 				jq.keypress(delegate(JQueryEvent e) {
-					if (new int[] { 46, 35, 13, 27, 36, 45, 33, 34, 9 }.Contains(e.keyCode) || (e.keyCode >= 112 && e.keyCode <= 123))
+					if (e.keyCode == 13 || e.keyCode == 27 || (e.keyCode >= 112 && e.keyCode <= 123))
 						handler(e);
 				});
 			}

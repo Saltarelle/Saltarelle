@@ -1,4 +1,6 @@
 ﻿.Grid {
+	position: relative; /* required for scrolling in drag-drop */
+
 	overflow: hidden;
 
 	div.GridValues {
@@ -79,20 +81,9 @@
 	margin: 0px;
 	padding: 0px 0px 0px 0px;
 
-	.tree-node {
+	.tree-node-container {
 		margin: 0px;
 		padding:0px;
-	}
-
-	.tree-spacer {
-		height: 2px;
-		margin: 0px;
-		padding: 0px;
-		border: 0px;
-	}
-
-	.tree-spacer-drophover {
-		background-color: blue
 	}
 
 	.tree-nested-list {
@@ -104,8 +95,16 @@
 		width: 16px;
 		height: 1px;
 	}
+	
+	.tree-node {
+		*height: 16px;
+		*overflow: hidden;
+		padding: 1px 0px 1px 0px;
+		vertical-align: top;
+	}
 
 	.expand-collapse-icon {
+		cursor: pointer;
 		display: inline-block;
 		width: 9px;
 		height: 16px;
@@ -131,48 +130,22 @@
 		background-image: @minus-image;
 	}
 
-	.tree-node-icon-collapsed {
+	.default-tree-icon-collapsed {
 		background: @folder_closed-image;
 	}
 
-	.tree-node-icon-expanded {
+	.default-tree-icon-expanded {
 		background: @folder_open-image;
 	}
 
-	.tree-node-icon-leaf {
+	.default-tree-icon-leaf {
 		background: @item-image;
 	}
 
-	.tree-node .tree-node-text {
+	.tree-node-text {
 		border: 0px;
 		cursor: pointer;
 		background-image: none;
-	}
-
-	li.tree-node .drop-before {
-		margin-top: 0px;
-		border-top: solid 1px black;
-	}
-
-	.tree-node-drop-above {
-		position: absolute;
-		width: 100%;
-		top: 0px;
-		height: 2px;
-		background-color: blue;
-	}
-
-	.tree-node-drop-above, .tree-node-drop-below {
-		position: absolute;
-		width: 100%;
-		top: 0px;
-		height: 4px;
-		background-color: Transparent;
-		z-index: 10000;
-	}
-
-	.tree-node-drop-abovebelow-hover {
-		background-color: blue;
 	}
 
 	.ui-draggable-dragging {
@@ -180,8 +153,30 @@
 	}
 
 	input.checkbox {
-		padding: 0px 2px 0px 0px;
+		padding: 0px;
+		margin: 0px 2px 0px 0px;
+		width: 13px;
+		height: 13px;
+		position: relative;
+		top: 1px;
+		*position: static; /* Reset in IE6 for two reasons: 1) It looks better, and 2) IE6 is not good with positioned inputs.*/
+		*top: 0px;
 	}
+	
+	.ui-draggable-dragging {
+	}
+	
+	.tree-node-dropinto .tree-node-text {
+		background: #c4c9f4;
+	}
+	
+	.tree-node-dropabove .tree-node-text {
+		border-top: 2px solid blue;
+	}
+}
+
+.TreeDisabled {
+	color: Gray;
 }
 
 .NoPaddingDialog {

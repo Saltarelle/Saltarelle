@@ -30,6 +30,7 @@ namespace Saltarelle.UI {
 			private bool hasBgiframe = false;
 			private bool isAttached;
 			private bool areEventsBound = false;
+
 			public event EventHandler Opened;
 			public event CancelEventHandler Closing;
 			public event EventHandler Closed;
