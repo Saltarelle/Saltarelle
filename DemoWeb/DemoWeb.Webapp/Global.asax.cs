@@ -32,7 +32,6 @@ namespace DemoWeb.Webapp {
 
 		protected void Application_Start() {
 			RegisterRoutes(RouteTable.Routes);
-//			RouteDebug.RouteDebugger.RewriteRoutesForTesting(RouteTable.Routes);
 		}
 	}
 }

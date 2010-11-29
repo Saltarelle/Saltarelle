@@ -14,8 +14,9 @@ protected override void OnLoad(EventArgs e) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Lesson 7</title>
-	<link rel="Stylesheet" href="/Content/themes/base/ui.all.css"/>
-	<link rel="Stylesheet" href="/Content/Saltarelle.UI.css"/>
+	<link rel="Stylesheet" href="/Content/themes/base/ui.all.css" type="text/css"/>
+	<link rel="Stylesheet" href="/Content/site.css" type="text/css"/>
+	<link rel="Stylesheet" href="/Stylesheet" type="text/css"/>
 <% Html.Scripts(); %>
 </head>
 

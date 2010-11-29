@@ -124,30 +124,42 @@ namespace DemoWeb {
 		                                                   null) };
 		#endregion
 
-		private void AddDepartmentToTree(Department d, int parentId) {
-			int n = DepartmentsTree.AddNode(parentId, d.name, d.employees, true);
+		private ITreeNode CreateTreeNode(Department d) {
+			ITreeNode n = Tree.CreateTreeNode();
+			Tree.SetTreeNodeText(n, d.name);
+			Tree.SetTreeNodeData(n, d.employees);
 			if (d.children != null) {
-				foreach (var c in d.children)
-					AddDepartmentToTree(c, n);
+				foreach (var c in d.children) {
+					ITreeNode x = CreateTreeNode(c);
+					Tree.AddTreeNodeChild(x, n);
+				}
 			}
+			return n;
+		}
+
+		private void AddDepartmentToTree(Department d, ITreeNode parentNode) {
 		}
 
 		private void Constructed() {
-			foreach (var d in data)
-				AddDepartmentToTree(d, 0);
+			foreach (var d in data) {
+				ITreeNode n = CreateTreeNode(d);
+				Tree.AddTreeNodeChild(n, DepartmentsTree.InvisibleRoot);
+			}
+			Tree.SetTreeNodeExpanded(DepartmentsTree.InvisibleRoot, true, true);
+			DepartmentsTree.SelectedNode = Tree.FollowTreeNodePath(DepartmentsTree.InvisibleRoot, new int[] { 0 });
 		}
 #endif
 
 #if CLIENT
 		private void Constructed() {
 			DepartmentsTree.SelectionChanged += new EventHandler(DepartmentsTree_SelectionChanged);
-			DepartmentsTree.SelectedId = DepartmentsTree.RootNodeIds[0];
 			EmployeesGrid.CellClicked += EmployeesGrid_CellClicked;
 		}
 		
 		private void Attached() {
 			JQueryProxy.jQuery(EditEmployeeOKButton).click(EditEmployeeOKButton_Click);
 			JQueryProxy.jQuery(EditEmployeeCancelButton).click(delegate { EditEmployeeDialog.Close(); });
+			DepartmentsTree_SelectionChanged(DepartmentsTree, EventArgs.Empty);
 		}
 		
 		private void EmployeesGrid_CellClicked(object sender, GridCellClickedEventArgs e) {
@@ -161,7 +173,8 @@ namespace DemoWeb {
 		}
 
 		private void DepartmentsTree_SelectionChanged(object sender, EventArgs _) {
-			Employee[] emps = (Employee[])DepartmentsTree.SelectedData ?? new Employee[0];
+			ITreeNode node = DepartmentsTree.SelectedNode;
+			Employee[] emps = ((node != null ? (Employee[])Tree.GetTreeNodeData(node) : null) ?? new Employee[0]);
 			EmployeesGrid.BeginRebuild();
 			foreach (Employee e in emps)
 				EmployeesGrid.AddItem(GetGridTexts(e), e);
@@ -206,7 +219,7 @@ namespace DemoWeb {
 			if (add)
 				EmployeesGrid.AddItem(GetGridTexts(null), null);
 
-			DepartmentsTree.SetNodeData(DepartmentsTree.SelectedId, GetCurrentEmployees());
+			Tree.SetTreeNodeData(DepartmentsTree.SelectedNode, GetCurrentEmployees());
 
 			EditEmployeeDialog.Close();
 		}

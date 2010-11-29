@@ -1,0 +1,70 @@
+﻿/*
+ * RESET
+ */
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,input,textarea,p,blockquote,th,td {
+	margin: 0;
+	padding: 0;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+img {  
+	border: 0;
+}
+fieldset {
+	margin: 0;
+	padding: 2px;
+}
+address,caption,cite,code,dfn,em,strong,th,var {
+	font-style: normal;
+	font-weight: normal;
+}
+ol,ul {
+	list-style: none;
+}
+caption,th {
+	text-align: left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+q:before,q:after {
+	content: '';
+}
+abbr,acronym {
+	border: 0;
+}
+
+body, table {
+	font: 13px tahoma, arial, helvetica, sans-serif;
+}
+
+.ui-widget {
+	font: 13px tahoma, arial, helvetica, sans-serif;
+	font-size: 1em;
+}
+
+.ui-widget button, .ui-widget input {
+	font: inherit;
+}
+
+.ui-widget-content .ui-state-highlight {
+	background: #c4c9f4;
+}
+
+/* Prevent a scrollbar from appearing when showing a modal dialog in IE: http://dev.jqueryui.com/ticket/3623*/
+.ui-widget-overlay {
+	position: fixed;
+	_position: absolute; /* IE6 only*/
+}
+
+.ui-resizable-handle {
+	background-image: url(/Content/blank.gif);
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	padding-bottom: 0px;
+	padding-top: 0px;
+}

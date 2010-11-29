@@ -51,10 +51,13 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RouteDebug, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="SaltarelleLib, Version=0.5.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.UI, Version=0.7.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Saltarelle\SaltarelleLib.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Debug\Saltarelle.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleLib, Version=0.7.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -102,7 +105,7 @@
     <Content Include="Content\folder_open.gif" />
     <Content Include="Content\minus.gif" />
     <Content Include="Content\plus.gif" />
-    <Content Include="Content\Saltarelle.UI.css" />
+    <Content Include="Content\site.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -172,6 +175,9 @@
     <Content Include="Scripts\sscorlib.debug.js" />
     <Content Include="Scripts\sscorlib.js" />
     <None Include="Views\Home\Lesson7.aspx" />
+    <Content Include="Views\Home\DialogTest.aspx" />
+    <Content Include="Views\Home\GridTest.aspx" />
+    <Content Include="Views\Home\TreeTest.aspx" />
     <Content Include="Views\Home\Lesson1.aspx" />
     <Content Include="Views\Home\Lesson4.aspx" />
     <None Include="Views\Home\Lesson5.aspx" />
