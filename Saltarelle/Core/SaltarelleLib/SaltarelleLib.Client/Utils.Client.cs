@@ -73,7 +73,7 @@ namespace Saltarelle {
 		}
 		
 		public static bool IsNull(object o) {
-			return Script.IsNull(o);
+			return Script.IsNullOrUndefined(o);
 		}
 
 		public static string JoinStrings(string separator, string[] value) {
