@@ -931,22 +931,24 @@ namespace Saltarelle.UI {
 		
 		private void DoSetTreeNodeExpanded(TreeNode node, bool expanded, bool doItEvenIfNoChildren) {
 			node.expanded = expanded;
-			if (isAttached && (doItEvenIfNoChildren || node.children.Length > 0)) {
+			if (doItEvenIfNoChildren || node.children.Length > 0) {
 				DOMElement elem = GetNodeElement(node);
-				if (elem.Children.Length > 1) {
-					// The list exists - update its display state.
-					elem.Children[1].Style.Display = expanded ? "" : "none";
-				}
-				else {
-					if (expanded) {
-						// Expanding and the list does not exist - add it
-						StringBuilder sb = new StringBuilder();
-						AppendNestedListHtml(node.children, sb);
-						JQueryProxy.jQuery(sb.ToString()).appendTo(JQueryProxy.jQuery(elem));
+				if (!Utils.IsNull(elem)) {
+					if (elem.Children.Length > 1) {
+						// The list exists - update its display state.
+						elem.Children[1].Style.Display = expanded ? "" : "none";
 					}
-				}
+					else {
+						if (expanded) {
+							// Expanding and the list does not exist - add it
+							StringBuilder sb = new StringBuilder();
+							AppendNestedListHtml(node.children, sb);
+							JQueryProxy.jQuery(sb.ToString()).appendTo(JQueryProxy.jQuery(elem));
+						}
+					}
 
-				UpdateExpansionClasses(elem, node.icon, node.children.Length > 0, expanded);
+					UpdateExpansionClasses(elem, node.icon, node.children.Length > 0, expanded);
+				}
 			}
 
 			if (!Utils.IsNull(selectedNode) && !expanded && TreeNodeIsChildOf(I(selectedNode), I(node))) {
@@ -1228,29 +1230,29 @@ namespace Saltarelle.UI {
 
 		public static void SetTreeNodeExpanded(ITreeNode node, bool expanded, bool applyToAllChildren) {
 			TreeNode n = N(node);
-			if (!Utils.IsNull(n.treeIfRoot) && !expanded)
-				throw new Exception("Cannot collapse the invisible root");
 			if (Utils.ArrayLength(n.children) > 0) {
 				if (applyToAllChildren) {
 					for (int i = 0; i < Utils.ArrayLength(n.children); i++)
 						SetTreeNodeExpanded(I((TreeNode)n.children[i]), expanded, true);
 				}
 
-				#if CLIENT
-					if (Utils.IsNull(n.treeIfRoot)) {
+				if (Utils.IsNull(n.treeIfRoot)) {
+					#if CLIENT
 						// Don't do this for the invisible root (it is always expanded).
 						Tree tree = GetTree(n);
-						if (!Utils.IsNull(tree))
+						if (!Utils.IsNull(tree) && tree.isAttached)
 							tree.DoSetTreeNodeExpanded(n, expanded, false);
 						else
 							n.expanded = expanded;
-					}
-				#else
-					n.expanded = expanded;
-				#endif
+					#else
+						n.expanded = expanded;
+					#endif
+				}
 			}
-			else
-				n.expanded = expanded;
+			else {
+				if (Utils.IsNull(n.treeIfRoot))
+					n.expanded = expanded;
+			}
 		}
 		
 		public static bool IsTreeNodeExpanded(ITreeNode node) {
