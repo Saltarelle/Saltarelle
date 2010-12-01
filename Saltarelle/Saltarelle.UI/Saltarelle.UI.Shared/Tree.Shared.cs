@@ -634,11 +634,17 @@ namespace Saltarelle.UI {
 			if (Utils.IsNull(dropParent.treeIfRoot)) {
 				DoSetTreeNodeExpanded(dropParent, true, true);
 				DOMElement dropParentN = GetNodeElement(dropParent);
-				dropParentN.Children[1].InsertBefore(draggedElem, dropParentN.Children[1].Children[dropIndex]);
+				if (dropIndex == dropParentN.Children[1].Children.Length)
+					dropParentN.Children[1].AppendChild(draggedElem);
+				else
+					dropParentN.Children[1].InsertBefore(draggedElem, dropParentN.Children[1].Children[dropIndex]);
 			}
 			else {
 				DOMElement elem = GetElement();
-				elem.InsertBefore(draggedElem, elem.Children[dropIndex]);
+				if (dropIndex == elem.Children.Length)
+					elem.AppendChild(draggedElem);
+				else
+					elem.InsertBefore(draggedElem, elem.Children[dropIndex]);
 			}
 
 			draggedNode.parent = dropParent;

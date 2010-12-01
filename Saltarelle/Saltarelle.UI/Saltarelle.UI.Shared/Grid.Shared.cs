@@ -411,6 +411,8 @@ namespace Saltarelle.UI {
 
 					if (selectedRowIndex >= 0 && enableDragDrop && enabled)
 						MakeDraggable(JQueryProxy.jQuery(SelectedRow));
+
+					rowTextsIfNotRendered = null;
 				}
 			#endif
 		}
@@ -527,8 +529,10 @@ namespace Saltarelle.UI {
 				for (int c = 0; c < NumColumns; c++)
 					sb.Append("<th " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (!string.IsNullOrEmpty(colTitles[c]) ? Utils.HtmlEncode(colTitles[c]) : "&nbsp;") + "</div></div></th>");
 				sb.Append("<th class=\"" + SpacerThClass + "\"><div>&nbsp;</div></th></tr></thead></table></div><div class=\"" + ValuesDivClass + "\" style=\"width: " + (this.width - 2 * BorderSize) + "px; height: " + Utils.ToStringInvariantInt(ContentHeight) + "px\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"" + ValuesTableClass + "\"><tbody>");
-				for (int i = 0; i < Utils.ArrayLength(rowTextsIfNotRendered); i++) {
-					AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
+				if (rowTextsIfNotRendered != null) {
+					for (int i = 0; i < Utils.ArrayLength(rowTextsIfNotRendered); i++) {
+						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
+					}
 				}
 				sb.Append("</tbody></table></div>");
 				return sb.ToString();

@@ -117,7 +117,7 @@ namespace Saltarelle {
 					throw new Exception("Must set ID before render");
 				var controlConfig = new Dictionary<string, object>();
 				foreach (var c in controls)
-					controlConfig[c.Key] = new { type = c.Value.GetType(), cfg = c.Value.ConfigObject };
+					controlConfig[c.Key] = new { type = c.Value.GetType().FullName, cfg = c.Value.ConfigObject };
 				return new { id, controls = controlConfig, namedElements };
 			}
 		}

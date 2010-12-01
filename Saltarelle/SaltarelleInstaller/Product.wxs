@@ -67,7 +67,7 @@
 						<File Id="NewtonsoftJsonDll" Name="Newtonsoft.Json.dll" Source="..\..\References\Newtonsoft.Json.dll" KeyPath="yes" DiskId="1" />
 					</Component>
 
-					<Component Id="MonoCecilComponent" Guid="{A8CC004F-1D80-48F6-A918-22BB922838B8}">
+					<Component Id="MonoCecilComponent" Guid="A8CC004F-1D80-48F6-A918-22BB922838B8">
 						<File Id="MonoCecilDll" Name="Mono.Cecil.dll" Source="..\..\References\Mono.Cecil.dll" KeyPath="yes" DiskId="1" />
 					</Component>
 

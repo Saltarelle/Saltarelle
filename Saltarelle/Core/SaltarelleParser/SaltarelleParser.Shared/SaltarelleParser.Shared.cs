@@ -81,7 +81,7 @@ namespace Saltarelle {
 			get {
 				return new { pluginNodeProcessors       = pluginNodeProcessors.Select(x => x.GetType().FullName),
 				             pluginTypedMarkupParsers   = pluginTypedMarkupParsers.ToDictionary(x => x.Key, x => x.Value.GetType().FullName),
-				             pluginUntypedMarkupParsers = pluginUntypedMarkupParsers.Select(x => x.GetType())
+				             pluginUntypedMarkupParsers = pluginUntypedMarkupParsers.Select(x => x.GetType().FullName)
 				           };
 			}
 		}
