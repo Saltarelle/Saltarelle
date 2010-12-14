@@ -129,7 +129,7 @@ namespace Saltarelle.UI {
 			get {
 				if (string.IsNullOrEmpty(title))
 					return null;
-				return "<div style=\"MozUserSelect: none; *width: expression(this.nextSibling.clientWidth + 'px')\" class=\"ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix\" unselectable=\"on\">"
+				return "<div style=\"MozUserSelect: none; *width: expression((this.nextSibling.clientWidth - this.children[1].clientWidth) + 'px')\" class=\"ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix\" unselectable=\"on\">"
 				     +     "<span style=\"MozUserSelect: none\" class=\"ui-dialog-title\" unselectable=\"on\">" + title + "</span>"
 				     +     "<a style=\"MozUserSelect: none\" class=\"ui-dialog-titlebar-close ui-corner-all\" href=\"#\"><span style=\"MozUserSelect: none\" class=\"ui-icon ui-icon-closethick\" unselectable=\"on\">close</span></a>"
 				     + "</div>";
@@ -140,9 +140,9 @@ namespace Saltarelle.UI {
 			get {
 				if (string.IsNullOrEmpty(id))
 					throw new Exception("Must set ID before render");
-				return "<div id=\"" + Utils.HtmlEncode(id) + "\" style=\"position: absolute; width: auto; height: auto; *width: 1px; *height: 1px\" class=\"" + EffectiveDialogClass + "\" tabindex=\"-1\" unselectable=\"on\">"
+				return "<div id=\"" + Utils.HtmlEncode(id) + "\" style=\"position: absolute; width: auto\" class=\"" + EffectiveDialogClass + "\" tabindex=\"-1\" unselectable=\"on\">"
 				     +    TitlebarHtml
-				     +    "<div class=\"ui-dialog-content ui-widget-content\">"
+				     +    "<div class=\"ui-dialog-content ui-widget-content\" style=\"*zoom: 1; *float: left; *display: inline-block\">"
 				     +        InnerHtml
 				     +    "</div>"
 				     + "</div>";
