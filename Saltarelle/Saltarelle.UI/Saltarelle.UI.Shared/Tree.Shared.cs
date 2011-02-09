@@ -192,11 +192,11 @@ namespace Saltarelle.UI {
 		public string Id {
 			get { return id; }
 			set {
-				id = value;
 				#if CLIENT
 					if (isAttached)
 						GetElement().ID = value;
 				#endif
+				id = value;
 			}
 		}
 		
