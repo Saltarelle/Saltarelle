@@ -25,6 +25,17 @@ namespace Saltarelle
 			this.left   = left;
 			this.top    = top;
 		}
+
+#if SERVER
+		public override bool Equals(object obj) {
+			Position other = obj as Position;
+			return other != null && this.anchor == other.anchor && (this.anchor != AnchoringEnum.TopLeft || (this.left == other.left && this.top == other.top));
+		}
+
+		public override int GetHashCode() {
+			return (int)anchor ^ (anchor == AnchoringEnum.TopLeft ? (left << 16 + top) : 0);
+		}
+#endif
 	}
 	
 	public static class PositionHelper {
