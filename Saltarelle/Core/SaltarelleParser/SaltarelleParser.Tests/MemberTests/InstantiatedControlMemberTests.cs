@@ -57,7 +57,7 @@ namespace SaltarelleParser.Tests {
 			                + "	set {" + Environment.NewLine
 			                + "		controls[\"TestId\"] = value;" + Environment.NewLine
 			                + "		if (!string.IsNullOrEmpty(id))" + Environment.NewLine
-			                + "			((IControl)_TestId).Id = id + \"_TestId\";" + Environment.NewLine
+			                + "			((IControl)controls[\"TestId\"]).Id = id + \"_TestId\";" + Environment.NewLine
 			                + "	}" + Environment.NewLine
 			                + "}" + Environment.NewLine + Environment.NewLine;
 

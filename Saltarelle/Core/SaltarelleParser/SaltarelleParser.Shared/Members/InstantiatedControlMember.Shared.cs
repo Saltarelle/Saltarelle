@@ -118,7 +118,7 @@ namespace Saltarelle.Members {
 				cb.AppendLine("set {").Indent()
 				  .AppendFormat("controls[\"{0}\"] = value;", name).AppendLine()
 				  .AppendLine("if (!string.IsNullOrEmpty(id))").Indent()
-				  .AppendFormat("((IControl)_{0}).Id = id + \"_{0}\";", name).Outdent().AppendLine()
+				  .AppendFormat("((IControl)controls[\"{0}\"]).Id = id + \"_{0}\";", name).Outdent().AppendLine()
 				  .Outdent().AppendLine("}");
 			}
 			
