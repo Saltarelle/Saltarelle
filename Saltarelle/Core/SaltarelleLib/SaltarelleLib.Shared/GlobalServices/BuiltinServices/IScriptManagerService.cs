@@ -23,7 +23,7 @@ namespace Saltarelle {
 		void RegisterTopLevelControl(string id, IControl control);
 
 		/// <summary>
-		/// Gets a control previously registered by the <see cref="RegisterTopLevelControl"/> method. Returns null if the control has not been registered.
+		/// Gets a control previously registered by the <see cref="RegisterTopLevelControl(string, Saltarelle.IControl)"/> method. Returns null if the control has not been registered.
 		/// </summary>
 		/// <param name="id">ID under which the control to return is registered as.</param>
 		/// <returns>The registered control, or null if the control has not been registered.</returns>
