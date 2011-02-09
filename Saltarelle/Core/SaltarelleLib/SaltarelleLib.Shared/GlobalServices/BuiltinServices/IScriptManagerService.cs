@@ -14,6 +14,21 @@ namespace Saltarelle {
 		/// <returns>A unique id.</returns>
 		string GetUniqueId();
 
+		/// <summary>
+		/// Register a control as a top level control. This means that its constructor will get called on page load.
+		/// The control can later be retrieved using the <see cref="GetTopLevelControl"/> method.
+		/// </summary>
+		/// <param name="control">The top level control.</param>
+		/// <param name="id">Key with which the control can later be retrieved by the <see cref="GetTopLevelControl"/> method.</param>
+		void RegisterTopLevelControl(string id, IControl control);
+
+		/// <summary>
+		/// Gets a control previously registered by the <see cref="RegisterTopLevelControl"/> method. Returns null if the control has not been registered.
+		/// </summary>
+		/// <param name="id">ID under which the control to return is registered as.</param>
+		/// <returns>The registered control, or null if the control has not been registered.</returns>
+		IControl GetTopLevelControl(string id);
+
 #if SERVER
 		/// <summary>
 		/// Registers a service which should be usable on the client. This will cause an instance of this service to be loaded on the server.
@@ -36,6 +51,12 @@ namespace Saltarelle {
 		void RegisterClientAssembly(Assembly asm);
 
 		/// <summary>
+		/// Register a control as a top level control. This means that its constructor will get called on page load.
+		/// </summary>
+		/// <param name="control">The top level control.</param>
+		void RegisterTopLevelControl(IControl control);
+
+		/// <summary>
 		/// Instruct the client to include a specific script. This script should not be an assembly script, for those use <see cref="RegisterClientAssembly"/> (or one of the extension methods that delegate to it).
 		/// Calling this method multiple times for the same script does NOT result in the script being included more than once.
 		/// </summary>
@@ -49,12 +70,6 @@ namespace Saltarelle {
 		/// <returns></returns>
 		IEnumerable<string> GetAllRequiredIncludes();
 		
-		/// <summary>
-		/// Register a control as a top level control. This means that its constructor will get called on page load.
-		/// </summary>
-		/// <param name="control">The top level control.</param>
-		void RegisterTopLevelControl(IControl control);
-
 		/// <summary>
 		/// Add a startup script with lazy evaluation. The script will be retrieved just before it is actually rendered, allowing
 		/// the use of startup scripts that depend on the final state of a control, as opposed to when the script is added.

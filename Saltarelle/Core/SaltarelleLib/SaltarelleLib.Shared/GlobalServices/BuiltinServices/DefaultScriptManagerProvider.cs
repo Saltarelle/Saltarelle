@@ -74,6 +74,7 @@ namespace Saltarelle {
 		private List<string>       lateAdditionalIncludes  = new List<string>();
 		private List<Func<string>> startupScripts          = new List<Func<string>>();
 		private List<Action>       beforeRenderCallbacks   = new List<Action>();
+		private Dictionary<string, IControl> topLevelControls = new Dictionary<string, IControl>();
 
 		public void RegisterClientAssembly(Assembly asm) {
 			registeredAssemblies.Add(asm);
@@ -104,9 +105,22 @@ namespace Saltarelle {
 		public void AddStartupScript(Func<string> scriptRetriever) {
 			startupScripts.Add(scriptRetriever);
 		}
+
+		public void RegisterTopLevelControl(string id, IControl control) {
+			if (!string.IsNullOrEmpty(id))
+				topLevelControls[id] = control;
+			string fmt = (!string.IsNullOrEmpty(id) ? "Saltarelle.GlobalServices.getService(" + typeof(IScriptManagerService).FullName + ").registerTopLevelControl(" + Utils.ScriptStr(id) + ", {0});" : "{0}");
+			startupScripts.Add(() => string.Format(fmt, "new " + control.GetType().FullName + "(" + Utils.InitScript(control.ConfigObject) + ")"));
+		}
 		
 		public void RegisterTopLevelControl(IControl control) {
-			startupScripts.Add(() => "new " + control.GetType().FullName + "(" + Utils.InitScript(control.ConfigObject) + ");");
+			RegisterTopLevelControl(null, control);
+		}
+		
+		public IControl GetTopLevelControl(string id) {
+			IControl c;
+			topLevelControls.TryGetValue(id, out c);
+			return c;
 		}
 		
 		public IEnumerable<string> GetStartupScripts() {
@@ -152,10 +166,12 @@ namespace Saltarelle {
 	public class DefaultScriptManagerProvider : IScriptManagerService {
 		private int nextUniqueId;
 		private ArrayList includedScripts;
+		private Dictionary topLevelControls;
 		
 		public DefaultScriptManagerProvider(object config) {
 			Dictionary cfg = Dictionary.GetDictionary(config);
 			this.nextUniqueId = (int)cfg["nextUniqueId"];
+			this.topLevelControls = new Dictionary();
 
 			includedScripts = new ArrayList();
 			JQueryProxy.jQuery("script").each(delegate(int _, DOMElement el) {
@@ -177,6 +193,15 @@ namespace Saltarelle {
 		
 		public string GetUniqueId() {
 			return "id" + Utils.ToStringInvariantInt(nextUniqueId++);
+		}
+		
+		public void RegisterTopLevelControl(string id, IControl control) {
+			if (!string.IsNullOrEmpty(id))
+				topLevelControls[id] = control;
+		}
+		
+		public IControl GetTopLevelControl(string id) {
+			return (IControl)topLevelControls[id] ?? null;	// ?? null is required to convert from undefined to null.
 		}
 	}
 #endif
