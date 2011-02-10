@@ -855,6 +855,8 @@ namespace Saltarelle.UI {
 				});
 			}
 
+			JQueryProxy.jQuery(element.Children[1].Children[0]).click(ValueTable_Click);
+
 			JQueryProxy.jQuery(element.Children[1]).scroll(delegate {
 				DOMElement elem = GetElement();
 				JQueryProxy.jQuery(elem.Children[0]).scrollLeft(Math.Round(JQueryProxy.jQuery(elem.Children[1]).scrollLeft()));
@@ -889,7 +891,6 @@ namespace Saltarelle.UI {
 			AttachInner(elem);
 
 			UIUtils.AttachKeyPressHandler(elem, el_KeyDown);
-			JQueryProxy.jQuery(elem.Children[1].Children[0]).click(ValueTable_Click);
 		}
 
 		private void el_KeyDown(JQueryEvent e) {
