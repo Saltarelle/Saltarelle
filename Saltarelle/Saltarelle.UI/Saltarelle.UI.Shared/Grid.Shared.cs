@@ -408,9 +408,12 @@ namespace Saltarelle.UI {
 						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
 					}
 					JQueryProxy.jQuery(GetValuesTBody()).html(sb.ToString());
-
-					if (selectedRowIndex >= 0 && enableDragDrop && enabled)
-						MakeDraggable(JQueryProxy.jQuery(SelectedRow));
+					
+					if (selectedRowIndex >= 0) {
+						EnsureVisible(selectedRowIndex);
+						if (enableDragDrop && enabled)
+							MakeDraggable(JQueryProxy.jQuery(SelectedRow));
+					}
 
 					rowTextsIfNotRendered = null;
 				}
@@ -653,14 +656,14 @@ namespace Saltarelle.UI {
 				if (!RaiseSelectionChanging(value))
 					return;
 					
-				if (selectedRowIndex != -1) {
+				if (selectedRowIndex != -1 && isAttached && !rebuilding) {
 					jQuery row = JQueryProxy.jQuery(SelectedRow);
 					row.removeClass("ui-state-highlight");
 					if (enableDragDrop)
 						row.draggable("destroy");
 				}
 				selectedRowIndex = value;
-				if (selectedRowIndex != -1) {
+				if (selectedRowIndex != -1 && isAttached && !rebuilding) {
 					EnsureVisible(selectedRowIndex);
 					jQuery row = JQueryProxy.jQuery(SelectedRow);
 					row.addClass("ui-state-highlight");
