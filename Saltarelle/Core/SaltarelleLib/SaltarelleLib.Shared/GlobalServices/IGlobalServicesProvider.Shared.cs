@@ -7,6 +7,7 @@ namespace Saltarelle {
 	public interface IGlobalServicesProvider {
 		object GetService(Type serviceType);
 		void LoadService(Type serviceType);
+		void LoadServiceExplicit(Type serviceType, object implementer);
 		bool HasService(Type serviceType);
 
 		#if SERVER
@@ -24,6 +25,9 @@ namespace Saltarelle {
 		}
 		public static bool HasService<IService>(this IGlobalServicesProvider provider) {
 			return provider.HasService(typeof(IService));
+		}
+		public static void LoadServiceExplicit<IService, TImplementer>(this IGlobalServicesProvider provider, TImplementer implementer) where TImplementer : IService {
+			provider.LoadServiceExplicit(typeof(IService), implementer);
 		}
 	}
 	#endif

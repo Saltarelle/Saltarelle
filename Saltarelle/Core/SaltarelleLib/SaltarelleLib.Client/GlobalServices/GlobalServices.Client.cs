@@ -34,7 +34,13 @@ namespace Saltarelle
 			if (!services.ContainsKey(serviceType.FullName))
 				throw new Exception("The service " + serviceType.FullName + " was not loaded.");
 		}
-		
+
+		public void LoadServiceExplicit(Type serviceType, object implementer) {
+			if (services.ContainsKey(serviceType.FullName))
+				throw new Exception("The service " + serviceType.FullName + " has already been loaded.");
+			services[serviceType.FullName] = implementer;
+		}
+
 		public object GetService(Type serviceType) {
 			if (!services.ContainsKey(serviceType.FullName))
 				throw new Exception("The service " + serviceType.FullName + " was not loaded.");

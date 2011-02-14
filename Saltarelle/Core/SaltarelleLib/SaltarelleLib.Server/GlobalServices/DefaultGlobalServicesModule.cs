@@ -16,13 +16,11 @@ namespace Saltarelle {
 			public DefaultGlobalServicesProvider(Dictionary<Type, Type> serviceProviders) {
 				this.serviceProviders = serviceProviders;
 			}
-		
+			
 			private object GetService(Type serviceType, bool allowLoad) {
 				if (Utils.IsNull(serviceType) || !serviceType.IsInterface)
 					throw new ArgumentException("serviceType must be an interface");
-				IList<CreatedServicePair> registered = (IList<CreatedServicePair>)HttpContext.Current.Items[CreatedServicesKey];
-				if (Utils.IsNull(registered))
-					HttpContext.Current.Items[CreatedServicesKey] = registered = new List<CreatedServicePair>();
+				IList<CreatedServicePair> registered = GetRegisteredServiceTable(true);
 				CreatedServicePair regEntry = registered.FirstOrDefault(x => x.Key == serviceType);
 				if (!Utils.IsNull(regEntry.Value))
 					return regEntry.Value;
@@ -60,15 +58,33 @@ namespace Saltarelle {
 				return GetService(serviceType, false) != null;
 			}
 			
+			public void LoadServiceExplicit(Type serviceType, object implementer) {
+				if (Utils.IsNull(serviceType) || !serviceType.IsInterface)
+					throw new ArgumentException("serviceType must be an interface");
+				if (Utils.IsNull(implementer) || !serviceType.IsAssignableFrom(implementer.GetType()))
+					throw new ArgumentException("implementer must implement the interface specified in serviceType");
+				var registered = GetRegisteredServiceTable(true);
+				if (registered.Any(x => x.Key == serviceType))
+					throw new InvalidOperationException("The service " + serviceType.FullName + " has already been loaded");
+				registered.Add(new CreatedServicePair(serviceType, implementer));
+			}
+			
 			public IEnumerable<KeyValuePair<Type, object>> AllLoadedServices {
 				get {
-					var l = (IList<CreatedServicePair>)HttpContext.Current.Items[CreatedServicesKey];
+					var l = GetRegisteredServiceTable(false);
 					if (!Utils.IsNull(l)) {
 						foreach (var x in l)
 							yield return x;
 					}
 				}
 			}
+		}
+
+		private static IList<CreatedServicePair> GetRegisteredServiceTable(bool allowLoad) {
+			var result = (IList<CreatedServicePair>)HttpContext.Current.Items[CreatedServicesKey];
+			if (Utils.IsNull(result) && allowLoad)
+				HttpContext.Current.Items[CreatedServicesKey] = result = new List<CreatedServicePair>();
+			return result;
 		}
 
 		public void Init(HttpApplication context) {
@@ -95,7 +111,7 @@ namespace Saltarelle {
 		}
 
 		void Application_EndRequest(object sender, EventArgs e) {
-			IList<CreatedServicePair> list = (IList<CreatedServicePair>)HttpContext.Current.Items[CreatedServicesKey];
+			IList<CreatedServicePair> list = GetRegisteredServiceTable(false);
 			if (!Utils.IsNull(list)) {
 				for (int i = list.Count - 1; i >= 0; i--) {
 					var igs = list[i].Value as IDisposable;

@@ -38,6 +38,10 @@ namespace Saltarelle
 			provider.LoadService(typeof(IService));
 		}
 
+		public static void LoadServiceExplicit<IService, TImplementer>(TImplementer implementer) where TImplementer : IService {
+			provider.LoadServiceExplicit(typeof(IService), implementer);
+		}
+
 		public static IService GetService<IService>() {
 			return (IService)provider.GetService(typeof(IService));
 		}
