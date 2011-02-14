@@ -37,9 +37,9 @@
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dotless.Core.NoMinifier, Version=0.0.0.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
+    <Reference Include="dotless.Core, Version=1.1.0.7, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\References\dotless.Core.NoMinifier.dll</HintPath>
+      <HintPath>..\..\..\..\References\dotless.Core.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.6.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
       <SpecificVersion>False</SpecificVersion>

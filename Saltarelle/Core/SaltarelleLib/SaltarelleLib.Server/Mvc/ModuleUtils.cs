@@ -119,8 +119,8 @@ namespace Saltarelle.Mvc {
 		}
 		
 		public static string GetCss(string lessSource, Assembly contextAssembly) {
-			var engine = new EngineFactory().GetEngine(DotlessConfiguration.Default);
-			return engine.TransformToCss(new StringSource().GetSource((!Utils.IsNull(contextAssembly) ? GetLessVariableDefinitions(contextAssembly) + Environment.NewLine : "") + lessSource));
+			var engine = new EngineFactory().GetEngine();
+			return engine.TransformToCss((!Utils.IsNull(contextAssembly) ? GetLessVariableDefinitions(contextAssembly) + Environment.NewLine : "") + lessSource, "Module.less");
 		}
 		
 		private static void AddAssembliesInCorrectOrder(Assembly asm, IList<Assembly> l) {
