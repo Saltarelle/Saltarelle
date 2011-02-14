@@ -9,6 +9,9 @@ using System.DHTML;
 
 namespace Saltarelle {
 	[Record]
+#if SERVER
+	[Serializable]
+#endif
 	public sealed class ControlDocumentFragment {
 		public string[] scriptReferences;
 		public string[] startupScripts;
