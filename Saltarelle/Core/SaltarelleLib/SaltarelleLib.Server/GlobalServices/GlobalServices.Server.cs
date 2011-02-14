@@ -12,22 +12,14 @@ namespace Saltarelle
 {
 	public static class GlobalServices {
 		private static IGlobalServicesProvider provider;
-		private static bool allowReinit = true;
 
 		public static IGlobalServicesProvider Provider { get { return provider; } }
 
 		public static void Init(IGlobalServicesProvider provider) {
-			Init(provider, false);
-		}
-
-		public static void Init(IGlobalServicesProvider provider, bool allowReinit) {
-			if (!GlobalServices.allowReinit)
-				throw new InvalidOperationException("Can only init once");
 			IDisposable d = GlobalServices.provider as IDisposable;
 			if (!Utils.IsNull(d))
 				d.Dispose();
 			GlobalServices.provider    = provider;
-			GlobalServices.allowReinit = allowReinit;
 		}
 
 		public static void LoadService(Type serviceType) {

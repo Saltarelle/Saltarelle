@@ -37,11 +37,11 @@ namespace SaltarelleParser.Tests {
 			var scr = mocks.StrictMock<IScriptManagerService>();
 			Expect.Call(svc.GetService(typeof(IScriptManagerService))).Return(scr).Repeat.Any();
 			try {
-				GlobalServices.Init(svc, true);
+				GlobalServices.Init(svc);
 				code(scr);
 			}
 			finally {
-				GlobalServices.Init(null, true);
+				GlobalServices.Init(null);
 			}
 		}
 	}
