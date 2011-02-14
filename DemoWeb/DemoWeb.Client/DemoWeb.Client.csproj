@@ -78,15 +78,15 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Saltarelle.UI.Client, Version=0.7.1.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.UI.Client, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Debug\Saltarelle.UI.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib.Client, Version=0.7.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleLib.Client, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleParser.Client, Version=0.7.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleParser.Client, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleParser.Client.dll</HintPath>
     </Reference>
