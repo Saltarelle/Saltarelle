@@ -866,6 +866,8 @@ namespace Saltarelle.UI {
 		private void ValueTable_Click(JQueryEvent evt) {
 			if (!enabled)
 				return;
+			if (evt.target == GetElement().Children[1].Children[0])	// Sometimes it is possible for the user to click on the table, as opposed to a table row.
+				return;
 
 			jQuery cell = Utils.Parent(JQueryProxy.jQuery(evt.target), "td"),
 			       row  = Utils.Parent(cell, "tr");
