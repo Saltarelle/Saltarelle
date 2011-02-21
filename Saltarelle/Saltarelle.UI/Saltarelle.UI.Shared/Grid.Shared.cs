@@ -1,11 +1,13 @@
 #if SERVER
 using StringArrayList = System.Collections.Generic.List<string[]>;
+using StringList = System.Collections.Generic.List<string>;
 using ObjectList = System.Collections.Generic.List<object>;
 using System.Text;
 using System;
 using System.Collections.Generic;
 #elif CLIENT
 using StringArrayList = System.ArrayList;
+using StringList = System.ArrayList;
 using ObjectList = System.ArrayList;
 using System;
 using System.DHTML;
@@ -67,6 +69,7 @@ namespace Saltarelle.UI {
 		public const string ValuesTableClass = "GridValues";
 		public const string EvenRowClass = "GridRowEven";
 		public const string OddRowClass = "GridRowOdd";
+		public const string SelectedRowClass = "ui-state-highlight";
 		public const string RowHoverClass = "DropHover";
 		public const string CurrentDraggingRowClass = "CurrentDraggingRow";
 
@@ -77,6 +80,7 @@ namespace Saltarelle.UI {
 		private string[] colClasses = new string[0];
 		private string[] colTitles = new string[0];
 		private StringArrayList rowTextsIfNotRendered;
+		private StringList      rowClassesIfNotRendered;
 		private ObjectList      rowData;
 		private Position position;
 		private int width;
@@ -365,7 +369,7 @@ namespace Saltarelle.UI {
 			#if CLIENT
 				if (isAttached && !rebuilding) {
 					StringBuilder sb = new StringBuilder();
-					AddRowHtml(sb, cellTexts, (numRows % 2) == 1, false);
+					AddRowHtml(sb, cellTexts, null, (numRows % 2) == 1, false);
 					jQuery q = JQueryProxy.jQuery(sb.ToString());
 					if (index == numRows - 1) // remember we already incremented numRows
 						q.appendTo(GetValuesTBody());
@@ -387,13 +391,46 @@ namespace Saltarelle.UI {
 				}
 			#endif
 			rowTextsIfNotRendered.Insert(index, cellTexts);
+			rowClassesIfNotRendered.Insert(index, null);
+		}
+		
+		public void SetRowClass(int index, string rowClass) {
+			if (index < 0 || index >= numRows)
+				return;
+			
+			#if CLIENT
+				if (isAttached && !rebuilding) {
+					TableRowElement tr = (TableRowElement)GetValuesTBody().Rows[index];
+					ArrayList classes = (ArrayList)(object)tr.ClassName.Split(" ").Filter(delegate(object x) { string s = (string)x; return s == EvenRowClass || s == OddRowClass || s == SelectedRowClass; });
+					classes.Add(rowClass);
+					tr.ClassName = classes.Join(" ");
+					return;
+				}
+			#endif
+			rowClassesIfNotRendered[index] = rowClass;
+		}
+
+		public string GetRowClass(int index, string rowClass) {
+			if (index < 0 || index >= numRows)
+				return null;
+			
+			#if CLIENT
+				if (isAttached && !rebuilding) {
+					TableRowElement tr = (TableRowElement)GetValuesTBody().Rows[index];
+					string[] classes = (string[])tr.ClassName.Split(" ").Filter(delegate(object x) { string s = (string)x; return s == EvenRowClass || s == OddRowClass || s == SelectedRowClass; });
+					return classes.Length > 0 ? classes[0] : null;
+				}
+			#endif
+			return (string)rowClassesIfNotRendered[index];
 		}
 
 		public void BeginRebuild() {
 			#if CLIENT
 				rebuilding = true;
 				if (rowTextsIfNotRendered == null)
-					rowTextsIfNotRendered = new ArrayList();
+					rowTextsIfNotRendered = new StringArrayList();
+				if (rowClassesIfNotRendered == null)
+					rowClassesIfNotRendered = new StringList();
 			#endif
 			Clear();
 		}
@@ -405,7 +442,7 @@ namespace Saltarelle.UI {
 				if (isAttached) {
 					StringBuilder sb = new StringBuilder();
 					for (int i = 0; i < rowTextsIfNotRendered.Length; i++) {
-						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
+						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (string)rowClassesIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
 					}
 					JQueryProxy.jQuery(GetValuesTBody()).html(sb.ToString());
 					
@@ -415,7 +452,8 @@ namespace Saltarelle.UI {
 							MakeDraggable(JQueryProxy.jQuery(SelectedRow));
 					}
 
-					rowTextsIfNotRendered = null;
+					rowTextsIfNotRendered   = null;
+					rowClassesIfNotRendered = null;
 				}
 			#endif
 		}
@@ -431,6 +469,8 @@ namespace Saltarelle.UI {
 			#endif
 			if (rowTextsIfNotRendered != null)
 				rowTextsIfNotRendered.Clear();
+			if (rowClassesIfNotRendered != null)
+				rowClassesIfNotRendered.Clear();
 			rowData.Clear();
 		}
 		
@@ -488,6 +528,7 @@ namespace Saltarelle.UI {
 			if (selectedRowIndex >= row)
 				selectedRowIndex--;
 			rowTextsIfNotRendered.RemoveAt(row);
+			rowClassesIfNotRendered.RemoveAt(row);
 		}
 		
 		public object GetData(int row) {
@@ -517,8 +558,8 @@ namespace Saltarelle.UI {
 			}
 		}
 		
-		private void AddRowHtml(StringBuilder sb, string[] cellTexts, bool even, bool selected) {
-			sb.Append("<tr class=\"" + (even ? EvenRowClass : OddRowClass) + (selected ? " ui-state-highlight" : "") + "\">");
+		private void AddRowHtml(StringBuilder sb, string[] cellTexts, string addClass, bool even, bool selected) {
+			sb.Append("<tr class=\"" + (even ? EvenRowClass : OddRowClass) + (selected ? " " + SelectedRowClass : "") + (!string.IsNullOrEmpty(addClass) ? " " + addClass : "") + "\">");
 			for (int c = 0; c < NumColumns; c++)
 				sb.Append("<td " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (c < cellTexts.Length && !string.IsNullOrEmpty(cellTexts[c]) ? Utils.HtmlEncode(cellTexts[c]) : "&nbsp;") + "</div></div></td>");
 			sb.Append("</tr>");
@@ -534,7 +575,7 @@ namespace Saltarelle.UI {
 				sb.Append("<th class=\"" + SpacerThClass + "\"><div>&nbsp;</div></th></tr></thead></table></div><div class=\"" + ValuesDivClass + "\" style=\"width: " + (this.width - 2 * BorderSize) + "px; height: " + Utils.ToStringInvariantInt(ContentHeight) + "px\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"" + ValuesTableClass + "\"><tbody>");
 				if (rowTextsIfNotRendered != null) {
 					for (int i = 0; i < Utils.ArrayLength(rowTextsIfNotRendered); i++) {
-						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
+						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (string)rowClassesIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
 					}
 				}
 				sb.Append("</tbody></table></div>");
@@ -557,7 +598,8 @@ namespace Saltarelle.UI {
 			position = PositionHelper.NotPositioned;
 			width = 300;
 			height = 300;
-			rowTextsIfNotRendered = new StringArrayList();
+			rowTextsIfNotRendered   = new StringArrayList();
+			rowClassesIfNotRendered = new StringList();
 			rowData = new ObjectList();
 		}
 		
@@ -658,7 +700,7 @@ namespace Saltarelle.UI {
 					
 				if (selectedRowIndex != -1 && isAttached && !rebuilding) {
 					jQuery row = JQueryProxy.jQuery(SelectedRow);
-					row.removeClass("ui-state-highlight");
+					row.removeClass(SelectedRowClass);
 					if (enableDragDrop)
 						row.draggable("destroy");
 				}
@@ -666,7 +708,7 @@ namespace Saltarelle.UI {
 				if (selectedRowIndex != -1 && isAttached && !rebuilding) {
 					EnsureVisible(selectedRowIndex);
 					jQuery row = JQueryProxy.jQuery(SelectedRow);
-					row.addClass("ui-state-highlight");
+					row.addClass(SelectedRowClass);
 					if (enableDragDrop && enabled)
 						MakeDraggable(row);
 				}
