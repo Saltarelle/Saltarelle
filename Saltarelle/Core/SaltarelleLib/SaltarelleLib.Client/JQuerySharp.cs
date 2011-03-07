@@ -470,6 +470,15 @@ namespace Saltarelle
         ///      location in the DOM.
         ///    </summary>
         [PreserveCase]
+        public jQuery clone() { return null; }
+
+        ///<summary>
+        ///      Clone matched DOM Elements and select the clones.
+        ///
+        ///      This is useful for moving copies of the elements to another
+        ///      location in the DOM.
+        ///    </summary>
+        [PreserveCase]
         public jQuery clone(bool deep) { return null; }
 
         ///<summary>
