@@ -248,11 +248,19 @@ namespace Saltarelle.UI {
 		}
 		
 		public void SetColClass(int col, string cls) {
+			if (col < 0 || col > colClasses.Length)
+				return;
 			#if CLIENT
 				if (isAttached) {
+					var headerCell = JQueryProxy.jQuery(GetHeaderRow().Cells[col]);
+					if (!string.IsNullOrEmpty(colClasses[col]))
+						headerCell.removeClass(colClasses[col]);
+					if (!string.IsNullOrEmpty(cls))
+						headerCell.addClass(cls);
+
 					TableRowElement[] rows = GetAllRows();
 					for (int i = 0; i < rows.Length; i++) {
-						jQuery q = JQueryProxy.jQuery(rows[i]);
+						jQuery q = JQueryProxy.jQuery(rows[i].Cells[col]);
 						if (!string.IsNullOrEmpty(colClasses[col]))
 							q.removeClass(colClasses[col]);
 						if (!string.IsNullOrEmpty(cls))
