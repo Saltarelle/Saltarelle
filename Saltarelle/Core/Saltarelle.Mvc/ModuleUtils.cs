@@ -55,7 +55,7 @@ namespace Saltarelle.Mvc {
 			if (asm is AssemblyBuilder)
 				return null;
 			string name = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Client.dll"));
-			return !Utils.IsNull(name) ? AssemblyFactory.GetAssembly(asm.GetManifestResourceStream(name)) : null;
+			return !Utils.IsNull(name) ? AssemblyDefinition.ReadAssembly(asm.GetManifestResourceStream(name)) : null;
 		}
 		
 		private static string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {

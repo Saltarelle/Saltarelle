@@ -2,12 +2,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B122334A-1FF6-4060-861B-20BE836169C3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SaltarelleLib</RootNamespace>
+    <RootNamespace>Saltarelle</RootNamespace>
     <AssemblyName>SaltarelleLib.Client</AssemblyName>
     <NoStdLib>True</NoStdLib>
     <CopyReferences>True</CopyReferences>
@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Saltarelle.snk">
-			<Link>Saltarelle.snk</Link>
+      <Link>Saltarelle.snk</Link>
     </None>
     <Content Include="Properties\Script.jst" />
     <Compile Include="..\..\..\SaltarelleVersion.cs">
@@ -67,9 +67,6 @@
     </Compile>
     <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
       <Link>ControlInterfaces.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\SaltarelleLib.Shared\GlobalServices\BuiltinServices\DefaultScriptManagerProvider.cs">
-      <Link>GlobalServices\BuiltinServices\DefaultScriptManagerProvider.cs</Link>
     </Compile>
     <Compile Include="..\SaltarelleLib.Shared\GlobalServices\BuiltinServices\IScriptManagerService.cs">
       <Link>GlobalServices\BuiltinServices\IScriptManagerService.cs</Link>
@@ -89,6 +86,7 @@
     <Compile Include="..\SaltarelleLib.Shared\Utils.Shared.cs">
       <Link>Utils.Shared.cs</Link>
     </Compile>
+    <Compile Include="DefaultScriptManagerService.cs" />
     <Compile Include="GlobalServices\GlobalServices.Client.cs" />
     <Compile Include="JQuerySharp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
