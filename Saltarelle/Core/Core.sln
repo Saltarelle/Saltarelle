@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSCustomTool", "Executables
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaltarelleParser.Tests", "SaltarelleParser\SaltarelleParser.Tests\SaltarelleParser.Tests.csproj", "{40D06C53-32D4-4E8E-AC8B-2155E6E910F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saltarelle.Mvc", "Saltarelle.Mvc\Saltarelle.Mvc.csproj", "{18934651-8F1C-485E-AB17-4BC0B2C16AC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{40D06C53-32D4-4E8E-AC8B-2155E6E910F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40D06C53-32D4-4E8E-AC8B-2155E6E910F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40D06C53-32D4-4E8E-AC8B-2155E6E910F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18934651-8F1C-485E-AB17-4BC0B2C16AC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18934651-8F1C-485E-AB17-4BC0B2C16AC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18934651-8F1C-485E-AB17-4BC0B2C16AC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18934651-8F1C-485E-AB17-4BC0B2C16AC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
