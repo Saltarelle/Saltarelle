@@ -1,2 +1,18 @@
+#ignore thumbnails created by windows
+Thumbs.db
+#Ignore files build by Visual Studio
+*.user
+*.ncb
+*.suo
+*.bak
+*.log
+[Bb]in
+[Dd]ebug*/
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
 
-*/_Resharper.*
+Client.dll
+Script.js
+Script.min.js
