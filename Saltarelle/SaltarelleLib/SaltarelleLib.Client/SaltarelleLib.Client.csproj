@@ -136,6 +136,5 @@
     <Copy SourceFiles="$(TargetDir)$(ProjectName).debug.js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.min.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ProjectDir)" />
   </Target>
 </Project>
