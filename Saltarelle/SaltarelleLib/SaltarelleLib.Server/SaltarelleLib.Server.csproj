@@ -36,6 +36,16 @@
     <DocumentationFile>bin\SaltarelleLib.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug With Installer|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug With Installer\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SERVER</DefineConstants>
+    <DocumentationFile>bin\SaltarelleLib.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.0.7.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
