@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{29A07A34-45DB-4271-A144-9AEE9CE933CA}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -37,13 +37,9 @@
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=4.0.7.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\References\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="SaltarelleLib, Version=0.5.0.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Core\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.4.0.7\lib\net35\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -126,6 +122,16 @@
     <EmbeddedResource Include="Resources\item.gif" />
     <EmbeddedResource Include="Resources\minus.gif" />
     <EmbeddedResource Include="Resources\plus.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Saltarelle.Mvc\Saltarelle.Mvc.csproj">
+      <Project>{18934651-8F1C-485E-AB17-4BC0B2C16AC3}</Project>
+      <Name>Saltarelle.Mvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
+      <Project>{23878C4C-4B77-4F13-B821-BECCA3E0BA98}</Project>
+      <Name>SaltarelleLib.Server</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

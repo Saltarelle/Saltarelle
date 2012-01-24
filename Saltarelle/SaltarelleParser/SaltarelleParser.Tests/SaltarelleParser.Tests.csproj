@@ -1,0 +1,109 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{40D06C53-32D4-4E8E-AC8B-2155E6E910F0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SaltarelleParser.Tests</RootNamespace>
+    <AssemblyName>SaltarelleParser.Tests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\RhinoMocks.3.6\lib\Rhino.Mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\SaltarelleVersion.cs">
+      <Link>Properties\SaltarelleVersion.cs</Link>
+    </Compile>
+    <Compile Include="FragmentTests\CodeExpressionFragmentTests.cs" />
+    <Compile Include="FragmentTests\CodeFragmentTests.cs" />
+    <Compile Include="FragmentTests\PositionFragmentTests.cs" />
+    <Compile Include="FragmentTests\InstantiatedControlFragmentTests.cs" />
+    <Compile Include="FragmentTests\IdFragmentTests.cs" />
+    <Compile Include="FragmentTests\LiteralFragmentTests.cs" />
+    <Compile Include="MemberTests\PropertyMemberTests.Shared.cs" />
+    <Compile Include="MemberTests\RenderFunctionMemberTests.cs" />
+    <Compile Include="MemberTests\NamedElementMemberTests.cs" />
+    <Compile Include="MemberTests\InstantiatedControlMemberTests.cs" />
+    <Compile Include="MemberTests\FieldMemberTests.cs" />
+    <Compile Include="NodeProcessorTests\ControlInstantiationNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\ControlFlowTagProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\UsingDirectiveNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\FunctionDefinitionAndCallNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\DirectiveNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\EmbeddedCodeNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\ViewDirectiveNodeProcessorTests.cs" />
+    <Compile Include="ParserUtilsTests.cs" />
+    <Compile Include="NodeProcessorTests\FieldNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\ImplementsOrInheritsNodeProcessorTests.cs" />
+    <Compile Include="NodeProcessorTests\GenericElementProcessorTests.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="NodeProcessorTests\NodeProcessorTestBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NodeProcessorTests\LeafNodeProcessorTests.cs" />
+    <Compile Include="TemplateTests.cs" />
+    <Compile Include="TypedMarkupParsers\CodeMarkupTests.cs" />
+    <Compile Include="TypedMarkupParsers\BoolMarkupParserTests.cs" />
+    <Compile Include="TypedMarkupParsers\EnumMarkupParserTests.cs" />
+    <Compile Include="TypedMarkupParsers\StringMarkupParserTests.cs" />
+    <Compile Include="TypedMarkupParsers\PositionMarkupParserTests.cs" />
+    <Compile Include="TypedMarkupParsers\TypedMarkupParserTests.cs" />
+    <Compile Include="TypedMarkupParsers\IntMarkupParserTests.cs" />
+    <Compile Include="UntypedMarkupParserTests\UntypedMarkupParserTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
+      <Project>{23878C4C-4B77-4F13-B821-BECCA3E0BA98}</Project>
+      <Name>SaltarelleLib.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SaltarelleParser.Server\SaltarelleParser.Server.csproj">
+      <Project>{0C31ABB3-C1C6-4498-AAC4-0F34BAE79538}</Project>
+      <Name>SaltarelleParser.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Saltarelle.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
