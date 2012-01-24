@@ -36,20 +36,20 @@
     <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;CLIENT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0028, 1591</NoWarn>
-    <DocumentationFile>bin\Debug\Saltarelle.UI.Client.xml</DocumentationFile>
+    <DocumentationFile>bin\Saltarelle.UI.Client.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>CLIENT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0028, 1591</NoWarn>
-    <DocumentationFile>bin\Release\Saltarelle.UI.Client.xml</DocumentationFile>
+    <DocumentationFile>bin\Saltarelle.UI.Client.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="sscorlib" />
