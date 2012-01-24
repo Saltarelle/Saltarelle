@@ -2,19 +2,19 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class LeafNodeProcessorTests : NodeProcessorTestBase {
 		public LeafNodeProcessorTests() {
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_CanParseText() {
 			mocks.ReplayAll();
 			Assert.IsTrue(new LeafNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("some_text"), true, template, renderFunction));
@@ -22,7 +22,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNormalizeSpaces() {
 			mocks.ReplayAll();
 			Assert.IsTrue(new LeafNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("  some  text     again  "), true, template, renderFunction));
@@ -36,7 +36,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_NewlinesAreNormalizedToSpaces() {
 			mocks.ReplayAll();
 			Assert.IsTrue(new LeafNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("\n\nsome\n\ntext\n\n\n\n\nagain\n\n"), true, template, renderFunction));
@@ -44,7 +44,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_CanParseCDataAndDoesNotNormalizeSpaces() {
 			mocks.ReplayAll();
 			Assert.IsTrue(new LeafNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<![CDATA[  some  text     again  ]]>"), true, template, renderFunction));
@@ -52,7 +52,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ReturnsEmptyForComment() {
 			mocks.ReplayAll();
 			Assert.IsTrue(new LeafNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<!-- test comment -->"), true, template, renderFunction));
@@ -60,7 +60,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ReturnsNullForElementNode() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new LeafNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<x>y</x>"), true, template, renderFunction));

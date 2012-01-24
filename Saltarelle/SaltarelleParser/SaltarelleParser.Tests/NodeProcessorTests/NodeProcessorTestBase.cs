@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 using Rhino.Mocks;
 using Saltarelle;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace SaltarelleParser.Tests {
 	public class NodeProcessorTestBase {
@@ -18,14 +18,7 @@ namespace SaltarelleParser.Tests {
 			get { return string.Join("", fragments.Select(f => f.ToString()).ToArray()); }
 		}
 
-		private TestContext testContextInstance;
-
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public virtual void SetupRepo() {
 			mocks = new MockRepository();
 			template = mocks.StrictMock<ITemplate>();

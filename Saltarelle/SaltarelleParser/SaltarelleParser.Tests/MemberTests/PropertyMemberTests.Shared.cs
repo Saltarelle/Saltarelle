@@ -2,30 +2,24 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class PropertyMemberTests {
 		private MockRepository mocks;
-		private TestContext testContextInstance;
 
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_WorksWithGetterAndSetterSameType() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -39,7 +33,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_WorksWithValueChangedHook() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -53,7 +47,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_WorksWithGetterAndSetterDifferentTypes() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -67,7 +61,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_WorksWithGetterOnly() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -80,7 +74,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_WorksWithSetterOnly() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -93,7 +87,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_NothingWrittenWhenNoServerType() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -104,7 +98,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientDefinition_WorksWithGetterAndSetterSameType() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -118,7 +112,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientDefinition_WorksWithGetterAndSetterDifferentTypes() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -132,7 +126,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientDefinition_NothingWrittenWhenNoClientType() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -143,7 +137,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -156,7 +150,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestInstantiate_Throws() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();

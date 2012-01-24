@@ -2,30 +2,24 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class NamedElementMemberTests {
 		private MockRepository mocks;
-		private TestContext testContextInstance;
 
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -36,7 +30,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientDefinition_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -68,7 +62,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientIdChangedCode_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -79,7 +73,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -92,7 +86,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestInstantiate_AddsNamedMember() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();

@@ -2,28 +2,29 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
 using Rhino.Mocks.Constraints;
 using Saltarelle.Fragments;
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class ControlInstantiationNodeProcessorTests : NodeProcessorTestBase {
 		public ControlInstantiationNodeProcessorTests() {
 		}
 
-		[TestInitialize]
+		[SetUp]
 		public override void SetupRepo() {
 			base.SetupRepo();
 			SetupResult.For(docProcessor.ParseTypedMarkup(null)).Do((Func<string, TypedMarkupData>)(s => { if (s == "bad") throw new TemplateErrorException("bad"); return new TypedMarkupData(s); })).IgnoreArguments();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotParseOtherNode() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<element></element>"), true, template, renderFunction));
@@ -31,7 +32,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_AttributesExceptCustomInstantiateMapCorrectly() {
 			Expect.Call(template.HasMember("TestId")).Return(false);
 			Expect.Call(() => template.AddMember(new InstantiatedControlMember("TestId", "Namespace.TestType", false, new Dictionary<string, TypedMarkupData>() { { "Attr1", new TypedMarkupData("value1") }, { "Attr2", new TypedMarkupData("value2") } }, new IMember[0])));
@@ -42,14 +43,14 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_RootIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"TestId\" type=\"Namespace.TestType\" Attr1=\"value1\" Attr2=\"value2\"/>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_InvalidPropertyValueIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"TestId\" type=\"Namespace.TestType\" Attr1=\"value1\" Attr2=\"bad\"/>"), false, template, renderFunction), (TemplateErrorException ex) => ex.Message == "bad");
@@ -57,7 +58,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_CustomInstantiateMapCorrectly() {
 			Expect.Call(template.HasMember("TestId")).Return(false);
 			Expect.Call(() => template.AddMember(new InstantiatedControlMember("TestId", "Namespace.TestType", true, new Dictionary<string, TypedMarkupData>(), new IMember[0])));
@@ -68,7 +69,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_InvalidIdCausesError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"Test.Id\" type=\"Namespace.TestType\" />"), false, template, renderFunction), (TemplateErrorException ex) => true);
@@ -76,7 +77,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_MissingIdCausesDefault() {
 			Expect.Call(template.GetUniqueId()).Return("_test_id");
 			Expect.Call(template.HasMember("_test_id")).Return(false);
@@ -88,7 +89,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_MissingTypeIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"TestId\" />"), false, template, renderFunction), (TemplateErrorException ex) => true);
@@ -96,7 +97,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_CustomInstantiateAndOtherPropertiesIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"TestId\" type=\"Namespace.TestType\" customInstantiate=\"true\" Attr1=\"value1\" Attr2=\"value2\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
@@ -112,7 +113,7 @@ namespace SaltarelleParser.Tests {
 		}
 		
 		
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ChildrenWorks() {
 			XmlNode node = Globals.GetXmlNode("<control id=\"TestId\" type=\"TestType\"><elem1/>Text node<elem2><elemx/></elem2>  <elem3/></control>");
 			XmlNode n1 = node.SelectSingleNode("elem1");

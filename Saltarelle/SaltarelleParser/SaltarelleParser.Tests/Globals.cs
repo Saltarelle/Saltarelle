@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Rhino.Mocks;
 using Saltarelle;
 
@@ -24,7 +24,7 @@ namespace SaltarelleParser.Tests {
 				return;
 			}
 			catch (Exception ex) {
-				if (ex is UnitTestAssertException)
+				if (ex is AssertionException)
 					throw;
 				Assert.Fail("Bad exception " + ex + " thrown.");
 				return; // strictly unnecessary

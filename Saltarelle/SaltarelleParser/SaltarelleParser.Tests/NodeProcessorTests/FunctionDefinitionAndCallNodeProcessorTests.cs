@@ -2,26 +2,26 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
-using Rhino.Mocks.Constraints;
 using Saltarelle.Members;
 using Saltarelle.Fragments;
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class FunctionDefinitionAndCallNodeProcessorTests : NodeProcessorTestBase {
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotProcessDirective() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?def-fragment ?>"), false, template, renderFunction));
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotProcessUnknownElement() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<unknown/>"), false, template, renderFunction));
@@ -49,17 +49,17 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DefFragmentWorksWithoutParams() {
 			TestTryProcess_DefFragmentWorks(false);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DefFragmentWorksWithParams() {
 			TestTryProcess_DefFragmentWorks(true);
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DefFragmentErrorIfNoName() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<def-fragment><x/></def-fragment>"), false, template, renderFunction), (TemplateErrorException ex) => true);
@@ -67,7 +67,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DefFragmentErrorIfInvalidUnqualifiedName() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<def-fragment name=\"A.B\"><x/></def-fragment>"), false, template, renderFunction), (TemplateErrorException ex) => true);
@@ -75,7 +75,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DefFragmentErrorIfDuplicateName() {
 			Expect.Call(template.HasMember("FragName")).Return(true);
 			mocks.ReplayAll();
@@ -84,7 +84,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DefFragmentRootIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<def-fragment name=\"FragName\"><x/><y/></def-fragment>"), true, template, renderFunction), (TemplateErrorException ex) => true);
@@ -99,28 +99,28 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_CallFragmentMissingNameIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<call-fragment/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_CallFragmentInvalidNameIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<call-fragment name=\"A.B\"/>"), false, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ChildrenIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<call-fragment name=\"FragName\"><x/></call-fragment>"), false, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_CallFragmentRootIsError() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new FunctionDefinitionAndCallNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<call-fragment name=\"FragName\"/>"), true, template, renderFunction), (TemplateErrorException ex) => true);

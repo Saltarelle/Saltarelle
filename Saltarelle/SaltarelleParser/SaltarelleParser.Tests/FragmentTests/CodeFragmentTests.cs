@@ -2,25 +2,19 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class CodeFragmentTests {
 		private MockRepository mocks;
-		private TestContext testContextInstance;
 
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
@@ -50,17 +44,17 @@ namespace SaltarelleParser.Tests {
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ServerSideWorks() {
 			TestWriteCode_Works(FragmentCodePoint.ServerRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ClientSideWorks() {
 			TestWriteCode_Works(FragmentCodePoint.ClientRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRender_Throws() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();

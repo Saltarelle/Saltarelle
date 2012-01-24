@@ -2,27 +2,27 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class ViewDirectiveNodeProcessorTests : NodeProcessorTestBase {
 		public ViewDirectiveNodeProcessorTests() {
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotParseElement() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new ViewDirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<element></element>"), true, template, renderFunction));
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotUnknownDirective() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new ViewDirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?unknown ?>"), true, template, renderFunction));
@@ -45,29 +45,29 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_WorksWithServerTypeWithoutClientType() {
 			TestTryProcess_WorksWithType(true, false);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_WorksWithServerTypeAndServerType() {
 			TestTryProcess_WorksWithType(true, true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_WorksWithoutModelType() {
 			TestTryProcess_WorksWithType(true, true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ErrorIfClientTypeButNotServerType() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new ViewDirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?view clientModelType=\"ClientType\"?>"), true, template, renderFunction), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ErrorIfModelMemberAlreadyExists() {
 			Expect.Call(template.HasMember("Model")).Return(true);
 			mocks.ReplayAll();
@@ -75,7 +75,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ErrorIfNotRoot() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new ViewDirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?view modelType=\"ServerType\" ?>"), false, template, renderFunction), (TemplateErrorException ex) => true);

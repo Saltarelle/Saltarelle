@@ -2,8 +2,8 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
@@ -11,12 +11,12 @@ using Saltarelle.Members;
 using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class GenericElementProcessorTests : NodeProcessorTestBase {
 		public GenericElementProcessorTests() {
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_SimpleNameValuePairWorks() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("test\"Value\"")).Return(new LiteralFragment("test&quot;Value&quot;"));
 			mocks.ReplayAll();
@@ -26,7 +26,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_StyleInRootAppendsPosition() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("width: 0px; ")).Return(new LiteralFragment("width: 0px; "));
 			mocks.ReplayAll();
@@ -36,7 +36,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_StyleInRootAppendsSemicolonIfOneIsMissing() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("width: 0px")).Return(new LiteralFragment("width: 0px"));
 			mocks.ReplayAll();
@@ -46,7 +46,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_StyleInRootAppendsSemicolonIfNonLiteralFragmentIsReturned() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("code")).Return(new CodeExpressionFragment("code"));
 			mocks.ReplayAll();
@@ -56,7 +56,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_StyleInNonRootIsNotModified() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("width: 0px")).Return(new LiteralFragment("width: 0px"));
 			mocks.ReplayAll();
@@ -66,7 +66,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_IdForNonRootElementWorks() {
 			Expect.Call(template.HasMember("testid")).Return(false);
 			mocks.ReplayAll();
@@ -77,13 +77,13 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_IdForRootElementThrowsException() {
 			var context = new GenericElementProcessorContext();
 			Globals.AssertThrows(() => GenericElementProcessor.AddSingleAttributeFragments(docProcessor, "id", "testid", true, template, renderFunction, context), (TemplateErrorException ex) => true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_ForAndNameAttributesWorks() {
 			foreach (var attrName in new[] { "for", "name" }) {
 				SetupRepo();
@@ -95,7 +95,7 @@ namespace SaltarelleParser.Tests {
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_TypeAttributeWorks() {
 			SetupRepo();
 			Expect.Call(docProcessor.ParseUntypedMarkup("TestValue")).Return(new LiteralFragment("TestValue"));
@@ -107,7 +107,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_ActualNameWorks() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("SomeName")).Return(new LiteralFragment("SomeName"));
 			mocks.ReplayAll();
@@ -117,7 +117,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddSingleAttributeFragments_ErrorIfDuplicateMember() {
 			Expect.Call(template.HasMember("ExistingMember")).Return(true);
 			mocks.ReplayAll();
@@ -126,7 +126,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddAttributeFragments_SimpleNonRootWorks() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("val1")).Return(new LiteralFragment("val1"));
 			Expect.Call(docProcessor.ParseUntypedMarkup("val2")).Return(new LiteralFragment("val2"));
@@ -137,7 +137,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddAttributeFragments_RootAddsPositionAndStyle() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("val1")).Return(new LiteralFragment("val1"));
 			Expect.Call(docProcessor.ParseUntypedMarkup("val2")).Return(new LiteralFragment("val2"));
@@ -148,7 +148,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestAddAttributeFragments_StyleIsNotAddedIfExists() {
 			Expect.Call(docProcessor.ParseUntypedMarkup("a: b")).Return(new LiteralFragment("a: b"));
 			mocks.ReplayAll();
@@ -158,14 +158,14 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotParseTextNode() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new GenericElementProcessor().TryProcess(docProcessor, Globals.GetXmlNode("a"), false, template, renderFunction));
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_AttributesWorkForNonRoot() {
 			var node = Globals.GetXmlNode("<div id=\"a\"><div id=\"b\">x</div><div id=\"c\">y</div></div>");
 		
@@ -179,7 +179,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_InputNoTypeWorks() {
 			var node = Globals.GetXmlNode("<input id=\"a\"/>");
 		
@@ -191,7 +191,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_InputWithTypeWorks() {
 			var node = Globals.GetXmlNode("<input id=\"a\" type=\"text\"/>");
 		
@@ -204,7 +204,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_InputWithNonLiteralTypeWorks() {
 			var node = Globals.GetXmlNode("<input id=\"a\" type=\"{= Something}\"/>");
 		
@@ -217,7 +217,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_EmptyWithPotentialChildrenWorks() {
 			Expect.Call(template.HasMember("a")).Return(false);
 			Expect.Call(() => template.AddMember(new NamedElementMember("div", "a")));
@@ -227,7 +227,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_SomeElementsSelfClose() {
 			foreach (var tag in new[] { "br", "img", "hr", "link", "input", "meta", "col", "frame", "base", "area" }) {	
 				SetupRepo();
@@ -240,7 +240,7 @@ namespace SaltarelleParser.Tests {
 			}
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_RootWorks() {
 			mocks.ReplayAll();
 			var actual = new GenericElementProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<div></div>"), true, template, renderFunction);

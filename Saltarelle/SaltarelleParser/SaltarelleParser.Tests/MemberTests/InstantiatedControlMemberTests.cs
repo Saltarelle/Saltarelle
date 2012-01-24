@@ -2,31 +2,25 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
-using Rhino.Mocks.Constraints;
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class InstantiatedControlMemberTests {
 		private MockRepository mocks;
-		private TestContext testContextInstance;
 
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteDefinition_NonCustomInstantiateWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -48,7 +42,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteDefinition_CustomInstantiateWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -75,7 +69,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteIdChangedCode_NothingWritten() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -93,7 +87,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteIdChangedCode_CustomInstantiateWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -133,17 +127,17 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerConstructorCode_Works() {
 			TestWriteConstructorCode_NonCustomInstantiateWorks(true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientConstructorCode_Works() {
 			TestWriteConstructorCode_NonCustomInstantiateWorks(false);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerConstructorCode_NothingWrittenForCustomInstantiate() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -154,7 +148,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientConstructorCode_NothingWrittenForCustomInstantiate() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -165,7 +159,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteTransferConstructorCode_NonCustomInstantiateWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -177,7 +171,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteTransferConstructorCode_CustomInstantiateWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -190,7 +184,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteConfigObjectInitCode_CorrectForNonCustomInstantiate() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -201,7 +195,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteConfigObjectInitCode_ControlTypeNameWrittenForCustomInstantiate() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -212,7 +206,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestWriteAttachCode_WorksForCustomInstantiate() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -224,7 +218,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestWriteAttachCode_WorksForNonCustomInstantiate() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -236,7 +230,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -249,7 +243,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestInstantiate_Works() {
 			var propValues = new Dictionary<string, TypedMarkupData>() {
 			                     { "IntProperty",    new TypedMarkupData("", () => 42) },
@@ -271,7 +265,7 @@ namespace SaltarelleParser.Tests {
 			Assert.IsTrue(new int[] { 20, 21 }.SequenceEqual(addedControl.ArrayProperty));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestInstantiate_CustomInstantiateThrows() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();

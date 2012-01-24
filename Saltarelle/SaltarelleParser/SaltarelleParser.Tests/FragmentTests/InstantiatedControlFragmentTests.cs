@@ -2,26 +2,20 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Fragments;
-using Rhino.Mocks.Constraints;
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class InstantiatedControlFragmentTests {
 		private MockRepository mocks;
-		private TestContext testContextInstance;
 
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
@@ -69,47 +63,47 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ServerNoChildrenWorks() {
 			TestWriteCode_NoChildrenWorks(FragmentCodePoint.ServerRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ServerCustomInstantiateWorks() {
 			TestWriteCode_CustomInstantiateWorks(FragmentCodePoint.ServerRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ServerOneChildWorks() {
 			TestWriteCode_OneChildWorks(FragmentCodePoint.ServerRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ServerTwoChildenWorks() {
 			TestWriteCode_TwoChildenWorks(FragmentCodePoint.ServerRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ClientNoChildrenWorks() {
 			TestWriteCode_NoChildrenWorks(FragmentCodePoint.ClientRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ClientCustomInstantiateWorks() {
 			TestWriteCode_CustomInstantiateWorks(FragmentCodePoint.ClientRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ClientOneChildWorks() {
 			TestWriteCode_OneChildWorks(FragmentCodePoint.ClientRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ClientTwoChildenWorks() {
 			TestWriteCode_TwoChildenWorks(FragmentCodePoint.ClientRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRender_WorksWithNoInnerFragments() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
@@ -126,7 +120,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRender_WorksWithOneInnerFragments() {
 			var rf  = mocks.StrictMock<IRenderFunction>();
 			var tpl = mocks.StrictMock<ITemplate>();
@@ -147,7 +141,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRender_WorksWithTwoInnerFragments() {
 			var rf1 = mocks.StrictMock<IRenderFunction>();
 			var rf2 = mocks.StrictMock<IRenderFunction>();

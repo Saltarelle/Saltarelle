@@ -2,34 +2,23 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Saltarelle;
 using Rhino.Mocks;
-using Rhino.Mocks.Constraints;
 using Saltarelle.Fragments;
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class TemplateTests {
 		MockRepository mocks = new MockRepository();
-	
-		private TestContext testContextInstance;
 
-		public TestContext TestContext {
-			get {
-				return testContextInstance;
-			}
-			set {
-				testContextInstance = value;
-			}
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerConstructor_Works() {
 			CodeBuilder cb = new CodeBuilder();
 
@@ -104,17 +93,17 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientConstructor_WorksEnableClientCreate() {
 			TestWriteClientConstructor_Works(true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientConstructor_WorksDisableClientCreate() {
 			TestWriteClientConstructor_Works(false);
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestWriteAttach_Works() {
 			CodeBuilder cb = new CodeBuilder();
 
@@ -142,7 +131,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteAttachSelf_Works() {
 			CodeBuilder cb = new CodeBuilder();
 
@@ -170,7 +159,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerIdProperty_Works() {
 			CodeBuilder cb = new CodeBuilder();
 			var tpl = new Template();
@@ -203,7 +192,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientIdProperty_Works() {
 			CodeBuilder cb = new CodeBuilder();
 			var tpl = new Template();
@@ -329,17 +318,17 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerCode_WorksWithNamespace() {
 			TestWriteServerCode_Works(true, false);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerCode_WorksWithoutNamespace() {
 			TestWriteServerCode_Works(false, false);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerCode_WorksWithClientCreate() {
 			TestWriteServerCode_Works(true, true);
 		}
@@ -472,22 +461,22 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientCode_WorksWithNamespace() {
 			TestWriteClientCode_Works(true, true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientCode_WorksWithoutNamespace() {
 			TestWriteClientCode_Works(false, true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientCode_WorksWithoutClientCreate() {
 			TestWriteClientCode_Works(true, false);
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestWriteGetConfig() {
 			CodeBuilder cb = new CodeBuilder();
 
@@ -525,7 +514,7 @@ namespace SaltarelleParser.Tests {
 			members.Add(name, m);
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestTopologicalSort_Works() {
 			var members = new Dictionary<string, IMember>();
 			AddMember(members, "m4", "m2", "m3");
@@ -558,7 +547,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTopologicalSort_DetectsCycles() {
 			var members = new Dictionary<string, IMember>();
 			AddMember(members, "m1", "m2");
@@ -573,7 +562,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTopologicalSort_ThrowsIfUnknownDependency() {
 			var members = new Dictionary<string, IMember>();
 			AddMember(members, "m1", "x");
@@ -585,7 +574,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestInstantiate() {
 			var tpl = new Template();
 

@@ -2,16 +2,16 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class DirectiveNodeProcessorTests : NodeProcessorTestBase {
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotParseElement() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new EmbeddedCodeNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<element></element>"), true, template, renderFunction));
@@ -19,7 +19,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_DoesNotParseUnknownInstruction() {
 			mocks.ReplayAll();
 			Assert.IsFalse(new DirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?unknown instruction?>"), true, template, renderFunction));
@@ -27,7 +27,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_Works() {
 			Expect.Call(() => template.EnableClientCreate = true);
 			mocks.ReplayAll();
@@ -36,7 +36,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryProcess_ErrorIfNotRoot() {
 			mocks.ReplayAll();
 			Globals.AssertThrows(() => new DirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?enableClientCreate ?>"), false, template, renderFunction), (TemplateErrorException ex) => true);

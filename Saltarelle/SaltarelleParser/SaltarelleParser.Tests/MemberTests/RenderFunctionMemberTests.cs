@@ -2,27 +2,20 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
-using Rhino.Mocks.Constraints;
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class RenderFunctionMemberTests {
 		private MockRepository mocks;
 	
-		private TestContext testContextInstance;
-
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
@@ -66,17 +59,17 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteServerDefinition_Works() {
 			TestWriteDefinition_Works(true);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientDefinition_Works() {
 			TestWriteDefinition_Works(false);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteClientDefinition_NothingWrittenIfClientCreateNotEnabled() {
 			ITemplate tpl = mocks.StrictMock<ITemplate>();
 			Expect.Call(tpl.EnableClientCreate).Return(false);
@@ -88,7 +81,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 		
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_NothingWrittenWhenItShouldNot() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
@@ -101,7 +94,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRender_Works() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();

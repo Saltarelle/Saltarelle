@@ -2,39 +2,32 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class ParserUtilsTests {
 		private MockRepository mocks;
-
-		private TestContext testContextInstance;
-
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
 
 		public ParserUtilsTests() {
 		}
 
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestMergeFragments_WorksWithEmptySequence() {
 			var actual = ParserUtils.MergeFragments(new List<IFragment>());
 			Assert.AreEqual(0, actual.Count);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestMergeFragments_WorksWithOneFragment() {
 			var f1 = mocks.StrictMock<IFragment>();
 			mocks.ReplayAll();
@@ -45,7 +38,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestMergeFragments_WorksWithThreeNonMergableFragments() {
 			var f1 = mocks.StrictMock<IFragment>();
 			var f2 = mocks.StrictMock<IFragment>();
@@ -62,7 +55,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestMergeFragments_WorksWithThreeMergableFragments() {
 			var f1 = mocks.StrictMock<IFragment>();
 			var f2 = mocks.StrictMock<IFragment>();
@@ -81,7 +74,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestMergeFragments_WorksWithForFragmentsMergableTwoByTwo() {
 			var f1 = mocks.StrictMock<IFragment>();
 			var f2 = mocks.StrictMock<IFragment>();

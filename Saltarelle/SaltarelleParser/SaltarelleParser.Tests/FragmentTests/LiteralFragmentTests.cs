@@ -2,69 +2,62 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
+using NUnit.Framework;
 using Saltarelle;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Fragments;
 
 namespace SaltarelleParser.Tests {
-	[TestClass]
+	[TestFixture]
 	public class LiteralFragmentTests {
 		private MockRepository mocks;
 	
-		private TestContext testContextInstance;
-
-		public TestContext TestContext {
-			get { return testContextInstance; }
-			set { testContextInstance = value; }
-		}
-
-		[TestInitialize]
+		[SetUp]
 		public void SetupRepo() {
 			mocks = new MockRepository();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_CanNotMergeWithIdFragment() {
 			Assert.IsNull(new LiteralFragment("X").TryMergeWithNext(new IdFragment()));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_CanNotMergeCDatas() {
 			Assert.IsNull(new LiteralFragment("X", true).TryMergeWithNext(new LiteralFragment("Y", true)));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_CanNotMergeCDataWithNonCData() {
 			Assert.IsNull(new LiteralFragment("X", true).TryMergeWithNext(new LiteralFragment("Y", false)));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_CanNotMergeNonCDataWithCData() {
 			Assert.IsNull(new LiteralFragment("X", false).TryMergeWithNext(new LiteralFragment("Y", true)));
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_CanMergeNonCDatas() {
 			var actual = new LiteralFragment("X", false).TryMergeWithNext(new LiteralFragment("Y", false));
 			Assert.AreEqual(new LiteralFragment("XY"), actual);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_MergeFromEmptyWorks() {
 			var actual = new LiteralFragment("", false).TryMergeWithNext(new LiteralFragment("Y", false));
 			Assert.AreEqual(new LiteralFragment("Y"), actual);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_MergeWithEmptyWorks() {
 			var actual = new LiteralFragment("X", false).TryMergeWithNext(new LiteralFragment("", false));
 			Assert.AreEqual(new LiteralFragment("X"), actual);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestTryMergeWithNext_SpacesAreCorrectlyCollapsed() {
 			Assert.AreEqual(new LiteralFragment("X Y"), new LiteralFragment("X ", false).TryMergeWithNext(new LiteralFragment(" Y", false)));
 			Assert.AreEqual(new LiteralFragment("X Y"), new LiteralFragment("X", false).TryMergeWithNext(new LiteralFragment(" Y", false)));
@@ -92,27 +85,27 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ServerNonCDataWorks() {
 			TestWriteCode_NonCDataWorks(FragmentCodePoint.ServerRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ServerCDataWorks() {
 			TestWriteCode_CDataWorks(FragmentCodePoint.ServerRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ClientNonCDataWorks() {
 			TestWriteCode_NonCDataWorks(FragmentCodePoint.ClientRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestWriteCode_ClientCDataWorks() {
 			TestWriteCode_CDataWorks(FragmentCodePoint.ClientRender);
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRender_NonCDataWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
@@ -126,7 +119,7 @@ namespace SaltarelleParser.Tests {
 			mocks.VerifyAll();
 		}
 
-		[TestMethod]
+		[Test]
 		public void TestRender_CDataWorks() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
