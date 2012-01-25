@@ -88,6 +88,8 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.xml" target="lib"/>
 		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" target="lib"/>
 		<file src="$base_dir\Saltarelle\Installer\bin\Saltarelle.msi" target="tools\Saltarelle-$script:ProductVersion.msi"/>
+		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.targets" target="tools"/>
+		<file src="$base_dir\Saltarelle\NuGet\install.ps1" target="tools"/>
 	</files>
 </package>
 "@ >"$out_dir\SaltarelleCore.nuspec"
