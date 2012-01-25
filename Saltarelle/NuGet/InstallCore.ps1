@@ -8,6 +8,23 @@ Function MakeRelativePath($Origin, $Target) {
     $originUri.MakeRelativeUri($targetUri).ToString().Replace('/', [System.IO.Path]::DirectorySeparatorChar)
 }
 
+Function AddEmbeddedResource([string]$RelativePath, [switch]$DeleteFileIfAdded) {
+	$fileName = [System.IO.Path]::GetFileName($RelativePath)
+	if (-not ($project.ProjectItems | ? { $_.Name -eq $fileName })) {
+		$filePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($project.FileName), $RelativePath))
+		if (-not (Test-Path "$filePath")) {
+			New-Item $filePath -Type File > $null
+			$added = $true
+		}
+		$item = $project.ProjectItems.AddFromFile($filePath)
+		$item.Properties.Item("ItemType").Value = "EmbeddedResource"
+
+		if ($added -and $DeleteFileIfAdded) {
+			rm $filePath > $null
+		}
+	}
+}
+
 if ($isClient) {
 	$project.Object.References.Item("SaltarelleLib").Remove()
 	$project.Object.References.Item("Newtonsoft.Json").Remove()
@@ -25,4 +42,9 @@ if ($isClient) {
 else {
 	$project.Object.References.Item("SaltarelleLib.Client").Remove()
 	$project.Object.References.Item("sscorlib").Remove()
+
+	AddEmbeddedResource "..\Client.dll" -DeleteFileIfAdded
+	AddEmbeddedResource "..\Script.js" -DeleteFileIfAdded
+	AddEmbeddedResource "..\Script.min.js" -DeleteFileIfAdded
+	AddEmbeddedResource "Module.less"
 }
