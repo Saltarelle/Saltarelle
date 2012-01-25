@@ -134,6 +134,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)tools\ILMerge\ilmerge.exe  "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)packages-manual\tools\ILMerge\ilmerge.exe  "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
