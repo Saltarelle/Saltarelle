@@ -71,9 +71,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
-    </Compile>
     <Compile Include="..\ExecutablesCommon.cs">
       <Link>ExecutablesCommon.cs</Link>
     </Compile>
@@ -94,6 +91,12 @@
     <None Include="..\..\Saltarelle.snk">
       <Link>Saltarelle.snk</Link>
     </None>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\ExecutablesVersion.cs">
+      <Link>Properties\ExecutablesVersion.cs</Link>
+    </Compile>
     <Compile Include="CommandLine.cs" />
   </ItemGroup>
   <ItemGroup>

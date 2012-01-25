@@ -1,5 +1,5 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask AssemblyName="Saltarelle.SalgenTask, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3" TaskName="Salgen" />
+  <UsingTask TaskName="Salgen" AssemblyName="" />
 
   <PropertyGroup>
     <BuildDependsOn>

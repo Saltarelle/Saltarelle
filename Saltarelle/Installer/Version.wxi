@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-	<?define ProductVersion="0.7.2"?>
-	<?define AssemblyVersion="0.7.2.0"?>
+	<?define Version="0.7.2"?>
+	<?define ExecutablesAssemblyVersion="0.7.2.0"?>
 </Include>

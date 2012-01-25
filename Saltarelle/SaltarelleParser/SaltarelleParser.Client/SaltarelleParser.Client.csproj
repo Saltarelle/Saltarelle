@@ -73,6 +73,9 @@
       <Link>Saltarelle.snk</Link>
     </None>
     <Content Include="Properties\Script.jst" />
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="..\..\SaltarelleVersion.cs">
       <Link>Properties\SaltarelleVersion.cs</Link>
     </Compile>

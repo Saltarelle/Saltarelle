@@ -77,18 +77,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\ExecutablesCommon.cs">
       <Link>ExecutablesCommon.cs</Link>
+    </Compile>
+    <Compile Include="..\ExecutablesVersion.cs">
+      <Link>Properties\ExecutablesVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SalgenTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Saltarelle.snk" />
-    <None Include="Saltarelle.targets" />
+    <None Include="Saltarelle.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Saltarelle.targets.template" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
@@ -122,9 +128,13 @@
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="TargetAssemblyInfo"/>
+    </GetAssemblyIdentity>
+		<XmlPoke XmlInputPath="$(TargetDir)saltarelle.targets" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;" Query="//x:UsingTask/@AssemblyName" Value="%(TargetAssemblyInfo.Name), Version=%(TargetAssemblyInfo.Version), Culture=neutral, PublicKeyToken=%(TargetAssemblyInfo.PublicKeyToken)"/>
+  </Target>
   <PropertyGroup>
     <PostBuildEvent>$(SolutionDir)tools\ILMerge\ilmerge.exe  "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"</PostBuildEvent>
   </PropertyGroup>
