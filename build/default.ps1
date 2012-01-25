@@ -25,13 +25,43 @@ Task Publish -Depends Publish-Zip, Publish-Nupkg {
 }
 
 Task Publish-Zip -Depends Determine-Version, Build, Run-Tests {
-#	$out_zip = "$out_dir\Publish\Engine-$script:version.zip"
-#
-#	If (Test-Path "$out_zip") {
-#		rm "$out_zip"
-#	}
-#
-#	Exec { & "$buildtools_dir\7z.exe" a -y -bd -r -tzip "$out_zip" "$out_dir\Engine\" "$out_dir\Tools\" }
+	$out_zip = "$out_dir\Publish\Saltarelle-$script:version.zip"
+
+	If (Test-Path "$out_zip") {
+		rm "$out_zip"
+	}
+	
+	If (Test-Path "$out_dir\zip") {
+		rm -Recurse -Force "$out_dir\zip"
+	}
+	
+	md "$out_dir\zip\Server"
+	md "$out_dir\zip\Client"
+	md "$out_dir\zip\Tools"
+	
+	copy "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Client\bin\SaltarelleLib.Client.dll" "$out_dir\zip\Client"
+	copy "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Client\bin\SaltarelleLib.Client.xml" "$out_dir\zip\Client"
+	copy "$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Client\bin\SaltarelleParser.Client.dll" "$out_dir\zip\Client"
+	copy "$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Client\bin\SaltarelleParser.Client.xml" "$out_dir\zip\Client"
+	copy "$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Saltarelle.UI.Client.dll" "$out_dir\zip\Client"
+	copy "$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Saltarelle.UI.Client.xml" "$out_dir\zip\Client"
+
+	copy "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.dll" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.xml" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.pdb" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.dll" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.xml" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.pdb" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.dll" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.xml" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.pdb" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.dll" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.xml" "$out_dir\zip\Server"
+	copy "$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" "$out_dir\zip\Server"
+
+	copy "$base_dir\Saltarelle\Installer\bin\Saltarelle.msi" "$out_dir\zip\Tools\Saltarelle-$script:ProductVersion.msi"
+
+	Exec { & "$buildtools_dir\7z.exe" a -y -bd -r -tzip "$out_zip" "$out_dir\zip\Client" "$out_dir\zip\Server" "$out_dir\zip\Tools" }
 }
 
 Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
