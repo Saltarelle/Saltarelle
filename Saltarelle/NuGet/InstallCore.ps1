@@ -15,13 +15,14 @@ if ($isClient) {
     Add-Type -AssemblyName 'Microsoft.Build, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
     $msbuild = [Microsoft.Build.Evaluation.ProjectCollection]::GlobalProjectCollection.GetLoadedProjects($project.FullName) | Select-Object -First 1
 
-	if (-not ($msbuild.Imports | % { $_.ImportedProject.FullPath } | ? { $_.EndsWith("nStuff.ScriptSharp.targets") })) {
-		$msbuild.Xml.AddImport("`$(ProgramFiles)\nStuff\ScriptSharp\v1.0\nStuff.ScriptSharp.targets")
-	}
+	$msbuild.Xml.Imports | ? { $_.Project.EndsWith("nStuff.ScriptSharp.targets") } | % { $msbuild.Xml.RemoveChild($_) }
+	$msbuild.Xml.Imports | ? { $_.Project.EndsWith("Microsoft.CSharp.targets") } | % { $msbuild.Xml.RemoveChild($_) }
+	$msbuild.Xml.AddImport("`$(SolutionDir)$(MakeRelativePath -Origin $project.DTE.Solution.FullName -Target ([System.IO.Path]::Combine($toolsPath, ""nStuff.ScriptSharp.targets"")))")
 	
 	$msbuild.Xml.Imports | ? { $_.Project.EndsWith("Saltarelle.targets") } | % { $msbuild.Xml.RemoveChild($_) }
 	$msbuild.Xml.AddImport("`$(SolutionDir)$(MakeRelativePath -Origin $project.DTE.Solution.FullName -Target ([System.IO.Path]::Combine($toolsPath, ""Saltarelle.targets"")))")
 }
 else {
 	$project.Object.References.Item("SaltarelleLib.Client").Remove()
+	$project.Object.References.Item("sscorlib").Remove()
 }

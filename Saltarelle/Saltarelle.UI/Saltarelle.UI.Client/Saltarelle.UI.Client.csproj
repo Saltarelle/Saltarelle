@@ -66,9 +66,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="sscorlib" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\Saltarelle.snk">
       <Link>Saltarelle.snk</Link>
     </None>
@@ -141,7 +138,12 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(ProgramFiles)\nStuff\ScriptSharp\v1.0\nStuff.ScriptSharp.targets" />
+  <ItemGroup>
+    <Reference Include="sscorlib">
+      <HintPath>..\..\packages-manual\ScriptSharp\sscorlib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(SolutionDir)packages-manual\ScriptSharp\nStuff.ScriptSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).debug.js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.min.js" />

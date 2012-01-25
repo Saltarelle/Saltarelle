@@ -95,6 +95,12 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\Installer\bin\Saltarelle.msi" target="tools\Saltarelle-$script:ProductVersion.msi"/>
 		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.SalgenTask.dll" target="tools"/>
 		<file src="$out_dir\Saltarelle.targets" target="tools"/>
+		<file src="$base_dir\Saltarelle\Executables\Salgen.exe\bin\salgen.exe" target="tools"/>
+		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\sscorlib.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\nStuff.ScriptSharp.dll" target="tools"/>
+		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\nStuff.ScriptSharp.targets" target="tools"/>
+		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\ssc.exe" target="tools"/>
+		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\sspp.exe" target="tools"/>
 		<file src="$base_dir\Saltarelle\NuGet\InstallCore.ps1" target="tools\install.ps1"/>
 	</files>
 </package>
