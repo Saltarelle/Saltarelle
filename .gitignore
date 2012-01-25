@@ -16,3 +16,6 @@ _ReSharper*/
 Client.dll
 Script.js
 Script.min.js
+Saltarelle/Executables/ExecutablesVersion.cs
+Saltarelle/Installer/Version.wxi
+Saltarelle/SaltarelleVersion.cs
