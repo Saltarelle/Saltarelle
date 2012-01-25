@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<?include $(sys.CURRENTDIR)\Version.wxi ?>
-	<Product Id="7341942A-29B9-45AA-BF92-E29139900E7D" Name="Saltarelle" Language="1033" Version="$(var.Version)" Manufacturer="Saltarelle" UpgradeCode="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
+	<Product Id="7341942A-29B9-45AA-BF92-E29139900E7D" Name="Saltarelle" Language="1033" Version="$(var.ProductVersion)" Manufacturer="Saltarelle" UpgradeCode="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
 		<Package InstallerVersion="200" Compressed="yes" Id="*" />
 
 		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
@@ -73,11 +73,11 @@
 <!--		<UIRef Id="WixUI_Mondo"/>-->
 		
 		<Upgrade Id="CB97D31F-A24E-4DCB-A2EF-803E60EDAAD5">
-			<UpgradeVersion OnlyDetect="yes" Property="SELFFOUND" Minimum="0.5.0" IncludeMinimum="yes" Maximum="$(var.Version)" IncludeMaximum="yes"/>
-			<UpgradeVersion OnlyDetect="yes" Property="NEWERFOUND" Minimum="$(var.Version)" IncludeMinimum="no" />
+			<UpgradeVersion OnlyDetect="yes" Property="SELFFOUND" Minimum="0.5.0" IncludeMinimum="yes" Maximum="$(var.ProductVersion)" IncludeMaximum="yes"/>
+			<UpgradeVersion OnlyDetect="yes" Property="NEWERFOUND" Minimum="$(var.ProductVersion)" IncludeMinimum="no" />
 		</Upgrade>
 
-		<CustomAction Id='AlreadyUpdated' Error='Saltarelle $(var.Version) is alreaday installed.' />
+		<CustomAction Id='AlreadyUpdated' Error='Saltarelle $(var.ProductVersion) is alreaday installed.' />
 		<CustomAction Id='NoDowngrade' Error='A later version of [ProductName] is already installed.' />
 
 		<InstallExecuteSequence>

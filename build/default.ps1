@@ -18,7 +18,7 @@ Task Clean {
 }
 
 Task Build -Depends Clean, Generate-VersionInfo {
-	Exec { msbuild "$base_dir\Project\Engine.sln" /p:"Configuration=$configuration" }
+	Exec { msbuild "$base_dir\Saltarelle\Saltarelle.sln" /p:"Configuration=$configuration" }
 }
 
 Task Publish -Depends Publish-Zip, Publish-Nupkg {
@@ -89,7 +89,7 @@ Task Determine-Version {
 	
 	$v = New-Object System.Version($script:version)
 	$script:ExecutablesAssemblyVersion = "$($v.Major).$($v.Minor).0.0"
-	$script:ProductVersion = "$($v.Major).$($v.Minor)"
+	$script:ProductVersion = "$($v.Major).$($v.Minor).0"
 
 	"Version: $script:version"
 	"ExecutablesAssemblyVersion: $script:ExecutablesAssemblyVersion"
@@ -107,10 +107,11 @@ Task Generate-VersionInfo -Depends Determine-Version {
 [assembly: System.Reflection.AssemblyFileVersion("$script:ExecutablesAssemblyVersion")]
 "@ | Out-File "$base_dir\Saltarelle\Executables\ExecutablesVersion.cs" -Encoding "UTF8"
 
-@"<?xml version="1.0" encoding="utf-8"?>
+@"
+<?xml version="1.0" encoding="utf-8"?>
 <Include>
-	<?define Version="0.7.2"?>
-	<?define ExecutablesAssemblyVersion="0.7.2.0"?>
+	<?define ProductVersion="$script:ProductVersion"?>
+	<?define ExecutablesAssemblyVersion="$script:ExecutablesAssemblyVersion"?>
 </Include>
-"@ | Out-File "$base_dif\Saltarelle\Installer\Version.wxi" -Encoding UTF8
+"@ | Out-File "$base_dir\Saltarelle\Installer\Version.wxi" -Encoding UTF8
 }
