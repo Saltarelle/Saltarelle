@@ -24,50 +24,29 @@
 				<RegistryValue Root="HKCR" Key="Component Categories\{62C8FE65-4EBB-45e7-B440-6E39B2CDBF29}" Name="0" Value=".NET Category" Type="string" Action="write" />
 			</Component>
 
-			<Component Id="SalgenTaskComponentGAC" Guid="0EE6125B-CCD0-4EBC-8EAF-E52A278ACF6A">
-				<File Id="SalgenTaskDllGAC" Name="Saltarelle.SalgenTask.dll" Assembly=".net" Source="..\Executables\SalgenTask\bin\Saltarelle.SalgenTask.dll" KeyPath="yes" DiskId="1" />
-			</Component>
+      <Component Id="VS2008RegistryEntries" Guid="8A93DA05-85CA-467A-B031-5E1103FB504D">
+        <RegistryKey Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Generators\{FAE04EC1-301F-11D3-BF4B-00C04F79EFBC}\Salgen">
+          <RegistryValue Type="string" Value="Saltarelle code generator that transforms a .tpl file to code." KeyPath="yes"/>
+          <RegistryValue Name="CLSID" Type="string" Value="{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}"/>
+          <RegistryValue Name="GeneratesDesignTimeSource" Type="integer" Value="1"/>
+        </RegistryKey>
+      </Component>
 
-			<Directory Id="ProgramFilesFolder">
-				<Directory Id="INSTALLLOCATION" Name="Saltarelle">
-					<Component Id="VSCustomToolComponent" Guid="2ECB28DC-0679-4E23-B3B1-F16E22656232">
-						<File Id="VsCustomToolDll" Name="Saltarelle.VSCustomTool.dll" Source="..\Executables\VSCustomTool\bin\Saltarelle.VSCustomTool.dll" KeyPath="yes" DiskId="1"/>
-					</Component>
-
-					<Component Id="SalgenTaskComponent" Guid="B8E2A408-9171-47AE-A735-92C8B8573987">
-						<File Id="SalgenTaskDll" Name="Saltarelle.SalgenTask.dll" Source="..\Executables\SalgenTask\bin\Saltarelle.SalgenTask.dll" KeyPath="yes" DiskId="1" />
-					</Component>
-					<Component Id="SaltarelleTargetsComponent" Guid="006E9107-F3AF-4D0D-80F0-53BF066DE0C3">
-						<File Id="SaltarelleTargets" Name="Saltarelle.targets" Source="..\Executables\SalgenTask\bin\Saltarelle.targets" KeyPath="yes" DiskId="1" />
-					</Component> 
-
-					<Component Id="SalgenExeComponent" Guid="BB39365F-8B0C-49D9-825E-DA7BDA2436D3">
-						<File Id="SalgenExe" Name="salgen.exe" Source="..\Executables\Salgen.exe\bin\salgen.exe" KeyPath="yes" DiskId="1"/>
-					</Component>
-					
-					<Component Id="VSCustomToolRegistryEntries" Guid="8A93DA05-85CA-467A-B031-5E1103FB504D">
-						<RegistryKey Root="HKLM" Key="Software\Microsoft\VisualStudio\9.0\Generators\{FAE04EC1-301F-11D3-BF4B-00C04F79EFBC}\Salgen">
-							<RegistryValue Type="string" Value="Saltarelle code generator that transforms a .tpl file to code." KeyPath="yes"/>
-							<RegistryValue Name="CLSID" Type="string" Value="{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}"/>
-							<RegistryValue Name="GeneratesDesignTimeSource" Type="integer" Value="1"/>
-						</RegistryKey>
-					</Component>
-				</Directory>
-			</Directory>
+      <Component Id="VS2010RegistryEntries" Guid="7862549C-FA81-48BF-8632-F5BA15D3285C">
+        <RegistryKey Root="HKLM" Key="Software\Microsoft\VisualStudio\10.0\Generators\{FAE04EC1-301F-11D3-BF4B-00C04F79EFBC}\Salgen">
+          <RegistryValue Type="string" Value="Saltarelle code generator that transforms a .tpl file to code." KeyPath="yes"/>
+          <RegistryValue Name="CLSID" Type="string" Value="{D5BAD3F4-6C57-4901-AEEC-AE18BAB760D9}"/>
+          <RegistryValue Name="GeneratesDesignTimeSource" Type="integer" Value="1"/>
+        </RegistryKey>
+      </Component>
 		</Directory>
 
 		<Feature Id="MainFeature" Title="Saltarelle" Level="1">
 			<Feature Id="SaltarelleCore" Title="Core Components" Level="1">
-				<ComponentRef Id="VSCustomToolComponent"/>
 				<ComponentRef Id="VSCustomToolComponentGAC"/>
-				<ComponentRef Id="SalgenTaskComponent"/>
-				<ComponentRef Id="SalgenTaskComponentGAC"/>
-				<ComponentRef Id="SaltarelleTargetsComponent"/>
-				<ComponentRef Id="SalgenExeComponent"/>
-				<ComponentRef Id="VSCustomToolRegistryEntries"/>
-			</Feature>
-			<Feature Id="SaltarelleSample" Title="Sample Web Site" Level="1">
-			</Feature>
+				<ComponentRef Id="VS2008RegistryEntries"/>
+        <ComponentRef Id="VS2010RegistryEntries"/>
+      </Feature>
 		</Feature>
 		
 <!--		<UIRef Id="WixUI_Mondo"/>-->
