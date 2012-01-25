@@ -116,14 +116,17 @@
     <Compile Include="Configuration\RoutesElement.cs" />
     <Compile Include="Configuration\ScriptElement.cs" />
     <Compile Include="Configuration\ScriptElementCollection.cs" />
+    <Compile Include="CssResourceAttribute.cs" />
     <Compile Include="GlobalServices\IGlobalService.Server.cs" />
     <Compile Include="GlobalServices\DefaultGlobalServicesModule.cs" />
     <Compile Include="GlobalServices\GlobalServiceAttribute.Server.cs" />
     <Compile Include="GlobalServices\GlobalServices.Server.cs" />
+    <Compile Include="ImportCssResourceAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiresClientServiceAttribute.cs" />
     <Compile Include="Configuration\SaltarelleConfigSection.cs" />
     <Compile Include="Utils.Server.cs" />
+    <Compile Include="WebResourceAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Script.js">

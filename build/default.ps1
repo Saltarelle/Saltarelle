@@ -65,18 +65,16 @@ Task Publish-Zip -Depends Determine-Version, Build, Run-Tests {
 }
 
 Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
+	$authors = "Erik Källén"
+
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>SaltarelleCore</id>
 		<version>$script:version</version>
-		<title>Data Collection Engine</title>
-		<description>Data Collection Engine</description>
-		<authors>Erik Källén</authors>
-		<dependencies>
-			<dependency id="dotless" version="1.2.2.0" />
-			<dependency id="Mono.Cecil" version="0.9.5.2" />
-		</dependencies>
+		<title>Saltarelle Core Library</title>
+		<description>Saltarelle Core Library</description>
+		<authors>$authors</authors>
 	</metadata>
 	<files>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Client\bin\SaltarelleLib.Client.dll" target="lib"/>
@@ -84,18 +82,40 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.dll" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.xml" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.pdb" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.dll" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" target="lib"/>
 		<file src="$base_dir\Saltarelle\Installer\bin\Saltarelle.msi" target="tools\Saltarelle-$script:ProductVersion.msi"/>
 		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.targets" target="tools"/>
-		<file src="$base_dir\Saltarelle\NuGet\install.ps1" target="tools"/>
+		<file src="$base_dir\Saltarelle\NuGet\InstallCore.ps1" target="tools\install.ps1"/>
 	</files>
 </package>
 "@ >"$out_dir\SaltarelleCore.nuspec"
 
 	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleCore.nuspec" -OutputDirectory "$out_dir\Publish" }
 	rm "$out_dir\SaltarelleCore.nuspec"
+
+@"
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>SaltarelleMvc</id>
+		<version>$script:version</version>
+		<title>Saltarelle Mvc Interop</title>
+		<description>Saltarelle Mvc Interop</description>
+		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="dotless" version="1.2.2.0" />
+			<dependency id="Mono.Cecil" version="0.9.5.2" />
+			<dependency id="SaltarelleCore" version="[$script:version]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" target="lib"/>
+	</files>
+</package>
+"@ >"$out_dir\SaltarelleMvc.nuspec"
+
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleMvc.nuspec" -OutputDirectory "$out_dir\Publish" }
+	rm "$out_dir\SaltarelleMvc.nuspec"
 }
 
 Task Run-Tests {

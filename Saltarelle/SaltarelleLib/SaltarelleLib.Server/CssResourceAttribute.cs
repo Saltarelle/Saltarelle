@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 
-namespace Saltarelle.Mvc {
+namespace Saltarelle {
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple=true)]
 	public class CssResourceAttribute : WebResourceAttribute {
 		/// <summary>

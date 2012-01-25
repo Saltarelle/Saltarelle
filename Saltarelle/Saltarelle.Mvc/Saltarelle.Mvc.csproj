@@ -114,10 +114,8 @@
     <Compile Include="..\SaltarelleVersion.cs">
       <Link>Properties\SaltarelleVersion.cs</Link>
     </Compile>
-    <Compile Include="CssResourceAttribute.cs" />
     <Compile Include="DefaultScriptManagerService.cs" />
     <Compile Include="HtmlExtensions.cs" />
-    <Compile Include="ImportCssResourceAttribute.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="ModuleUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,7 +123,6 @@
     <Compile Include="Routes.cs" />
     <Compile Include="SaltarelleController.cs" />
     <Compile Include="VersionedRoute.cs" />
-    <Compile Include="WebResourceAttribute.cs" />
     <None Include="..\Saltarelle.snk" />
     <None Include="packages.config" />
   </ItemGroup>

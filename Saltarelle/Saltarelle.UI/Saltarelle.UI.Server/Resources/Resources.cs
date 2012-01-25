@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Saltarelle.Mvc;
-using Saltarelle.UI;
+﻿using Saltarelle;
 
 [assembly: CssResource("Saltarelle.UI.Resources.blank.gif", Saltarelle.UI.Resources.BlankImage, "blank-image")]
 [assembly: CssResource("Saltarelle.UI.Resources.folder_closed.gif", Saltarelle.UI.Resources.FolderClosedImage, "folder_closed-image")]
