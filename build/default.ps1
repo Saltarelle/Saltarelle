@@ -75,6 +75,9 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 		<title>Saltarelle Core Library</title>
 		<description>Saltarelle Core Library</description>
 		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="Newtonsoft.Json" version="4.0.7" />
+		</dependencies>
 	</metadata>
 	<files>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Client\bin\SaltarelleLib.Client.dll" target="lib"/>
