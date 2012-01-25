@@ -56,19 +56,19 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 }
 
 Task Run-Tests {
-#	$test_assemblies_file = "$base_dir\Project\TestAssemblies.txt"
-#
-#	if (Test-Path "$test_assemblies_file") {
-#		$testasms = @(Get-Content "$test_assemblies_file")
-#	}
-#	else {
-#		$testasms = @()
-#	}
-#	
-#	if ($testasms.Count -ne 0) {
-#		$runner = (dir "$base_dir\Project\packages" -Recurse -Filter nunit-console.exe | Select -ExpandProperty FullName)
-#		Exec { & "$runner" $testasms -nologo -xml "$out_dir\TestResults.xml" }
-#	}
+	$test_assemblies_file = "$base_dir\Saltarelle\TestAssemblies.txt"
+
+	if (Test-Path "$test_assemblies_file") {
+		$testasms = @(Get-Content "$test_assemblies_file")
+	}
+	else {
+		$testasms = @()
+	}
+	
+	if ($testasms.Count -ne 0) {
+		$runner = (dir "$base_dir\Saltarelle\packages" -Recurse -Filter nunit-console.exe | Select -ExpandProperty FullName)
+		Exec { & "$runner" $testasms -nologo -xml "$out_dir\TestResults.xml" }
+	}
 }
 
 Task Configure -Depends Generate-VersionInfo {
