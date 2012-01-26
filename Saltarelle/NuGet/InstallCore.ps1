@@ -76,9 +76,10 @@ if ($isClient) {
 	$msbuild.Xml.Imports | ? { $_.Project.EndsWith("Saltarelle.targets") } | % { $msbuild.Xml.RemoveChild($_) }
 	$msbuild.Xml.AddImport("`$(SolutionDir)$(MakeRelativePath -Origin $project.DTE.Solution.FullName -Target ([System.IO.Path]::Combine($toolsPath, ""Saltarelle.targets"")))")
 	
-	# Set the NoStdLib and TemplateFile properties
+	# Set the NoStdLib, TemplateFile and TargetFrameworkVersion properties
 	$msbuild.SetProperty("NoStdLib", "True")
 	$msbuild.SetProperty("TemplateFile", "Properties\Script.jst")
+	$msbuild.SetProperty("TargetFrameworkVersion", "v2.0")
 	
 	# Add a default script template (Script.jst) to the project
 	$propertiesDir = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($project.FileName), "Properties")
