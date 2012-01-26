@@ -56,13 +56,65 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\nStuff.ScriptSharp.targets" target="tools"/>
 		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\ssc.exe" target="tools"/>
 		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\sspp.exe" target="tools"/>
-		<file src="$base_dir\Saltarelle\NuGet\InstallCore.ps1" target="tools\install.ps1"/>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\install.ps1" target="tools"/>
 	</files>
 </package>
 "@ >"$out_dir\SaltarelleCore.nuspec"
 
 	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleCore.nuspec" -OutputDirectory "$out_dir\Publish" }
 	rm "$out_dir\SaltarelleCore.nuspec" > $null
+
+@"
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>SaltarelleParser</id>
+		<version>$script:version</version>
+		<title>Saltarelle Parser</title>
+		<description>Saltarelle Parser</description>
+		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="SaltarelleCore" version="[$script:version]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Client\bin\SaltarelleParser.Client.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Client\bin\SaltarelleParser.Client.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.pdb" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\install.ps1" target="tools"/>
+	</files>
+</package>
+"@ >"$out_dir\SaltarelleParser.nuspec"
+
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleParser.nuspec" -OutputDirectory "$out_dir\Publish" }
+	rm "$out_dir\SaltarelleParser.nuspec" > $null
+
+@"
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>SaltarelleUI</id>
+		<version>$script:version</version>
+		<title>Saltarelle UI</title>
+		<description>Saltarelle UI</description>
+		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="SaltarelleCore" version="[$script:version]" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Saltarelle.UI.Client.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Saltarelle.UI.Client.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.pdb" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\install.ps1" target="tools"/>
+	</files>
+</package>
+"@ >"$out_dir\Saltarelle.UI.nuspec"
+
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\Saltarelle.UI.nuspec" -OutputDirectory "$out_dir\Publish" }
+	rm "$out_dir\Saltarelle.UI.nuspec" > $null
 
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">

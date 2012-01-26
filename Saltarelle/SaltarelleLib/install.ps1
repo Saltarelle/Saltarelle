@@ -92,14 +92,14 @@ if ($isClient) {
 	# Add the CLIENT define constant
 	$project.ConfigurationManager | % { Add-DefineConstant -Configuration $_ -Constant "CLIENT" }
 	
-	# Add a reference from the server project to this project
+	# Add a reference from the server project to this project (if the server project exists)
 	$serverProject = $project.Collection | ? { $_.Name -eq "$canonicalName.Server" }
 	if ($serverProject) {
 		Add-OrderingDependency -From $serverProject -To $project
 	}
 }
 else {
-	# Remove serverside references added by us
+	# Remove clientside references added by us
 	$project.Object.References.Item("SaltarelleLib.Client").Remove()
 	$project.Object.References.Item("sscorlib").Remove()
 
@@ -118,7 +118,7 @@ else {
 		$msbuild.SetProperty("AssemblyName", $canonicalName)
 	}
 	
-	# Add a reference from this project to the corresponding client project
+	# Add a reference from this project to the corresponding client project (if the client project exists)
 	$clientProject = $project.Collection | ? { $_.Name -eq "$canonicalName.Client" }
 	if ($clientProject) {
 		Add-OrderingDependency -From $project -To $clientProject
