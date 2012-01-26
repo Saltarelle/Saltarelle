@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
-using SysConfig = System.Configuration.Configuration;
 using Saltarelle.Configuration;
 using System.Reflection;
 using System.IO;
@@ -16,7 +15,7 @@ namespace Saltarelle {
 		/// <summary>Creates a parser based on the content of a config section.</summary>
 		/// <param name="config">Configuration file</param>
 		/// <param name="rootPath">Path to resolve referenced assembly files in.</param>
-		public static SaltarelleParser CreateParserFromConfigSection(SaltarelleConfigSection config, string rootPath) {
+		public static SaltarelleParser CreateParserFromConfig(SaltarelleConfig config, string rootPath) {
 			var nodeProcessors            = new List<INodeProcessor>();
 			var typedParserImplementers   = new Dictionary<string, ITypedMarkupParserImpl>();
 			var untypedParserImplementers = new List<IUntypedMarkupParserImpl>();
@@ -38,30 +37,24 @@ namespace Saltarelle {
 		/// </summary>
 		public static SaltarelleParser CreateParserFromConfigFile(string configFile) {
 			if (string.IsNullOrEmpty(configFile) || !File.Exists(configFile)) throw new ArgumentException("configFile");
-			return CreateParserFromConfigSection(LoadConfig(configFile), Path.GetDirectoryName(configFile));
+			return CreateParserFromConfig(SaltarelleConfig.LoadFile(configFile), Path.GetDirectoryName(configFile));
 		}
-		
+
 		/// <summary>
 		/// Creates a parser with no plugins.
 		/// </summary>
 		public static SaltarelleParser CreateDefaultParser() {
 			return new SaltarelleParser(new INodeProcessor[0], new Dictionary<string, ITypedMarkupParserImpl>(), new IUntypedMarkupParserImpl[0]);
 		}
+
 		
-		/// <summary>
+        /// <summary>
 		/// Creates a parser with plugins loaded from web.config.
 		/// </summary>
 		public static SaltarelleParser CreateParserFromWebConfig() {
-			return CreateParserFromConfigSection((SaltarelleConfigSection)WebConfigurationManager.GetSection("saltarelle"), HostingEnvironment.MapPath("~/bin"));
+			return CreateParserFromConfig(SaltarelleConfig.GetFromWebConfig(), HostingEnvironment.MapPath("~/bin"));
 		}
 
-		private static SaltarelleConfigSection LoadConfig(string fileName) {
-			if (Utils.IsNull(fileName)) throw new ArgumentException("fileName");
-			ConfigurationFileMap fileMap = new ConfigurationFileMap(fileName);
-			SysConfig cfg = ConfigurationManager.OpenMappedMachineConfiguration(fileMap);
-			return !Utils.IsNull(cfg) ? (SaltarelleConfigSection)cfg.Sections["saltarelle"] : null;
-		}
-		
 		private static IEnumerable<INodeProcessor> GetNodeProcessors(Assembly asm) {
 			var seq = (   from tp in asm.GetTypes()
 			               let attr = (NodeProcessorAttribute)Attribute.GetCustomAttribute(tp, typeof(NodeProcessorAttribute))
@@ -71,9 +64,9 @@ namespace Saltarelle {
 			var result = new List<INodeProcessor>();
 			foreach (var tp in seq) {
 				if (!typeof(INodeProcessor).IsAssignableFrom(tp))
-					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a NodeProcessorAttribute, does not implement INodeProcessor.");
+					throw new InvalidOperationException("The type " + tp.FullName + ", which is decorated with a NodeProcessorAttribute, does not implement INodeProcessor.");
 				if (tp.GetConstructor(Type.EmptyTypes) == null)
-					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a NodeProcessorAttribute, does not have a parameterless public constructor.");
+					throw new InvalidOperationException("The type " + tp.FullName + ", which is decorated with a NodeProcessorAttribute, does not have a parameterless public constructor.");
 				result.Add((INodeProcessor)Activator.CreateInstance(tp));
 			}
 			return result;
@@ -88,9 +81,9 @@ namespace Saltarelle {
 			var result = new List<IUntypedMarkupParserImpl>();
 			foreach (var tp in seq) {
 				if (!typeof(IUntypedMarkupParserImpl).IsAssignableFrom(tp))
-					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a UntypedMarkupParserImplAttribute, does not implement IUntypedMarkupParserImpl.");
+					throw new InvalidOperationException("The type " + tp.FullName + ", which is decorated with a UntypedMarkupParserImplAttribute, does not implement IUntypedMarkupParserImpl.");
 				if (tp.GetConstructor(Type.EmptyTypes) == null)
-					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a UntypedMarkupParserImplAttribute, does not have a parameterless public constructor.");
+					throw new InvalidOperationException("The type " + tp.FullName + ", which is decorated with a UntypedMarkupParserImplAttribute, does not have a parameterless public constructor.");
 				result.Add((IUntypedMarkupParserImpl)Activator.CreateInstance(tp));
 			}
 			return result;
@@ -105,12 +98,12 @@ namespace Saltarelle {
 
 			foreach (var g in seq) {
 				if (g.Count() > 1)
-					throw new ConfigurationErrorsException("The plugin assembly " + asm.GetName().Name + " defines more than one typed markup processor for the prefix " + g.Key + ".");
+					throw new InvalidOperationException("The plugin assembly " + asm.GetName().Name + " defines more than one typed markup processor for the prefix " + g.Key + ".");
 				var tp = g.Single().tp;
 				if (!typeof(ITypedMarkupParserImpl).IsAssignableFrom(tp))
-					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a TypedMarkupParserImplAttribute, does not implement ITypedMarkupParserImpl.");
+					throw new InvalidOperationException("The type " + tp.FullName + ", which is decorated with a TypedMarkupParserImplAttribute, does not implement ITypedMarkupParserImpl.");
 				if (tp.GetConstructor(Type.EmptyTypes) == null)
-					throw new ConfigurationErrorsException("The type " + tp.FullName + ", which is decorated with a TypedMarkupParserImplAttribute, does not have a parameterless public constructor.");
+					throw new InvalidOperationException("The type " + tp.FullName + ", which is decorated with a TypedMarkupParserImplAttribute, does not have a parameterless public constructor.");
 				if (!parsers.ContainsKey(g.Key))
 					parsers.Add(g.Key, (ITypedMarkupParserImpl)Activator.CreateInstance(tp));
 			}

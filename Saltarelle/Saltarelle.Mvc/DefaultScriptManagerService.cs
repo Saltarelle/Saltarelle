@@ -25,7 +25,7 @@ namespace Saltarelle {
 		private static ReadOnlyCollection<string> addScriptsAfterAssemblyScripts;
 
 		static DefaultScriptManagerService() {
-			var cfg = (SaltarelleConfigSection)WebConfigurationManager.GetSection("saltarelle");
+			var cfg = SaltarelleConfig.GetFromWebConfig();
 			debugScripts = cfg.Scripts.Debug;
 
 			var allScripts = cfg.Scripts.Cast<ScriptElement>().Select(elem => {

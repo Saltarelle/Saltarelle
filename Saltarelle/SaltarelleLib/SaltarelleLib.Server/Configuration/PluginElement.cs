@@ -5,22 +5,11 @@ using System.Text;
 using System.Configuration;
 
 namespace Saltarelle.Configuration {
-	public class PluginElement : ConfigurationElement {
-		private static ConfigurationProperty propAssembly;
-		private static ConfigurationPropertyCollection properties;
+	public class PluginElement {
+		public string Assembly { get; private set; }
 
-		static PluginElement() {
-			propAssembly = new ConfigurationProperty("assembly", typeof(string));
-			properties   = new ConfigurationPropertyCollection() { propAssembly };
-		}
-		
-		[ConfigurationProperty("assembly")]
-		public string Assembly {
-			get { return (string)base[propAssembly]; }
-		}
-
-		protected override ConfigurationPropertyCollection Properties {
-			get { return properties; }
-		}
+	    public PluginElement(string assembly) {
+	        Assembly = assembly;
+	    }
 	}
 }

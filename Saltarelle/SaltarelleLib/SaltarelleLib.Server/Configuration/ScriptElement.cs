@@ -12,43 +12,17 @@ namespace Saltarelle.Configuration {
 		AfterAssemblyScripts
 	}
 
-	public class ScriptElement : ConfigurationElement {
-		private static ConfigurationProperty propUrl;
-		private static ConfigurationProperty propPosition;
-		private static ConfigurationProperty propAssembly;
-		private static ConfigurationProperty propResource;
-		private static ConfigurationPropertyCollection properties;
+	public class ScriptElement {
+	    public string Url { get; private set; }
+		public ScriptPosition Position { get; private set; }
+		public string Assembly { get; private set; }
+		public string Resource { get; private set; }
 
-		static ScriptElement() {
-			propUrl      = new ConfigurationProperty("url", typeof(string));
-			propPosition = new ConfigurationProperty("position", typeof(ScriptPosition));
-			propAssembly = new ConfigurationProperty("assembly", typeof(string));
-			propResource = new ConfigurationProperty("resource", typeof(string));
-			properties   = new ConfigurationPropertyCollection() { propUrl, propPosition, propAssembly, propResource };
-		}
-		
-		[ConfigurationProperty("url")]
-		public string Url {
-			get { return (string)base[propUrl]; }
-		}
-		
-		[ConfigurationProperty("position")]
-		public ScriptPosition Position {
-			get { return (ScriptPosition)base[propPosition]; }
-		}
-
-		[ConfigurationProperty("assembly")]
-		public string Assembly {
-			get { return (string)base[propAssembly]; }
-		}
-		
-		[ConfigurationProperty("resource")]
-		public string Resource {
-			get { return (string)base[propResource]; }
-		}
-
-		protected override ConfigurationPropertyCollection Properties {
-			get { return properties; }
-		}
+	    public ScriptElement(string url, ScriptPosition position, string assembly, string resource) {
+	        Url = url;
+	        Position = position;
+	        Assembly = assembly;
+	        Resource = resource;
+	    }
 	}
 }

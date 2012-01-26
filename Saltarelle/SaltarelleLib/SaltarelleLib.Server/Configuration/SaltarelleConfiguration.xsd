@@ -23,12 +23,12 @@
           </xs:complexType>
         </xs:element>
 
-        <xs:element name="routes" minOccurs="0">
+        <xs:element name="routes">
           <xs:complexType>
-            <xs:attribute name="assemblyScripts" type="xs:string"/>
-            <xs:attribute name="assemblyCss" type="xs:string"/>
-            <xs:attribute name="assemblyResources" type="xs:string"/>
-            <xs:attribute name="delegate" type="xs:string"/>
+            <xs:attribute name="assemblyScripts" type="xs:string" use="required"/>
+            <xs:attribute name="assemblyCss" type="xs:string" use="required"/>
+            <xs:attribute name="assemblyResources" type="xs:string" use="required"/>
+            <xs:attribute name="delegate" type="xs:string" use="required"/>
           </xs:complexType>
         </xs:element>
 
@@ -37,13 +37,14 @@
             <xs:sequence>
               <xs:element name="add" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
-                  <xs:attribute name="url" type="xs:string"/>
-                  <xs:attribute name="assembly" type="xs:string"/>
-                  <xs:attribute name="resource" type="xs:string"/>
-                  <xs:attribute name="position" type="scriptPosition"/>
+                  <xs:attribute name="url" type="xs:string" use="optional"/>
+                  <xs:attribute name="assembly" type="xs:string" use="optional"/>
+                  <xs:attribute name="resource" type="xs:string" use="optional"/>
+                  <xs:attribute name="position" type="scriptPosition" use="optional"/>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
+            <xs:attribute name="debug" type="xs:boolean"/>
           </xs:complexType>
         </xs:element>
       </xs:all>

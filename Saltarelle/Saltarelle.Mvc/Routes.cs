@@ -49,7 +49,7 @@ namespace Saltarelle.Mvc {
 		}
 
 		public static void RegisterRoutes(RouteCollection routes) {
-			var config = (SaltarelleConfigSection)WebConfigurationManager.GetSection("saltarelle");
+			var config = SaltarelleConfig.GetFromWebConfig();
 			if (Utils.IsNull(config))
 				throw new ConfigurationErrorsException("The <saltarelle> section is missing from web.config.");
 			bool debugScripts = config.Scripts.Debug;

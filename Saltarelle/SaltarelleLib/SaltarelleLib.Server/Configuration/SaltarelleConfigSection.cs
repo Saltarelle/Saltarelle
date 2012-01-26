@@ -3,39 +3,48 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
+using System.Xml;
 
 namespace Saltarelle.Configuration {
 	public class SaltarelleConfigSection : ConfigurationSection {
-		private static ConfigurationProperty propPlugins;
-		private static ConfigurationProperty propRoutes;
-		private static ConfigurationProperty propScripts;
-		private static ConfigurationPropertyCollection properties;
+        internal string RawXml { get; private set; }
+        private static ConfigurationPropertyCollection s_properties;
+        private bool isModified;
 
-		static SaltarelleConfigSection() {
-			propPlugins = new ConfigurationProperty("plugins", typeof(PluginElementCollection));
-			propRoutes  = new ConfigurationProperty("routes", typeof(RoutesElement));
-			propScripts = new ConfigurationProperty("scripts", typeof(ScriptElementCollection));
-			properties  = new ConfigurationPropertyCollection() { propPlugins, propRoutes, propScripts };
-		}
-		
-		[ConfigurationProperty("plugins")]
-		public PluginElementCollection Plugins {
-			get { return (PluginElementCollection)base[propPlugins]; }
-		}
+        protected override ConfigurationPropertyCollection Properties {
+            get { return EnsureStaticPropertyBag(); }
+        }
 
-		[ConfigurationProperty("routes")]
-		public RoutesElement Routes {
-			get { return (RoutesElement)base[propRoutes]; }
-		}
-		
-		[ConfigurationProperty("scripts")]
-		public ScriptElementCollection Scripts {
-			get { return (ScriptElementCollection)base[propScripts];  }
-		}
+        public SaltarelleConfigSection() {
+            EnsureStaticPropertyBag();
+        }
 
-		protected override ConfigurationPropertyCollection Properties {
-			get { return properties; }
-		}
+        private static ConfigurationPropertyCollection EnsureStaticPropertyBag() {
+            if (s_properties == null)
+                s_properties = new ConfigurationPropertyCollection();
+            return s_properties;
+        }
+
+        protected override bool IsModified() {
+            return isModified;
+        }
+
+        protected override void ResetModified() {
+            isModified = false;
+        }
+
+        protected override void Reset(ConfigurationElement parentSection) {
+            RawXml = string.Empty;
+            isModified = false;
+        }
+
+        protected override void DeserializeSection(XmlReader xmlReader) {
+            RawXml = xmlReader.ReadOuterXml();
+            isModified = true;
+        }
+
+        protected override string SerializeSection(ConfigurationElement parentSection, string name, ConfigurationSaveMode saveMode) {
+          return RawXml;
+        }
 	}
-	
 }

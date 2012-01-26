@@ -111,9 +111,12 @@
     <Compile Include="..\SaltarelleLib.Shared\Utils.Shared.cs">
       <Link>Utils.Shared.cs</Link>
     </Compile>
+    <Compile Include="Configuration\SaltarelleConfig.cs" />
     <Compile Include="Configuration\PluginElement.cs" />
-    <Compile Include="Configuration\PluginElementCollection.cs" />
     <Compile Include="Configuration\RoutesElement.cs" />
+    <Compile Include="Configuration\SaltarelleConfiguration.cs">
+      <DependentUpon>SaltarelleConfiguration.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Configuration\ScriptElement.cs" />
     <Compile Include="Configuration\ScriptElementCollection.cs" />
     <Compile Include="CssResourceAttribute.cs" />
@@ -170,6 +173,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"$(SolutionDir)packages-manual\Xsd\xsd.exe" /out:"$(ProjectDir)Configuration" /c "$(ProjectDir)Configuration\SaltarelleConfiguration.xsd"</PreBuildEvent>
+    <PreBuildEvent>"$(SolutionDir)packages-manual\Xsd\xsd.exe" /n:"Saltarelle.Configuration.Internal.Xml" /out:"$(ProjectDir)Configuration" /c "$(ProjectDir)Configuration\SaltarelleConfiguration.xsd"</PreBuildEvent>
   </PropertyGroup>
 </Project>
