@@ -59,7 +59,7 @@ Task Publish-Zip -Depends Determine-Version, Build, Run-Tests {
 	copy "$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.xml" "$out_dir\zip\Server"
 	copy "$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" "$out_dir\zip\Server"
 
-	copy "$base_dir\Saltarelle\Installer\bin\Saltarelle.msi" "$out_dir\zip\Tools\Saltarelle-$script:ProductVersion.msi"
+	copy "$base_dir\Saltarelle\VSIntegrationInstaller\bin\SaltarelleVSIntegration.msi" "$out_dir\zip\Tools\SaltarelleVSIntegration-$script:ProductVersion.msi"
 
 	Exec { & "$buildtools_dir\7z.exe" a -y -bd -r -tzip "$out_zip" "$out_dir\zip\Client" "$out_dir\zip\Server" "$out_dir\zip\Tools" }
 }
@@ -92,7 +92,7 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.dll" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.xml" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.pdb" target="lib"/>
-		<file src="$base_dir\Saltarelle\Installer\bin\Saltarelle.msi" target="tools\Saltarelle-$script:ProductVersion.msi"/>
+		<file src="$base_dir\Saltarelle\VSIntegrationInstaller\bin\SaltarelleVSIntegration.msi" target="tools\SaltarelleVSIntegration-$script:ProductVersion.msi"/>
 		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.SalgenTask.dll" target="tools"/>
 		<file src="$out_dir\Saltarelle.targets" target="tools"/>
 		<file src="$base_dir\Saltarelle\Executables\Salgen.exe\bin\salgen.exe" target="tools"/>
@@ -194,5 +194,5 @@ Task Generate-VersionInfo -Depends Determine-Version {
 	<?define ProductVersion="$script:ProductVersion"?>
 	<?define ExecutablesAssemblyVersion="$script:ExecutablesAssemblyVersion"?>
 </Include>
-"@ | Out-File "$base_dir\Saltarelle\Installer\Version.wxi" -Encoding UTF8
+"@ | Out-File "$base_dir\Saltarelle\VSIntegrationInstaller\Version.wxi" -Encoding UTF8
 }
