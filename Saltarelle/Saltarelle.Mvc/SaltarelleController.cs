@@ -34,16 +34,12 @@ namespace Saltarelle.Mvc
 			}
 			catch (Exception) {
 				// Something is probably wrong with IIS (not installed/not working/whatever. No big deal, just use the map from the registry instead if developing.
-				if (System.Diagnostics.Process.GetCurrentProcess().MainModule.ModuleName.ToLowerInvariant() == "webdev.webserver.exe") {
-					mimeMap = (  from key in Registry.ClassesRoot.GetSubKeyNames()
-					            where key.StartsWith(".")
-					              let value = Registry.GetValue("HKEY_CLASSES_ROOT\\" + key, "Content Type", null) as string
-					            where !string.IsNullOrEmpty(value)
-					           select new { key, value }
-					          ).ToDictionary(x => x.key.ToLowerInvariant(), x => x.value);
-				}
-				else
-					throw;
+				mimeMap = (  from key in Registry.ClassesRoot.GetSubKeyNames()
+					        where key.StartsWith(".")
+					            let value = Registry.GetValue("HKEY_CLASSES_ROOT\\" + key, "Content Type", null) as string
+					        where !string.IsNullOrEmpty(value)
+					        select new { key, value }
+					        ).ToDictionary(x => x.key.ToLowerInvariant(), x => x.value);
 			}
 		}
 
