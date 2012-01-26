@@ -67,13 +67,6 @@ Task Publish-Zip -Depends Determine-Version, Build, Run-Tests {
 Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 	$authors = "Erik Källén"
 	
-	$targetsContent = [xml](Get-Content "$base_dir\Saltarelle\Executables\SalgenTask\Saltarelle.targets")
-	$x = Select-Xml -Xml $targetsContent -Xpath "//x:UsingTask" -Namespace @{ x = "http://schemas.microsoft.com/developer/msbuild/2003" }
-	$x.Node.RemoveAttribute("AssemblyName") > $null
-	$x.Node.SetAttribute("AssemblyFile", "Saltarelle.SalgenTask.dll") > $null
-	
-	$targetsContent.Save("$out_dir\Saltarelle.targets") > $null
-	
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
@@ -94,7 +87,7 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.pdb" target="lib"/>
 		<file src="$base_dir\Saltarelle\VSIntegrationInstaller\bin\SaltarelleVSIntegration.msi" target="tools\SaltarelleVSIntegration-$script:ProductVersion.msi"/>
 		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.SalgenTask.dll" target="tools"/>
-		<file src="$out_dir\Saltarelle.targets" target="tools"/>
+		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.targets" target="tools"/>
 		<file src="$base_dir\Saltarelle\Executables\Salgen.exe\bin\salgen.exe" target="tools"/>
 		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\sscorlib.dll" target="lib"/>
 		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\nStuff.ScriptSharp.dll" target="tools"/>
@@ -108,7 +101,6 @@ Task Publish-Nupkg -Depends Determine-Version, Build, Run-Tests {
 
 	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleCore.nuspec" -OutputDirectory "$out_dir\Publish" }
 	rm "$out_dir\SaltarelleCore.nuspec" > $null
-	rm "$out_dir\Saltarelle.targets" > $null
 
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">

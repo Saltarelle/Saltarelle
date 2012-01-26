@@ -94,7 +94,6 @@
     <None Include="Saltarelle.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Saltarelle.targets.template" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
@@ -130,10 +129,7 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-      <Output TaskParameter="Assemblies" ItemName="TargetAssemblyInfo" />
-    </GetAssemblyIdentity>
-    <XmlPoke XmlInputPath="$(TargetDir)saltarelle.targets" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;" Query="//x:UsingTask/@AssemblyName" Value="%(TargetAssemblyInfo.Name), Version=%(TargetAssemblyInfo.FullName), Culture=neutral, PublicKeyToken=%(TargetAssemblyInfo.PublicKeyToken)" />
+    <XmlPoke XmlInputPath="$(TargetDir)saltarelle.targets" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;" Query="//x:UsingTask/@AssemblyFile" Value="$(TargetFileName)" />
   </Target>
   <PropertyGroup>
     <PostBuildEvent>"$(SolutionDir)packages-manual\ILMerge\ilmerge.exe" "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"</PostBuildEvent>
