@@ -38,8 +38,10 @@ namespace Saltarelle.Configuration {
             isModified = false;
         }
 
-        protected override void DeserializeSection(XmlReader xmlReader) {
-            RawXml = xmlReader.ReadOuterXml();
+        protected override void DeserializeSection(XmlReader reader) {
+            if (!reader.Read() || reader.NodeType != XmlNodeType.Element)
+                throw new ConfigurationErrorsException("Expected to find element");
+            RawXml = reader.ReadOuterXml();
             isModified = true;
         }
 
