@@ -138,6 +138,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Saltarelle.snk" />
+    <None Include="Configuration\SaltarelleConfiguration.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -166,4 +169,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)packages-manual\Xsd\xsd.exe" /out:"$(ProjectDir)Configuration" /c "$(ProjectDir)Configuration\SaltarelleConfiguration.xsd"</PreBuildEvent>
+  </PropertyGroup>
 </Project>
