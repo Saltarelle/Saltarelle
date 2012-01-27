@@ -49,10 +49,10 @@ Function Add-OrderingDependency($From, $To, [switch]$Save) {
 		$ref = $msb.AddItem("ProjectReference", $relPath) | Select-Object -First 1
 		$ref.SetMetadataValue("ReferenceOutputAssembly", "false") > $null
 		$ref.SetMetadataValue("Name", "$($To.Name) (ordering only)") > $null
-	}
-	
-	if ($Save) {
-		$msb.Save() > $null
+
+		if ($Save) {
+			$msb.Save()
+		}
 	}
 }
 
@@ -100,7 +100,7 @@ if ($isClient) {
 	# Add a reference from the server project to this project (if the server project exists)
 	$serverProject = $project.Collection | ? { $_.Name -eq "$canonicalName.Server" }
 	if ($serverProject) {
-		Add-OrderingDependency -From $serverProject -To $project
+		Add-OrderingDependency -From $serverProject -To $project -Save
 	}
 }
 else {
@@ -129,3 +129,5 @@ else {
 		Add-OrderingDependency -From $project -To $clientProject
 	}
 }
+
+$project.Save()
