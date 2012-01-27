@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SERVER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -31,14 +31,14 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;SERVER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SERVER</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
@@ -47,7 +47,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;SERVER</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -56,14 +56,31 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Saltarelle.UI, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Debug\Saltarelle.UI.dll</HintPath>
+    <Reference Include="dotless.Core, Version=1.2.2.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
+      <HintPath>..\packages\dotless.1.2.2.0\lib\dotless.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.7.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.4.0.7\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.Mvc, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\SaltarelleMvc.0.7.2.61\lib\Saltarelle.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleLib, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SaltarelleCore.0.7.2.61\lib\SaltarelleLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -179,6 +196,7 @@
     <Content Include="Scripts\sscompat.js" />
     <Content Include="Scripts\sscorlib.debug.js" />
     <Content Include="Scripts\sscorlib.js" />
+    <Content Include="packages.config" />
     <None Include="Views\Home\Lesson7.aspx" />
     <Content Include="Views\Home\DialogTest.aspx" />
     <Content Include="Views\Home\GridTest.aspx" />

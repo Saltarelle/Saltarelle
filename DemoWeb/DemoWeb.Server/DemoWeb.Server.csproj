@@ -55,18 +55,39 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Saltarelle.UI, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\Saltarelle.UI.dll</HintPath>
+    <Reference Include="dotless.Core, Version=1.2.2.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
+      <HintPath>..\packages\dotless.1.2.2.0\lib\dotless.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleParser, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.0.7.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.4.0.7\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.Mvc, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleParser.dll</HintPath>
+      <HintPath>..\packages\SaltarelleMvc.0.7.2.61\lib\Saltarelle.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.UI, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SaltarelleUI.0.7.2.61\lib\Saltarelle.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleLib, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SaltarelleCore.0.7.2.61\lib\SaltarelleLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleParser, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SaltarelleParser.0.7.2.61\lib\SaltarelleParser.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -126,6 +147,8 @@
       <Link>Person.Shared.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Module.less" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Script.js">
@@ -170,6 +193,12 @@
     <EmbeddedResource Include="..\Client.dll">
       <Link>Client.dll</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DemoWeb.Client\DemoWeb.Client.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Name>DemoWeb.Client (ordering only)</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

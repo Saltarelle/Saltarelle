@@ -80,19 +80,20 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Saltarelle.UI.Client, Version=0.7.2.0, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Debug\Saltarelle.UI.Client.dll</HintPath>
+    <Reference Include="Saltarelle.UI.Client">
+      <HintPath>..\packages\SaltarelleUI.0.7.2.61\lib\Saltarelle.UI.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib.Client, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleLib.Client.dll</HintPath>
+    <Reference Include="SaltarelleLib.Client">
+      <HintPath>..\packages\SaltarelleCore.0.7.2.61\lib\SaltarelleLib.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="SaltarelleParser.Client, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ProgramFiles)\Saltarelle\SaltarelleParser.Client.dll</HintPath>
+    <Reference Include="SaltarelleParser.Client">
+      <HintPath>..\packages\SaltarelleParser.0.7.2.61\lib\SaltarelleParser.Client.dll</HintPath>
     </Reference>
-    <Reference Include="sscorlib" />
+    <Reference Include="sscorlib">
+      <HintPath>..\packages\SaltarelleCore.0.7.2.61\lib\sscorlib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Script.jst" />
@@ -139,6 +140,7 @@
       <Link>Person.Shared.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -196,6 +198,6 @@
       <Link>saltarelle.config</Link>
     </None>
   </ItemGroup>
-  <Import Project="$(ProgramFiles)\nStuff\ScriptSharp\v1.0\nStuff.ScriptSharp.targets" />
-  <Import Project="$(ProgramFiles)\Saltarelle\Saltarelle.targets" />
+  <Import Project="$(SolutionDir)packages\SaltarelleCore.0.7.2.61\tools\nStuff.ScriptSharp.targets" />
+  <Import Project="$(SolutionDir)packages\SaltarelleCore.0.7.2.61\tools\Saltarelle.targets" />
 </Project>

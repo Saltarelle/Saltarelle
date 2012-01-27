@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Saltarelle.UI</name>
+    </assembly>
+    <members>
+        <member name="T:Saltarelle.UI.ITreeNode">
+            <summary>
+            Represents a tree node. Instances of this class are manipulated using static methods on the <see cref="T:Saltarelle.UI.Tree"/> class.
+            Instances are created by the <see cref="M:Saltarelle.UI.Tree.CreateTreeNode"/> method.
+            The reasons for this interface are:
+            1) Script# does not support methods on [Record] types, and
+            2) If we make the TreeNode class (whose members we don't want others to modify) public and its fields internal, Script# will minimize the field names, which is bad for JSON. [PreserveName] does not seem to work.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.UI.Tree.TreeNodeIsChildOf(Saltarelle.UI.ITreeNode,Saltarelle.UI.ITreeNode)">
+            <summary>
+            Determines is a node is a child of another. Returns false if the nodes are the same.
+            </summary>
+        </member>
+    </members>
+</doc>
