@@ -41,13 +41,18 @@ Function Add-DefineConstant($Configuration, [string]$Constant) {
 	}
 }
 
-Function Add-OrderingDependency($From, $To) {
-	If (-not ($From.Object.References | ? { $_.SourceProject -eq $To })) {
-		$msb = [Microsoft.Build.Evaluation.ProjectCollection]::GlobalProjectCollection.GetLoadedProjects($From.FullName) | Select-Object -First 1
-		$relPath = MakeRelativePath -Origin $From.FullName -Target $To.FullName
+Function Add-OrderingDependency($From, $To, [switch]$Save) {
+	$msb = [Microsoft.Build.Evaluation.ProjectCollection]::GlobalProjectCollection.GetLoadedProjects($From.FullName) | Select-Object -First 1
+	$relPath = MakeRelativePath -Origin $From.FullName -Target $To.FullName
+
+	If (-not ($msb.Items | ? { $_.Key -eq "ProjectReference" } | % { $_.Value } | ? { $_.UnevaluatedInclude -eq $relPath })) {
 		$ref = $msb.AddItem("ProjectReference", $relPath) | Select-Object -First 1
 		$ref.SetMetadataValue("ReferenceOutputAssembly", "false") > $null
-		$ref.SetMetadataValue("Name", "$($To.Name) (ordering dependency only)") > $null
+		$ref.SetMetadataValue("Name", "$($To.Name) (ordering only)") > $null
+	}
+	
+	if ($Save) {
+		$msb.Save() > $null
 	}
 }
 
