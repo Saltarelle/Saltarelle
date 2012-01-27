@@ -165,24 +165,34 @@ Task Configure -Depends Generate-VersionInfo {
 }
 
 Task Determine-Version {
-	$script:version = 
-		git log --decorate=full --simplify-by-decoration --pretty=oneline |             # Get the log
+	$refcommit = % {
+	(git log --decorate=full --simplify-by-decoration --pretty=oneline HEAD |           # Append items from the log
 		Select-String '\(' |                                                            # Only include entries with names
 		% { ($_ -replace "^[^(]*\(([^)]*)\).*$","`$1" -replace " ", "").Split(',') } |  # Select only the names, one line per name, delete spaces
 		Select-String "^tag:$release_tag_pattern`$" |                                   # Only tags of interest
-		% { $_ -replace "^tag:$release_tag_pattern`$", "`$1" } |                        # Extract the version
-		Select-Object -First 1                                                          # Take the first (most recent) one
-
-	if ($script:version -eq $null) {
-		$script:version = "1.0"
+		% { $_ -replace "^tag:","" }                                                    # Remove the tag: prefix
+	) } { git log --reverse --pretty=format:%H | Select-Object -First 1 } |             # Add the oldest commit as a fallback
+	Select-Object -First 1
+	
+	If ($refcommit | Select-String "^$release_tag_pattern`$") {
+		$ver = New-Object System.Version(($refcommit -replace "^$release_tag_pattern`$","`$1"))
+		If ($ver.Build -eq -1) {
+			$ver = New-Object System.Version($ver.Major, $ver.Minor, 0)
+		}
+	}
+	else {
+		$ver = New-Object System.Version("0.0.0")
 	}
 	
-	$v = New-Object System.Version($script:version)
-	$script:ExecutablesAssemblyVersion = "$($v.Major).$($v.Minor).0.0"
-	$script:ProductVersion = "$($v.Major).$($v.Minor).0"
+	$revision = ((git log "$refcommit..HEAD" --pretty=format:"%H") | Measure-Object).Count # Number of commits since our reference commit
+	if ($revision -gt 0) {
+		$ver = New-Object System.Version($ver.Major, $ver.Minor, $ver.Build, $revision)
+	}
+	
+	$script:version = $ver.ToString()
+	$script:ProductVersion = "$($ver.Major).$($ver.Minor).$($ver.Build)"
 
 	"Version: $script:version"
-	"ExecutablesAssemblyVersion: $script:ExecutablesAssemblyVersion"
 	"ProductVersion: $script:ProductVersion"
 }
 
@@ -193,15 +203,10 @@ Task Generate-VersionInfo -Depends Determine-Version {
 "@ | Out-File "$base_dir\Saltarelle\SaltarelleVersion.cs" -Encoding "UTF8"
 
 @"
-[assembly: System.Reflection.AssemblyVersion("$script:ExecutablesAssemblyVersion")]
-[assembly: System.Reflection.AssemblyFileVersion("$script:ExecutablesAssemblyVersion")]
-"@ | Out-File "$base_dir\Saltarelle\Executables\ExecutablesVersion.cs" -Encoding "UTF8"
-
-@"
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
 	<?define ProductVersion="$script:ProductVersion"?>
-	<?define ExecutablesAssemblyVersion="$script:ExecutablesAssemblyVersion"?>
+	<?define AssemblyVersion="$script:version"?>
 </Include>
 "@ | Out-File "$base_dir\Saltarelle\VSIntegrationInstaller\Version.wxi" -Encoding UTF8
 }
