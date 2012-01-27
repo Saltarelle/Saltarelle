@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWeb.Client", "DemoWeb.Client\DemoWeb.Client.csproj", "{B5913887-CE93-4A65-9C9E-394AAC9F90DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWeb.Server", "DemoWeb.Server\DemoWeb.Server.csproj", "{98625DA7-6346-49AF-85A4-BD4B7EF147E4}"

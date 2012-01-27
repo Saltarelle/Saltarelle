@@ -1,0 +1,21 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Salgen" AssemblyFile="" />
+
+  <PropertyGroup>
+    <BuildDependsOn>
+      RunSalgen;
+      $(BuildDependsOn);
+      CopyFilesWhereServerFacetCanFindThem
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="RunSalgen">
+    <Salgen InputFiles="@(Salgen)" RootNamespace="$(RootNamespace)">
+      <Output TaskParameter="OutputFiles" ItemName="SalgenGeneratedFiles" />
+    </Salgen>
+  </Target>
+  <Target Name="CopyFilesWhereServerFacetCanFindThem">
+    <Copy SourceFiles="@(DebugScriptFile)" DestinationFiles="$(ProjectDir)..\Script.js" />
+    <Copy SourceFiles="@(ReleaseScriptFile)" DestinationFiles="$(ProjectDir)..\Script.min.js" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
+  </Target>
+</Project>

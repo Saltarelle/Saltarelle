@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="scriptPosition">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BeforeCoreScripts"/>
+      <xs:enumeration value="BeforeAssemblyScripts"/>
+      <xs:enumeration value="AfterAssemblyScripts"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="saltarelle">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="plugins" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="plugin" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="assembly" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="routes">
+          <xs:complexType>
+            <xs:attribute name="assemblyScripts" type="xs:string" use="required"/>
+            <xs:attribute name="assemblyCss" type="xs:string" use="required"/>
+            <xs:attribute name="assemblyResources" type="xs:string" use="required"/>
+            <xs:attribute name="delegate" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="scripts" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="add" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="url" type="xs:string" use="optional"/>
+                  <xs:attribute name="assembly" type="xs:string" use="optional"/>
+                  <xs:attribute name="resource" type="xs:string" use="optional"/>
+                  <xs:attribute name="position" type="scriptPosition" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="debug" type="xs:boolean"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

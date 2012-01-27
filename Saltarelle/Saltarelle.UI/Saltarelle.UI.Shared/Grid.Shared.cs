@@ -252,7 +252,7 @@ namespace Saltarelle.UI {
 				return;
 			#if CLIENT
 				if (isAttached) {
-					var headerCell = JQueryProxy.jQuery(GetHeaderRow().Cells[col]);
+					jQuery headerCell = JQueryProxy.jQuery(GetHeaderRow().Cells[col]);
 					if (!string.IsNullOrEmpty(colClasses[col]))
 						headerCell.removeClass(colClasses[col]);
 					if (!string.IsNullOrEmpty(cls))

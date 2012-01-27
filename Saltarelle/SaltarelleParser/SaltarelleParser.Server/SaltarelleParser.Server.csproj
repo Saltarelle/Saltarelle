@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0C31ABB3-C1C6-4498-AAC4-0F34BAE79538}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Saltarelle</RootNamespace>
+    <AssemblyName>SaltarelleParser</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SERVER</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\SaltarelleParser.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;SERVER</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\SaltarelleParser.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug With Installer|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SERVER</DefineConstants>
+    <DocumentationFile>bin\SaltarelleParser.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\SaltarelleVersion.cs">
+      <Link>Properties\SaltarelleVersion.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\DocumentProcessor.Shared.cs">
+      <Link>DocumentProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Fragments\CodeExpressionFragment.Shared.cs">
+      <Link>Fragments\CodeExpressionFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Fragments\CodeFragment.Shared.cs">
+      <Link>Fragments\CodeFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Fragments\IdFragment.Shared.cs">
+      <Link>Fragments\IdFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Fragments\IFragment.Shared.cs">
+      <Link>Fragments\IFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Fragments\InstantiatedControlFragment.Shared.cs">
+      <Link>Fragments\InstantiatedControlFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Fragments\LiteralFragment.Shared.cs">
+      <Link>Fragments\LiteralFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Fragments\PositionFragment.Shared.cs">
+      <Link>Fragments\PositionFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\IRenderFunction.Shared.cs">
+      <Link>IRenderFunction.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\FieldMember.Shared.cs">
+      <Link>Members\FieldMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\IMember.Shared.cs">
+      <Link>Members\IMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\InstantiatedControlMember.Shared.cs">
+      <Link>Members\InstantiatedControlMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\NamedElementMember.Shared.cs">
+      <Link>Members\NamedElementMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\PropertyMember.Shared.cs">
+      <Link>Members\PropertyMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\RenderFunctionMember.Shared.cs">
+      <Link>Members\RenderFunctionMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ControlFlowTagProcessor.Shared.cs">
+      <Link>NodeProcessors\ControlFlowTagProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ControlInstantiationNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\ControlInstantiationNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\DirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\DirectiveNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\EmbeddedCodeNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\EmbeddedCodeNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\FieldNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\FieldNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\FunctionDefinitionAndCallNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\FunctionDefinitionAndCallNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\GenericElementProcessor.Shared.cs">
+      <Link>NodeProcessors\GenericElementProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ImplementsOrInheritsNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\ImplementsOrInheritsNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\INodeProcessor.Shared.cs">
+      <Link>NodeProcessors\INodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\LeafNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\LeafNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\ParserUtils.Shared.cs">
+      <Link>ParserUtils.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\SaltarelleParser.Shared.cs">
+      <Link>SaltarelleParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Template.Shared.cs">
+      <Link>Template.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\BoolMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\BoolMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\CodeMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\CodeMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\EnumMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\EnumMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\IntMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\IntMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\ITypedMarkupParserImpl.Shared.cs">
+      <Link>TypedMarkupParsers\ITypedMarkupParserImpl.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\PositionMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\PositionMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\StringMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\StringMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\TypedMarkupData.Shared.cs">
+      <Link>TypedMarkupParsers\TypedMarkupData.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\TypedMarkupParsers\TypedMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\TypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\CodeUntypedMarkupParser.Shared.cs">
+      <Link>UntypedMarkupParsers\CodeUntypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\IUntypedMarkupParserImpl.Shared.cs">
+      <Link>UntypedMarkupParsers\IUntypedMarkupParserImpl.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\LiteralUntypedMarkupParser.Shared.cs">
+      <Link>UntypedMarkupParsers\LiteralUntypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <None Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\UntypedMarkupData.Shared.cs">
+      <Link>UntypedMarkupParsers\UntypedMarkupData.Shared.cs</Link>
+    </None>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\UntypedMarkupParser.Shared.cs">
+      <Link>UntypedMarkupParsers\UntypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="CodeBuilder.Server.cs" />
+    <Compile Include="NodeProcessors\NodeProcessorAttribute.Server.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SaltarelleParserFactory.Server.cs" />
+    <Compile Include="TemplateErrorException.Server.cs" />
+    <Compile Include="TypedMarkupParsers\TypedMarkupParserImplAttribute.Server.cs" />
+    <Compile Include="UntypedMarkupParsers\UntypedMarkupParserImplAttribute.Server.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\Script.js">
+      <Link>Script.js</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Script.min.js">
+      <Link>Script.min.js</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Client.dll">
+      <Link>Client.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
+      <Project>{23878C4C-4B77-4F13-B821-BECCA3E0BA98}</Project>
+      <Name>SaltarelleLib.Server</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Saltarelle.snk" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
