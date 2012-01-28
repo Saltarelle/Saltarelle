@@ -4,6 +4,7 @@ Add-Type -AssemblyName 'Microsoft.Build, Version=4.0.0.0, Culture=neutral, Publi
 $msbuild = [Microsoft.Build.Evaluation.ProjectCollection]::GlobalProjectCollection.GetLoadedProjects($project.FullName) | Select-Object -First 1
 
 $isClient = $project.Name.EndsWith(".Client")
+$isServer = $project.Name.EndsWith(".Server")
 $canonicalName = ($project.Name -replace "\.(Client|Server)$","")
 
 Function MakeRelativePath($Origin, $Target) {
@@ -91,7 +92,7 @@ if ($isClient) {
 	if (-not (Test-Path $propertiesDir)) {
 		md $propertiesDir >$null
 	}
-	if (-not (Test-Path (Join-Path $propertiesDir, "Script.jst"))) {
+	if (-not (Test-Path (Join-Path $propertiesDir "Script.jst"))) {
 		"#include[as-is] ""%code%""" | Out-File ([System.IO.Path]::Combine($propertiesDir, "Script.jst")) -Encoding UTF8
 	}
 	AddFile "Properties\Script.jst" -ItemType "Content"
@@ -109,26 +110,28 @@ else {
 	# Remove clientside references added by us
 	$project.Object.References | ? { $_.Name -eq "SaltarelleLib.Client" } | % { $_.Remove() }
 	$project.Object.References | ? { $_.Name -eq "sscorlib" } | % { $_.Remove() }
-
-	# Add references to the files that the client assembly produces
-	AddFile "..\Client.dll" -ItemType "EmbeddedResource" -DeleteFileIfCreated
-	AddFile "..\Script.js" -ItemType "EmbeddedResource" -DeleteFileIfCreated
-	AddFile "..\Script.min.js" -ItemType "EmbeddedResource" -DeleteFileIfCreated
-	AddFile "Module.less" -ItemType "EmbeddedResource"
-
-	# Add the SERVER define constant
-	$project.ConfigurationManager | % { Add-DefineConstant -Configuration $_ -Constant "SERVER" }
-
-	# Update the assembly name to be the canonical name (unless it has already been changed)
-	$assemblyName = $msbuild.Properties | ? { $_.Name -eq "AssemblyName" } | % { $_.UnevaluatedValue } | Select-Object -First 1
-	if ($assemblyName -eq $project.Name) {
-		$msbuild.SetProperty("AssemblyName", $canonicalName)
-	}
 	
-	# Add a reference from this project to the corresponding client project (if the client project exists)
-	$clientProject = $project.Collection | ? { $_.Name -eq "$canonicalName.Client" }
-	if ($clientProject) {
-		Add-OrderingDependency -From $project -To $clientProject
+	if ($isServer) {
+		# Add references to the files that the client assembly produces
+		AddFile "..\Client.dll" -ItemType "EmbeddedResource" -DeleteFileIfCreated
+		AddFile "..\Script.js" -ItemType "EmbeddedResource" -DeleteFileIfCreated
+		AddFile "..\Script.min.js" -ItemType "EmbeddedResource" -DeleteFileIfCreated
+		AddFile "Module.less" -ItemType "EmbeddedResource"
+
+		# Add the SERVER define constant
+		$project.ConfigurationManager | % { Add-DefineConstant -Configuration $_ -Constant "SERVER" }
+
+		# Update the assembly name to be the canonical name (unless it has already been changed)
+		$assemblyName = $msbuild.Properties | ? { $_.Name -eq "AssemblyName" } | % { $_.UnevaluatedValue } | Select-Object -First 1
+		if ($assemblyName -eq $project.Name) {
+			$msbuild.SetProperty("AssemblyName", $canonicalName)
+		}
+		
+		# Add a reference from this project to the corresponding client project (if the client project exists)
+		$clientProject = $project.Collection | ? { $_.Name -eq "$canonicalName.Client" }
+		if ($clientProject) {
+			Add-OrderingDependency -From $project -To $clientProject
+		}
 	}
 }
 
