@@ -4,9 +4,9 @@ $isClient = $project.Name.EndsWith(".Client")
 
 if ($isClient) {
 	# Remove serverside reference added by us
-	$project.Object.References.Item("Saltarelle.UI").Remove()
+	$project.Object.References | ? { $_.Name -eq "Saltarelle.UI" } | % { $_.Remove() }
 }
 else {
 	# Remove clientside references added by us
-	$project.Object.References.Item("Saltarelle.UI.Client").Remove()
+	$project.Object.References | ? { $_.Name -eq "Saltarelle.UI.Client" } | % { $_.Remove() }
 }

@@ -12,7 +12,7 @@ Function MakeRelativePath($Origin, $Target) {
     $originUri.MakeRelativeUri($targetUri).ToString().Replace('/', [System.IO.Path]::DirectorySeparatorChar)
 }
 
-Function AddFile([string]$RelativePath, [string]$ItemType, [switch]$DeleteFileIfAdded) {
+Function AddFile([string]$RelativePath, [string]$ItemType, [switch]$DeleteFileIfCreated) {
 	$fileName = [System.IO.Path]::GetFileName($RelativePath)
 	if (-not ($project.ProjectItems | ? { $_.Name -eq $fileName })) {
 		$filePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($project.FileName), $RelativePath))
@@ -23,7 +23,7 @@ Function AddFile([string]$RelativePath, [string]$ItemType, [switch]$DeleteFileIf
 		$item = $project.ProjectItems.AddFromFile($filePath)
 		$item.Properties.Item("ItemType").Value = $ItemType
 
-		if ($added -and $DeleteFileIfAdded) {
+		if ($added -and $DeleteFileIfCreated) {
 			rm $filePath > $null
 		}
 	}
@@ -64,8 +64,8 @@ if ($rootNamespace -eq $project.Name) {
 
 if ($isClient) {
 	# Remove serverside references added by us
-	$project.Object.References.Item("SaltarelleLib").Remove()
-	$project.Object.References.Item("Newtonsoft.Json").Remove()
+	$project.Object.References | ? { $_.Name -eq "Newtonsoft.Json" } | % { $_.Remove() }
+	$project.Object.References | ? { $_.Name -eq "SaltarelleLib" } | % { $_.Remove() }
 
 	# Remove default assemblies System, System.*, Microsoft.*
 	$project.Object.References | ? { $_.Name.StartsWith("System.") } | % { $_.Remove() }
@@ -89,9 +89,11 @@ if ($isClient) {
 	# Add a default script template (Script.jst) to the project
 	$propertiesDir = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($project.FileName), "Properties")
 	if (-not (Test-Path $propertiesDir)) {
-		md $propertiesDir
+		md $propertiesDir >$null
 	}
-	"#include[as-is] ""%code%""" | Out-File ([System.IO.Path]::Combine($propertiesDir, "Script.jst")) -Encoding UTF8
+	if (-not (Test-Path (Join-Path $propertiesDir, "Script.jst"))) {
+		"#include[as-is] ""%code%""" | Out-File ([System.IO.Path]::Combine($propertiesDir, "Script.jst")) -Encoding UTF8
+	}
 	AddFile "Properties\Script.jst" -ItemType "Content"
 	
 	# Add the CLIENT define constant
@@ -105,13 +107,13 @@ if ($isClient) {
 }
 else {
 	# Remove clientside references added by us
-	$project.Object.References.Item("SaltarelleLib.Client").Remove()
-	$project.Object.References.Item("sscorlib").Remove()
+	$project.Object.References | ? { $_.Name -eq "SaltarelleLib.Client" } | % { $_.Remove() }
+	$project.Object.References | ? { $_.Name -eq "sscorlib" } | % { $_.Remove() }
 
 	# Add references to the files that the client assembly produces
-	AddFile "..\Client.dll" -ItemType "EmbeddedResource" -DeleteFileIfAdded
-	AddFile "..\Script.js" -ItemType "EmbeddedResource" -DeleteFileIfAdded
-	AddFile "..\Script.min.js" -ItemType "EmbeddedResource" -DeleteFileIfAdded
+	AddFile "..\Client.dll" -ItemType "EmbeddedResource" -DeleteFileIfCreated
+	AddFile "..\Script.js" -ItemType "EmbeddedResource" -DeleteFileIfCreated
+	AddFile "..\Script.min.js" -ItemType "EmbeddedResource" -DeleteFileIfCreated
 	AddFile "Module.less" -ItemType "EmbeddedResource"
 
 	# Add the SERVER define constant
