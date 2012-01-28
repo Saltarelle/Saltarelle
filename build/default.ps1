@@ -76,7 +76,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<description>Saltarelle Parser</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="SaltarelleCore" version="[$script:version]" />
+			<dependency id="SaltarelleCore" version="$script:version" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -102,7 +102,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<description>Saltarelle UI</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="SaltarelleCore" version="[$script:version]" />
+			<dependency id="SaltarelleCore" version="$script:version" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -130,7 +130,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<dependencies>
 			<dependency id="dotless" version="1.2.2.0" />
 			<dependency id="Mono.Cecil" version="0.9.5.2" />
-			<dependency id="SaltarelleCore" version="[$script:version]" />
+			<dependency id="SaltarelleCore" version="$script:version" />
 		</dependencies>
 	</metadata>
 	<files>
