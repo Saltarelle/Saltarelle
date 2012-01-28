@@ -8,7 +8,7 @@
     <ProjectGuid>{7F4D6EFF-9248-4B68-9CEC-DA5D572AC687}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Saltarelle.VSCustomTool</RootNamespace>
+    <RootNamespace>Saltarelle</RootNamespace>
     <AssemblyName>Saltarelle.VSCustomTool</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

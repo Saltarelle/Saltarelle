@@ -110,14 +110,18 @@ namespace Saltarelle {
 		}
 		
 		private static Assembly LoadAssembly(string identifier, string rootPath) {
-			// There might be a better way of doing this, but if so, I don't know about it.
-			try {
-				return Assembly.Load(new AssemblyName(identifier));
-			}
-			catch (Exception) {
-				string path = Path.IsPathRooted(identifier) ? identifier : Path.Combine(rootPath, identifier);
-				return Assembly.LoadFrom(path);
-			}
+            // Plugins are now loaded without any context. This means that they can not have any references to other assemblies, except for the Saltarelle core ones.
+			string path = Path.IsPathRooted(identifier) ? identifier : Path.Combine(rootPath, identifier);
+            byte[] content = File.ReadAllBytes(path);
+            try {
+                return Assembly.Load(content);
+            }
+            catch (ReflectionTypeLoadException ex) {
+                if (ex.LoaderExceptions.Length > 0)
+                    throw ex.LoaderExceptions[0];
+                else
+                    throw;
+            }
 		}
 	}
 }

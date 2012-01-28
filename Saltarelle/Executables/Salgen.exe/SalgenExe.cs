@@ -79,14 +79,8 @@ namespace Saltarelle {
 					#endif
 					return;
 				}
-				
-				SaltarelleParser parser = !Utils.IsNull(opts.ConfigFile) ? SaltarelleParserFactory.CreateParserFromConfigFile(opts.ConfigFile) : SaltarelleParserFactory.CreateDefaultParser();
 
-				XmlDocument doc = ExecutablesCommon.CreateXmlDocument();
-				doc.Load(opts.InputFile);
-				string templateText = ExecutablesCommon.GetTemplateCodeFileContents(parser, doc, opts.ClassName, opts.Nmspace);
-				using (var w = new StreamWriter(opts.OutputFile))
-					w.Write(templateText);
+                ExecutablesCommon.ProcessWorkItemsInSeparateAppDomain(opts.ConfigFile, new[] { new WorkItem { InFile = opts.InputFile, OutFile = opts.OutputFile, Namespace = opts.Nmspace } }, null);
 			}
 			catch (Exception ex) {
 				Console.WriteLine(ex.Message);

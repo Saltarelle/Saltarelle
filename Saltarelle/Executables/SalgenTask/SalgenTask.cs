@@ -9,12 +9,6 @@ using System.Xml;
 
 namespace Saltarelle {
 	public class Salgen : Task {
-		private class DataItem {
-			public string InFile    { get; set; }
-			public string OutFile   { get; set; }
-			public string Namespace { get; set; }
-		}
-		
 		private string FindNamespace(ITaskItem item) {
 			string s = item.GetMetadata("CustomToolNamespace");
 			if (!string.IsNullOrEmpty(s))
@@ -28,30 +22,8 @@ namespace Saltarelle {
 			return rootNamespaceWithDot + dir;
 		}
 		
-		private void MaybeWriteFile(string path, byte[] content) {
-			using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate)) {
-				bool areEqual = false;
-				if (fs.Length == content.Length) {
-					areEqual = true;
-					byte[] oldContent = new byte[fs.Length];
-					fs.Read(oldContent, 0, oldContent.Length);
-					for (int i = 0; i < content.Length; i++) {
-						if (content[i] != oldContent[i]) {
-							areEqual = false;
-							break;
-						}
-					}
-				}
-				if (!areEqual) {
-					fs.Seek(0, SeekOrigin.Begin);
-					fs.Write(content, 0, content.Length);
-					fs.SetLength(content.Length);
-				}
-			}
-		}
-
 		public override bool Execute() {
-			var inputsGroupedByConfigFile = new Dictionary<string, List<DataItem>>();
+			var inputsGroupedByConfigFile = new Dictionary<string, List<WorkItem>>();
 		
 			OutputFiles = new ITaskItem[InputFiles.Length];
 			for (int i = 0; i < InputFiles.Length; i++) {
@@ -60,32 +32,25 @@ namespace Saltarelle {
 				string infile     = Path.GetFullPath(infileLocal);
 				string outfile    = Path.ChangeExtension(infile, ExecutablesCommon.GeneratedFileExtension);
 				string configFile = ExecutablesCommon.FindConfigFilePath(infile) ?? "";
-				List<DataItem> l;
+				List<WorkItem> l;
 				if (!inputsGroupedByConfigFile.TryGetValue(configFile, out l))
-					inputsGroupedByConfigFile[configFile] = l = new List<DataItem>();
-				l.Add(new DataItem() { InFile = infile, OutFile = outfile, Namespace = FindNamespace(InputFiles[i]) });
+					inputsGroupedByConfigFile[configFile] = l = new List<WorkItem>();
+				l.Add(new WorkItem() { InFile = infile, OutFile = outfile, Namespace = FindNamespace(InputFiles[i]) });
 			}
 
 			bool success = true;
 			foreach (var kvp in inputsGroupedByConfigFile) {
-				SaltarelleParser parser = kvp.Key != "" ? SaltarelleParserFactory.CreateParserFromConfigFile(kvp.Key) : SaltarelleParserFactory.CreateDefaultParser();
-				foreach (var f in kvp.Value) {
-					try {
-						XmlDocument doc = ExecutablesCommon.CreateXmlDocument();
-						doc.Load(f.InFile);
-						string outText = ExecutablesCommon.GetTemplateCodeFileContents(parser, doc, Path.GetFileNameWithoutExtension(f.InFile), f.Namespace);
-						byte[] outBytes = Encoding.UTF8.GetBytes(outText);
-						MaybeWriteFile(f.OutFile, outBytes);
-					}
-					catch (TemplateErrorException ex) {
-						Log.LogError(null, null, null, f.InFile, 0, 0, 0, 0, ex.Message);
+                ExecutablesCommon.ProcessWorkItemsInSeparateAppDomain(kvp.Key, kvp.Value, (item, ex) => {
+                    if (ex is TemplateErrorException) {
+						Log.LogError(null, null, null, item.InFile, 0, 0, 0, 0, ex.Message);
 						success = false;
 					}
-					catch (XmlException ex) {
-						Log.LogErrorFromException(ex, true, true, f.InFile);
+					else {
+						Log.LogErrorFromException(ex, true, true, item.InFile);
 						success = false;
 					}
-				}
+                    return true;
+                });
 			}
 			return success;
 		}
