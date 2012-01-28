@@ -4,13 +4,10 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Linq;
-using System.Configuration;
 using System.Reflection;
 
-using Saltarelle;
-using Saltarelle.Configuration;
-
 namespace Saltarelle {
+	[Serializable]
 	public class WorkItem {
 		public string InFile    { get; set; }
 		public string OutFile   { get; set; }
@@ -92,7 +89,8 @@ namespace Saltarelle {
 		}
 
         private static void ExecuteInSeparateAppDomain(Action<Executor> action) {
-            var newDomain = AppDomain.CreateDomain("Executor");
+            var setup = new AppDomainSetup() { ApplicationBase = Path.GetDirectoryName(new Uri(typeof(ExecutablesCommon).Assembly.CodeBase).AbsolutePath) };
+            var newDomain = AppDomain.CreateDomain("Executor", null, setup);
             newDomain.AssemblyResolve += (sender, eventArgs) => ResolveAssembly(eventArgs.Name);
 
             var executor = (Executor)newDomain.CreateInstanceAndUnwrap(typeof(Executor).Assembly.FullName, typeof(Executor).FullName);
