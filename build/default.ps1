@@ -29,6 +29,8 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 	}
 	md "$out_dir\Publish"
 	
+	$dependencyVersion = New-Object System.Version($script:version.Major, $script:version.Minor)
+	
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
@@ -76,7 +78,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<description>Saltarelle Parser</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="SaltarelleCore" version="$script:version" />
+			<dependency id="SaltarelleCore" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -102,7 +104,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<description>Saltarelle UI</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="SaltarelleCore" version="$script:version" />
+			<dependency id="SaltarelleCore" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -130,7 +132,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<dependencies>
 			<dependency id="dotless" version="1.2.2.0" />
 			<dependency id="Mono.Cecil" version="0.9.5.2" />
-			<dependency id="SaltarelleCore" version="$script:version" />
+			<dependency id="SaltarelleCore" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -189,8 +191,8 @@ Task Determine-Version {
 		$ver = New-Object System.Version($ver.Major, $ver.Minor, $ver.Build, $revision)
 	}
 	
-	$script:version = $ver.ToString()
-	$script:ProductVersion = "$($ver.Major).$($ver.Minor).$($ver.Build)"
+	$script:version = $ver
+	$script:ProductVersion = New-Object System.Version($ver.Major, $ver.Minor, $ver.Build)
 
 	"Version: $script:version"
 	"ProductVersion: $script:ProductVersion"
