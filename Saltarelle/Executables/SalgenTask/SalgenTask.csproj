@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Saltarelle</RootNamespace>
     <AssemblyName>Saltarelle.SalgenTask</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
@@ -33,6 +33,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,7 +61,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Build.Framework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -132,6 +133,6 @@
     <XmlPoke XmlInputPath="$(TargetDir)saltarelle.targets" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;" Query="//x:UsingTask/@AssemblyFile" Value="$(TargetFileName)" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)packages-manual\ILMerge\ilmerge.exe" "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"</PostBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)packages-manual\ILMerge\ilmerge.exe" /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>
