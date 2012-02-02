@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace Saltarelle.Configuration {
 	public class SaltarelleConfig {
-		public ReadOnlyCollection<PluginElement> Plugins { get; private set; }
+		public List<PluginElement> Plugins { get; private set; }
 		public RoutesElement Routes { get; private set; }
 		public ScriptElementCollection Scripts { get; private set; }
 
@@ -27,11 +27,13 @@ namespace Saltarelle.Configuration {
             }
             
             var result = new SaltarelleConfig();
-            result.Plugins = (obj.plugins != null ? obj.plugins.Select(MapPlugin).ToList() : new List<PluginElement>()).AsReadOnly();
+            result.Plugins = (obj.plugins != null ? obj.plugins.Select(MapPlugin).ToList() : new List<PluginElement>());
             if (obj.routes != null) {
                 result.Routes = new RoutesElement(obj.routes.assemblyScripts, obj.routes.assemblyCss, obj.routes.assemblyResources, obj.routes.@delegate);
             }
-            result.Scripts = new ScriptElementCollection(obj.scripts != null && obj.scripts.add != null ? obj.scripts.add.Select(MapScript).ToList() : new List<ScriptElement>(), obj.scripts != null && obj.scripts.debugSpecified && obj.scripts.debug);
+            result.Scripts = new ScriptElementCollection { Debug = obj.scripts != null && obj.scripts.debugSpecified && obj.scripts.debug };
+            if (obj.scripts != null && obj.scripts.add != null)
+                result.Scripts.AddRange(obj.scripts.add.Select(MapScript));
 
             return result;
         }

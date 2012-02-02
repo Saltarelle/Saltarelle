@@ -6,10 +6,13 @@ using System.Configuration;
 
 namespace Saltarelle.Configuration {
 	public class RoutesElement {
-		public string AssemblyScripts { get; private set; }
-		public string AssemblyCss { get; private set; }
-		public string AssemblyResources { get; private set; }
-		public string Delegate { get; private set; }
+		public string AssemblyScripts { get; set; }
+		public string AssemblyCss { get; set; }
+		public string AssemblyResources { get; set; }
+		public string Delegate { get; set; }
+
+	    public RoutesElement() {
+	    }
 
 	    public RoutesElement(string assemblyScripts, string assemblyCss, string assemblyResources, string @delegate) {
 	        AssemblyScripts = assemblyScripts;

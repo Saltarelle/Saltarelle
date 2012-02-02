@@ -6,7 +6,10 @@ using System.Configuration;
 
 namespace Saltarelle.Configuration {
 	public class PluginElement {
-		public string Assembly { get; private set; }
+	    public string Assembly { get; set; }
+
+	    public PluginElement() {
+	    }
 
 	    public PluginElement(string assembly) {
 	        Assembly = assembly;

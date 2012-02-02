@@ -13,10 +13,13 @@ namespace Saltarelle.Configuration {
 	}
 
 	public class ScriptElement {
-	    public string Url { get; private set; }
-		public ScriptPosition Position { get; private set; }
-		public string Assembly { get; private set; }
-		public string Resource { get; private set; }
+	    public string Url { get; set; }
+		public ScriptPosition Position { get; set; }
+		public string Assembly { get; set; }
+		public string Resource { get; set; }
+
+	    public ScriptElement() {
+	    }
 
 	    public ScriptElement(string url, ScriptPosition position, string assembly, string resource) {
 	        Url = url;

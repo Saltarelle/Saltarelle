@@ -6,11 +6,7 @@ using System.Text;
 using System.Configuration;
 
 namespace Saltarelle.Configuration {
-	public class ScriptElementCollection : ReadOnlyCollection<ScriptElement> {
+	public class ScriptElementCollection : List<ScriptElement> {
         public bool Debug { get; set; }
-
-        public ScriptElementCollection(List<ScriptElement> l, bool debug) : base(l) {
-            Debug = debug;
-        }
 	}
 }
