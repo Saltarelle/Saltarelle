@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Configuration;
 using System.Web.Configuration;
@@ -13,6 +15,45 @@ namespace Saltarelle.Configuration {
 		public List<PluginElement> Plugins { get; private set; }
 		public RoutesElement Routes { get; private set; }
 		public ScriptElementCollection Scripts { get; private set; }
+
+        private string MakeFullPath(string path, string rootPath) {
+            return Path.IsPathRooted(path) ? path : Path.Combine(rootPath, path);;
+        }
+
+        private T HandleTypeLoadException<T>(Func<T> f) {
+            try {
+                return f();
+            }
+            catch (ReflectionTypeLoadException ex) {
+                if (ex.LoaderExceptions.Length > 0)
+                    throw ex.LoaderExceptions[0];
+                else
+                    throw;
+            }
+        }
+
+        public IEnumerable<Assembly> LoadPluginsInLoadFromContext(string rootPath) {
+            var result = new List<Assembly>();
+            if (!Utils.IsNull(Plugins)) {
+				foreach (PluginElement p in Plugins) {
+                    var asm = HandleTypeLoadException(() => Assembly.LoadFrom(MakeFullPath(p.Assembly, rootPath)));
+                    result.Add(asm);
+                }
+            }
+            return result;
+        }
+
+        public IEnumerable<Assembly> LoadPluginsInNoContext(string rootPath) {
+            var result = new List<Assembly>();
+            if (!Utils.IsNull(Plugins)) {
+				foreach (PluginElement p in Plugins) {
+                    byte[] content = File.ReadAllBytes(MakeFullPath(p.Assembly, rootPath));
+                    var asm = HandleTypeLoadException(() => Assembly.Load(content));
+                    result.Add(asm);
+                }
+            }
+            return result;
+        }
 
         public static SaltarelleConfig LoadXml(XmlNode node) {
             if (node.Name != "saltarelle")

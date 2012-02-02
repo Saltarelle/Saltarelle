@@ -12,47 +12,23 @@ using System.Web.Hosting;
 
 namespace Saltarelle {
 	public static class SaltarelleParserFactory {
-		/// <summary>Creates a parser based on the content of a config section.</summary>
-		/// <param name="config">Configuration file</param>
-		/// <param name="rootPath">Path to resolve referenced assembly files in.</param>
-		public static ISaltarelleParser CreateParserFromConfig(SaltarelleConfig config, string rootPath) {
+		/// <summary>
+		/// Creates a parser with the specified plugin assemblies.
+		/// </summary>
+		public static ISaltarelleParser CreateParserWithPlugins(IEnumerable<Assembly> plugins) {
 			var nodeProcessors            = new List<INodeProcessor>();
 			var typedParserImplementers   = new Dictionary<string, ITypedMarkupParserImpl>();
 			var untypedParserImplementers = new List<IUntypedMarkupParserImpl>();
 
-			if (!Utils.IsNull(config) && !Utils.IsNull(config.Plugins)) {
-				foreach (PluginElement p in config.Plugins) {
-					Assembly asm = LoadAssembly(p.Assembly, rootPath);
-					nodeProcessors.AddRange(GetNodeProcessors(asm));
-					AddTypedMarkupParsersToDictionary(asm, typedParserImplementers);
-					untypedParserImplementers.AddRange(GetUntypedParsers(asm));
-				}
-			}
+            if (plugins != null) {
+                foreach (var asm in plugins) {
+				    nodeProcessors.AddRange(GetNodeProcessors(asm));
+				    AddTypedMarkupParsersToDictionary(asm, typedParserImplementers);
+				    untypedParserImplementers.AddRange(GetUntypedParsers(asm));
+			    }
+            }
 			
 			return new SaltarelleParser(nodeProcessors.ToArray(), typedParserImplementers, untypedParserImplementers.ToArray());
-		}
-
-		/// <summary>
-		/// Creates a parser with plugins specified in a config file.
-		/// </summary>
-		public static ISaltarelleParser CreateParserFromConfigFile(string configFile) {
-			if (string.IsNullOrEmpty(configFile) || !File.Exists(configFile)) throw new ArgumentException("configFile");
-			return CreateParserFromConfig(SaltarelleConfig.LoadFile(configFile), Path.GetDirectoryName(configFile));
-		}
-
-		/// <summary>
-		/// Creates a parser with no plugins.
-		/// </summary>
-		public static ISaltarelleParser CreateDefaultParser() {
-			return new SaltarelleParser(new INodeProcessor[0], new Dictionary<string, ITypedMarkupParserImpl>(), new IUntypedMarkupParserImpl[0]);
-		}
-
-		
-        /// <summary>
-		/// Creates a parser with plugins loaded from web.config.
-		/// </summary>
-		public static ISaltarelleParser CreateParserFromWebConfig() {
-			return CreateParserFromConfig(SaltarelleConfig.GetFromWebConfig(), HostingEnvironment.MapPath("~/bin"));
 		}
 
 		private static IEnumerable<INodeProcessor> GetNodeProcessors(Assembly asm) {
@@ -107,21 +83,6 @@ namespace Saltarelle {
 				if (!parsers.ContainsKey(g.Key))
 					parsers.Add(g.Key, (ITypedMarkupParserImpl)Activator.CreateInstance(tp));
 			}
-		}
-		
-		private static Assembly LoadAssembly(string identifier, string rootPath) {
-            // Plugins are now loaded without any context. This means that they can not have any references to other assemblies, except for the Saltarelle core ones.
-			string path = Path.IsPathRooted(identifier) ? identifier : Path.Combine(rootPath, identifier);
-            byte[] content = File.ReadAllBytes(path);
-            try {
-                return Assembly.Load(content);
-            }
-            catch (ReflectionTypeLoadException ex) {
-                if (ex.LoaderExceptions.Length > 0)
-                    throw ex.LoaderExceptions[0];
-                else
-                    throw;
-            }
 		}
 	}
 }

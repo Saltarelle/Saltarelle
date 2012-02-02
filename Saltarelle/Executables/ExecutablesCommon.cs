@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Linq;
 using System.Reflection;
+using Saltarelle.Configuration;
 
 namespace Saltarelle {
 	[Serializable]
@@ -19,7 +20,14 @@ namespace Saltarelle {
             private ISaltarelleParser parser;
 
             public void CreateParser(string configFileName) {
-                parser = !string.IsNullOrEmpty(configFileName) ? SaltarelleParserFactory.CreateParserFromConfigFile(configFileName) : SaltarelleParserFactory.CreateDefaultParser();
+                IEnumerable<Assembly> plugins;
+                if (!string.IsNullOrEmpty(configFileName)) {
+                    var config = SaltarelleConfig.LoadFile(configFileName);
+                    plugins = config.LoadPluginsInNoContext(Path.GetDirectoryName(configFileName));
+                }
+                else
+                    plugins = new Assembly[0];
+                parser = SaltarelleParserFactory.CreateParserWithPlugins(plugins);
             }
 
             public void ProcessWorkItem(WorkItem workItem) {
