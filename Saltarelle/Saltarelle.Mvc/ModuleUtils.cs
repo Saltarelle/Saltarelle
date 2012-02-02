@@ -52,14 +52,14 @@ namespace Saltarelle.Mvc {
 		}
 		
 		private static AssemblyDefinition GetClientAssemblyAssumingLock(Assembly asm) {
-			if (asm is AssemblyBuilder)
+			if (asm.IsDynamic)
 				return null;
 			string name = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Client.dll"));
 			return !Utils.IsNull(name) ? AssemblyDefinition.ReadAssembly(asm.GetManifestResourceStream(name)) : null;
 		}
 		
 		private static string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {
-			if (asm is AssemblyBuilder)
+			if (asm.IsDynamic)
 				return null;
 		
 			string scriptName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith(debug ? "Script.js" : "Script.min.js"));
@@ -95,7 +95,7 @@ namespace Saltarelle.Mvc {
 		}
 		
 		private static string GenerateAssemblyCss(Assembly asm) {
-			if (asm is AssemblyBuilder)
+			if (asm.IsDynamic)
 				return null;
 
 			string resName = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Module.less"));
