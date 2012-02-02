@@ -15,7 +15,7 @@ namespace Saltarelle {
 		/// <summary>Creates a parser based on the content of a config section.</summary>
 		/// <param name="config">Configuration file</param>
 		/// <param name="rootPath">Path to resolve referenced assembly files in.</param>
-		public static SaltarelleParser CreateParserFromConfig(SaltarelleConfig config, string rootPath) {
+		public static ISaltarelleParser CreateParserFromConfig(SaltarelleConfig config, string rootPath) {
 			var nodeProcessors            = new List<INodeProcessor>();
 			var typedParserImplementers   = new Dictionary<string, ITypedMarkupParserImpl>();
 			var untypedParserImplementers = new List<IUntypedMarkupParserImpl>();
@@ -35,7 +35,7 @@ namespace Saltarelle {
 		/// <summary>
 		/// Creates a parser with plugins specified in a config file.
 		/// </summary>
-		public static SaltarelleParser CreateParserFromConfigFile(string configFile) {
+		public static ISaltarelleParser CreateParserFromConfigFile(string configFile) {
 			if (string.IsNullOrEmpty(configFile) || !File.Exists(configFile)) throw new ArgumentException("configFile");
 			return CreateParserFromConfig(SaltarelleConfig.LoadFile(configFile), Path.GetDirectoryName(configFile));
 		}
@@ -43,7 +43,7 @@ namespace Saltarelle {
 		/// <summary>
 		/// Creates a parser with no plugins.
 		/// </summary>
-		public static SaltarelleParser CreateDefaultParser() {
+		public static ISaltarelleParser CreateDefaultParser() {
 			return new SaltarelleParser(new INodeProcessor[0], new Dictionary<string, ITypedMarkupParserImpl>(), new IUntypedMarkupParserImpl[0]);
 		}
 
@@ -51,7 +51,7 @@ namespace Saltarelle {
         /// <summary>
 		/// Creates a parser with plugins loaded from web.config.
 		/// </summary>
-		public static SaltarelleParser CreateParserFromWebConfig() {
+		public static ISaltarelleParser CreateParserFromWebConfig() {
 			return CreateParserFromConfig(SaltarelleConfig.GetFromWebConfig(), HostingEnvironment.MapPath("~/bin"));
 		}
 

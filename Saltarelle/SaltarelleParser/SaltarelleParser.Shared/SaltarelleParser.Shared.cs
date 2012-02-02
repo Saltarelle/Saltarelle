@@ -10,7 +10,18 @@ using XmlNode = System.XML.XMLNode;
 #endif
 
 namespace Saltarelle {
-	public class SaltarelleParser {
+    public interface ISaltarelleParser {
+		ITemplate ParseTemplate(XmlNode node);
+		IFragment ParseUntypedMarkup(string markup);
+		TypedMarkupData ParseTypedMarkup(string markup);
+
+        #if SERVER
+		    void RegisterTypesForClient(IScriptManagerService svc);
+		    object ConfigObject { get; }
+        #endif
+    }
+
+	public class SaltarelleParser : ISaltarelleParser {
 		private readonly INodeProcessor[] pluginNodeProcessors;
 		private readonly TypedMarkupParserImplDictionary pluginTypedMarkupParsers;
 		private readonly IUntypedMarkupParserImpl[] pluginUntypedMarkupParsers;

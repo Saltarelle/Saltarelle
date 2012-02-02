@@ -16,7 +16,7 @@ namespace Saltarelle {
 
 	public static class ExecutablesCommon {
         class Executor : MarshalByRefObject {
-            private SaltarelleParser parser;
+            private ISaltarelleParser parser;
 
             public void CreateParser(string configFileName) {
                 parser = !string.IsNullOrEmpty(configFileName) ? SaltarelleParserFactory.CreateParserFromConfigFile(configFileName) : SaltarelleParserFactory.CreateDefaultParser();
@@ -56,7 +56,7 @@ namespace Saltarelle {
 			    }
 		    }
 
-		    private string GetTemplateCodeFileContents(SaltarelleParser parser, XmlDocument doc, string className, string nmspace) {
+		    private string GetTemplateCodeFileContents(ISaltarelleParser parser, XmlDocument doc, string className, string nmspace) {
 			    ITemplate template = parser.ParseTemplate(doc);
 			    template.ClassName = className;
 			    template.Nmspace   = nmspace;
