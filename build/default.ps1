@@ -61,7 +61,6 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\SaltarelleLib\install.ps1" target="tools"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\init.ps1" target="tools"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleVSModule.psm1" target="tools"/>
-		<file src="$base_dir\Saltarelle\SaltarelleLib\uninstall.ps1" target="tools"/>
 	</files>
 </package>
 "@ >"$out_dir\SaltarelleCore.nuspec"
