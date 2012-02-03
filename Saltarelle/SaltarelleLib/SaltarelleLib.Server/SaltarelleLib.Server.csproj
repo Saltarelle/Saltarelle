@@ -133,7 +133,6 @@
     <Compile Include="Ioc\ClientInjectPropertyAttribute.cs" />
     <Compile Include="IRouteService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RequiresClientServiceAttribute.cs" />
     <Compile Include="Configuration\SaltarelleConfigSection.cs" />
     <Compile Include="Utils.Server.cs" />
     <Compile Include="WebResourceAttribute.cs" />
