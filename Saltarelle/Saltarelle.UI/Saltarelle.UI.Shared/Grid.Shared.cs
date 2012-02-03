@@ -613,7 +613,6 @@ namespace Saltarelle.UI {
 		
 #if SERVER
 		public Grid() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

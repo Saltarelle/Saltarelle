@@ -421,7 +421,10 @@ namespace Saltarelle.UI {
 			invisibleRoot = new TreeNode();
 			invisibleRoot.treeIfRoot = this;
 			invisibleRoot.expanded   = true;
-			blankImageUrl = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
+#if SERVER
+#warning TODO: Fix
+#endif
+//			blankImageUrl = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 			selectedNode  = null;
 			enabled       = true;
 			width         = 300;
@@ -431,7 +434,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public Tree() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

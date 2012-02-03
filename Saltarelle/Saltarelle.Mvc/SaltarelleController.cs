@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Ajax;
 using System.Reflection;
-using System.ComponentModel;
+using Saltarelle.Ioc;
 using System.Web.UI;
 using System.Globalization;
 using System.Web.Routing;
@@ -24,6 +24,12 @@ namespace Saltarelle.Mvc
 		public const string ScriptDebugParam      = "debug";
     
 		private static Dictionary<string, string> mimeMap;
+
+        private IContainer container;
+
+        public SaltarelleController(IContainer container) {
+            this.container = container;
+        }
 
 		static SaltarelleController() {
 			try {
@@ -49,7 +55,7 @@ namespace Saltarelle.Mvc
 		private void InitializeDelegateData(AuthorizationContext filterContext) {
 			string typeName   = (string)filterContext.RouteData.Values[DelegateTypeNameParam],
 			       methodName = (string)filterContext.RouteData.Values[DelegateMethodParam];
-			Type t = Utils.FindType(typeName);
+			Type t = container.FindType(typeName);
 			var candidates = (  from mi in t.GetMethods((t.IsInterface ? BindingFlags.Instance : BindingFlags.Static) | BindingFlags.Public)
 			                   where mi.Name.Equals(methodName, StringComparison.InvariantCultureIgnoreCase)
 			                      && mi.GetCustomAttributes(typeof(AcceptVerbsAttribute), true).Cast<AcceptVerbsAttribute>().Any(attr => attr.IsValidForRequest(filterContext, mi))
@@ -167,7 +173,7 @@ namespace Saltarelle.Mvc
 				}
 			}
 			
-			object instance = methodInfo.DeclaringType.IsInterface ? GlobalServices.GetService(methodInfo.DeclaringType) : null;
+			object instance = methodInfo.DeclaringType.IsInterface ? container.Resolve(methodInfo.DeclaringType) : null;
 			object result;
 			if (methodInfo.ReturnType == typeof(void)) {
 				methodInfo.Invoke(instance, parms);

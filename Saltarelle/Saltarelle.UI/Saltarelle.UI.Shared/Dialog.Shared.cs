@@ -171,7 +171,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		protected DialogBase() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 		
@@ -476,12 +475,6 @@ namespace Saltarelle.UI {
 
 		protected override string InnerHtml { get { return innerHtml ?? ""; } }
 
-#if SERVER
-		public DialogFrame() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
-		}
-#endif
-
 #if CLIENT
 		[AlternateSignature]
 		public extern DialogFrame();
@@ -518,10 +511,6 @@ namespace Saltarelle.UI {
 			base.AddItemsToConfigObject(config);
 			config.Add("containedControlType", containedControl.GetType().FullName);
 			config.Add("containedControlData", containedControl.ConfigObject);
-		}
-
-		protected ControlDialogBase() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 		}
 
 		protected override string InnerHtml { get { return containedControl.Html; } }
@@ -567,10 +556,6 @@ namespace Saltarelle.UI {
 		}
 
 #if SERVER
-		public ControlDialog() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
-		}
-
 		public void SetContainedControl(IControl value) {
 			SetContainedControlBase(value);
 		}

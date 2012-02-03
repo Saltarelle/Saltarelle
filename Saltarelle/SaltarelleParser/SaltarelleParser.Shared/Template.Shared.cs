@@ -1,5 +1,6 @@
 ﻿using System;
 using Saltarelle.Members;
+using Saltarelle.Ioc;
 #if CLIENT
 using MemberList             = System.ArrayList;
 using HashMapDictionary      = System.Dictionary;
@@ -46,7 +47,7 @@ namespace Saltarelle {
 
 		string GetUniqueId();
 		
-		InstantiatedTemplateControl Instantiate();
+		InstantiatedTemplateControl Instantiate(IContainer container);
 
 		#if SERVER
 			string ServerInheritanceList { get; }
@@ -204,12 +205,12 @@ namespace Saltarelle {
 			return result;
 		}
 
-		public InstantiatedTemplateControl Instantiate() {
+		public InstantiatedTemplateControl Instantiate(IContainer container) {
 			MemberList orderedMembers = TopologicalSort(members);
 			InstantiatedTemplateControl ctl = new InstantiatedTemplateControl(delegate(IInstantiatedTemplateControl x) { return MainRenderFunction.Render(this, x); });
 			foreach (IMember m in orderedMembers) {
 				try {
-					m.Instantiate(this, ctl);
+					m.Instantiate(this, ctl, container);
 				}
 #if SERVER
 				catch (Exception ex) {

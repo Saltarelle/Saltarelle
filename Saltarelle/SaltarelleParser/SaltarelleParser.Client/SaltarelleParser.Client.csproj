@@ -103,6 +103,9 @@
     <Compile Include="..\SaltarelleParser.Shared\IRenderFunction.Shared.cs">
       <Link>IRenderFunction.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\ContainerMember.Shared.cs">
+      <Link>Members\ContainerMember.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\saltarelleparser.shared\members\FieldMember.Shared.cs">
       <Link>Members\FieldMember.Shared.cs</Link>
     </Compile>
@@ -171,9 +174,6 @@
     </Compile>
     <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\CodeMarkupParser.Shared.cs">
       <Link>TypedMarkupParsers\CodeMarkupParser.Shared.cs</Link>
-    </Compile>
-    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\EnumMarkupParser.Shared.cs">
-      <Link>TypedMarkupParsers\EnumMarkupParser.Shared.cs</Link>
     </Compile>
     <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\IntMarkupParser.Shared.cs">
       <Link>TypedMarkupParsers\IntMarkupParser.Shared.cs</Link>

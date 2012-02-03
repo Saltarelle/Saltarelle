@@ -96,7 +96,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public Label() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Saltarelle;
+using Saltarelle.Ioc;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
@@ -253,11 +254,12 @@ namespace SaltarelleParser.Tests {
 
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
+            var container = mocks.StrictMock<IContainer>();
 			TestControlClass addedControl = null;
 			Expect.Call(() => ctl.AddControl(null, null)).IgnoreArguments().Constraints(Is.Equal("CtlName"), Is.TypeOf<TestControlClass>()).Do((Action<string, IControl>)((_, c) => addedControl = (TestControlClass)c));
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
-			new InstantiatedControlMember("CtlName", "SaltarelleParser.Tests.TestControlClass", false, propValues, new IMember[0]).Instantiate(tpl, ctl);
+			new InstantiatedControlMember("CtlName", "SaltarelleParser.Tests.TestControlClass", false, propValues, new IMember[0]).Instantiate(tpl, ctl, container);
 			mocks.VerifyAll();
 			
 			Assert.AreEqual(42, addedControl.IntProperty);
@@ -269,8 +271,9 @@ namespace SaltarelleParser.Tests {
 		public void TestInstantiate_CustomInstantiateThrows() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
+            var container = mocks.StrictMock<IContainer>();
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), new IMember[0]).Instantiate(tpl, ctl), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), new IMember[0]).Instantiate(tpl, ctl, container), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 	}

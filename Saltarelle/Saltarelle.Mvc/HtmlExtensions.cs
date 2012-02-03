@@ -8,8 +8,8 @@ namespace Saltarelle.Mvc {
 	public static class HtmlExtensions {
 		public static void Scripts(this HtmlHelper helper) {
 			var writer = helper.ViewContext.HttpContext.Response.Output;
-
-			var sm = GlobalServices.GetService<IScriptManagerService>();
+#warning TODO: Fix
+/*			var sm = GlobalServices.GetService<IScriptManagerService>();
 			
 			sm.ExecuteBeforeRenderCallbacks();
 
@@ -24,7 +24,7 @@ namespace Saltarelle.Mvc {
 
 			writer.WriteLine("\tif (typeof(init) == 'function') init();");
 			writer.WriteLine("});");
-			writer.WriteLine("</script>");
+			writer.WriteLine("</script>");*/
 		}
 	}
 }

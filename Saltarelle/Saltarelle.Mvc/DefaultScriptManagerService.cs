@@ -15,8 +15,7 @@ using System.Configuration;
 // ReSharper disable CheckNamespace
 namespace Saltarelle {
 // ReSharper restore CheckNamespace
-	[GlobalService(typeof(IScriptManagerService))]
-	public class DefaultScriptManagerService : IScriptManagerService, IGlobalService {
+	public class DefaultScriptManagerService : IScriptManagerService {
 		private int nextUniqueId = 1;
 
 		private static bool debugScripts;
@@ -88,7 +87,9 @@ namespace Saltarelle {
 		}
 
 		public IEnumerable<string> GetAllRequiredIncludes() {
-			var asms = registeredAssemblies.Concat(GlobalServices.AllLoadedServices.Select(kvp => kvp.Value.GetType().Assembly));
+#warning TODO: Fix
+//			var asms = registeredAssemblies.Concat(GlobalServices.AllLoadedServices.Select(kvp => kvp.Value.GetType().Assembly));
+            var asms = registeredAssemblies;
 			return earlyAdditionalIncludes.Concat(ModuleUtils.TopologicalSortAssembliesWithDependencies(asms).Select(a => Routes.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
 		}
 		
@@ -121,8 +122,10 @@ namespace Saltarelle {
 		
 		public IEnumerable<string> GetStartupScripts() {
 			return          registeredServices
-			               .Select(svc => new { svc, impl = GlobalServices.GetService(svc) })
-			               .Select(x => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + x.svc.FullName + ")) Saltarelle.GlobalServices.setService(" + x.svc.FullName + ", new " + x.impl.GetType().FullName + "(" + (x.impl is IGlobalService ? Utils.InitScript((x.impl as IGlobalService).ConfigObject) : "") + "));")
+#warning TODO: Fix
+//			               .Select(svc => new { svc, impl = GlobalServices.GetService(svc) })
+			               .Select(svc => new { svc, impl = (object)null })
+			               .Select(x => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + x.svc.FullName + ")) Saltarelle.GlobalServices.setService(" + x.svc.FullName + ", new " + x.impl.GetType().FullName + "(" + (x.impl is ITransferrableService ? Utils.InitScript((x.impl as ITransferrableService).ConfigObject) : "") + "));")
 			       .Concat(startupScripts.Select(f => f()).Where(s => !string.IsNullOrEmpty(s)));
 		}
 		
@@ -153,8 +156,6 @@ namespace Saltarelle {
 			earlyAdditionalIncludes.AddRange((debugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => Routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
 			earlyAdditionalIncludes.AddRange(addScriptsBeforeAssemblyScripts);
 			lateAdditionalIncludes.AddRange(addScriptsAfterAssemblyScripts);
-
-			this.RegisterClientService<IScriptManagerService>();
 		}
 	}
 }

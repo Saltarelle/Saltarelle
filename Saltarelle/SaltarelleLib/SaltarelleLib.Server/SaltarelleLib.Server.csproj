@@ -103,6 +103,9 @@
     <Compile Include="..\SaltarelleLib.Shared\InstantiatedTemplateControl.Shared.cs">
       <Link>InstantiatedTemplateControl.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\Ioc\IContainer.Shared.cs">
+      <Link>Ioc\IContainer.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Position.Shared.cs">
       <Link>Position.Shared.cs</Link>
     </Compile>
@@ -121,11 +124,10 @@
     <Compile Include="Configuration\ScriptElement.cs" />
     <Compile Include="Configuration\ScriptElementCollection.cs" />
     <Compile Include="CssResourceAttribute.cs" />
-    <Compile Include="GlobalServices\IGlobalService.Server.cs" />
-    <Compile Include="GlobalServices\DefaultGlobalServicesModule.cs" />
-    <Compile Include="GlobalServices\GlobalServiceAttribute.Server.cs" />
-    <Compile Include="GlobalServices\GlobalServices.Server.cs" />
+    <Compile Include="GlobalServices\ITransferrableService.Server.cs" />
     <Compile Include="ImportCssResourceAttribute.cs" />
+    <Compile Include="Ioc\ClientInjectAttribute.cs" />
+    <Compile Include="Ioc\ClientInjectPropertyAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequiresClientServiceAttribute.cs" />
     <Compile Include="Configuration\SaltarelleConfigSection.cs" />

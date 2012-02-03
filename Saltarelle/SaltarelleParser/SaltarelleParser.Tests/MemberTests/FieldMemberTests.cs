@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Saltarelle;
+using Saltarelle.Ioc;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
@@ -146,8 +147,9 @@ namespace SaltarelleParser.Tests {
 		public void TestInstantiate_Throws() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
+            var c   = mocks.StrictMock<IContainer>();
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").Instantiate(tpl, ctl), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new FieldMember("TestId", "Namespace.ServerType", "Namespace.ClientType").Instantiate(tpl, ctl, c), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 	}

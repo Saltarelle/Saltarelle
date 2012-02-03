@@ -1,13 +1,7 @@
 using System;
 
 namespace Saltarelle.UI {
-#if SERVER
-	[GlobalService(typeof(ISaltarelleUIService))]
-#endif
 	public class DefaultSaltarelleUIProvider : ISaltarelleUIService
-	#if SERVER
-	, IGlobalService
-	#endif
 	{
 		private string blankImageUrl;
 		public string BlankImageUrl { get { return blankImageUrl; } }

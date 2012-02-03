@@ -31,18 +31,5 @@ namespace SaltarelleParser.Tests {
 			}
 			Assert.Fail("No exception was thrown");
 		}
-		
-		internal static void RunWithMockedScriptManager(MockRepository mocks, Action<IScriptManagerService> code) {
-			var svc = mocks.StrictMock<IGlobalServicesProvider>();
-			var scr = mocks.StrictMock<IScriptManagerService>();
-			Expect.Call(svc.GetService(typeof(IScriptManagerService))).Return(scr).Repeat.Any();
-			try {
-				GlobalServices.Init(svc);
-				code(scr);
-			}
-			finally {
-				GlobalServices.Init(null);
-			}
-		}
 	}
 }

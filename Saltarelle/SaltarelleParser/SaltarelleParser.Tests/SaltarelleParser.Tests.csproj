@@ -101,7 +101,6 @@
     <Compile Include="TemplateTests.cs" />
     <Compile Include="TypedMarkupParsers\CodeMarkupTests.cs" />
     <Compile Include="TypedMarkupParsers\BoolMarkupParserTests.cs" />
-    <Compile Include="TypedMarkupParsers\EnumMarkupParserTests.cs" />
     <Compile Include="TypedMarkupParsers\StringMarkupParserTests.cs" />
     <Compile Include="TypedMarkupParsers\PositionMarkupParserTests.cs" />
     <Compile Include="TypedMarkupParsers\TypedMarkupParserTests.cs" />

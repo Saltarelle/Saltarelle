@@ -22,7 +22,6 @@ namespace Saltarelle {
 	public delegate void XmlNodeAction(XmlNode n);
 
 	public static partial class Utils {
-		private static readonly Dictionary<string, Type>     typeCache = new Dictionary<string, Type>();
 		private static readonly Dictionary<string, Assembly> asmCache  = new Dictionary<string, Assembly>();
 
 		public static int ParseInt(string s) {
@@ -250,33 +249,12 @@ namespace Saltarelle {
 			return IdAndStyle(id, p, width, height, null);
 		}
 
-		public static Type FindType(string typeName) {
-			Type t;
-			if (!TryFindType(typeName, out t))
-				throw new ArgumentException("The type " + typeName + " was not found in any loaded assembly.");
-			return t;
-		}
-		
 		public static Assembly[] GetAllAssemblies() {
 			lock (AppDomain.CurrentDomain) {
 				return AppDomain.CurrentDomain.GetAssemblies();
 			}
 		}
 
-		public static bool TryFindType(string typeName, out Type t) {
-			lock (typeCache) {
-				if (!typeCache.TryGetValue(typeName, out t)) {
-					foreach (Assembly a in GetAllAssemblies()) {
-						t = a.GetType(typeName);
-						if (!IsNull(t))
-							break;
-					}
-					typeCache[typeName] = t; // perhaps null
-				}
-			}
-			return !IsNull(t);
-		}
-		
 		public static Assembly FindAssembly(string assemblyName) {
 			Assembly a;
 			if (!TryFindAssembly(assemblyName, out a))

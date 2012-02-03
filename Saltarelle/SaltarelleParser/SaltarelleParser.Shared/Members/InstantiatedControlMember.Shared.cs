@@ -1,4 +1,5 @@
 ﻿using System;
+using Saltarelle.Ioc;
 #if SERVER
 using System.Text;
 using AdditionalPropertiesDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.TypedMarkupData>;
@@ -36,16 +37,13 @@ namespace Saltarelle.Members {
 				this.dependencies[i] = dependencies[i].Name;
 		}
 
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
 			if (CustomInstantiate)
 				throw ParserUtils.TemplateErrorException("Dynamically instantiated templates cannot have customInstantiate controls.");
 			IControl newCtl;
-			#if SERVER
-				newCtl = (IControl)Activator.CreateInstance(Utils.FindType(TypeName));
-			#else
-				Type tp = Utils.FindType(typeName);
-				newCtl = (IControl)Type.CreateInstance(tp);
-			#endif
+
+			newCtl = (IControl)container.ResolveByTypeName(typeName);
+
 			foreach (AdditionalPropertiesEntry prop in additionalProperties)
 				Utils.SetPropertyValue(newCtl, prop.Key, ((TypedMarkupData)prop.Value).ValueRetriever());
 			ctl.AddControl(name, newCtl);
@@ -128,7 +126,7 @@ namespace Saltarelle.Members {
 		private void WriteNonTransferConstructorCode(CodeBuilder cb) {
 			if (!customInstantiate) {
 				cb.AppendLine("{");
-				cb.AppendLine(typeName + " c = new " + typeName + "();");
+				cb.AppendLine(typeName + " c = " + ContainerMember.MemberName + ".Resolve(typeof(" + typeName + "));");
 				foreach (var kvp in additionalProperties)	
 					cb.AppendLine("c." + kvp.Key + " = " + kvp.Value.InitializerString + ";");
 				cb.AppendLine("this.controls[\"" + name + "\"] = c;");
@@ -138,11 +136,10 @@ namespace Saltarelle.Members {
 		
 		private void WriteTransferConstructorCode(CodeBuilder cb) {
 			if (customInstantiate) {
-				cb.AppendLine("Type __" + name + "Type" + " = Type.GetType((string)" + ParserUtils.ConfigObjectName + "[\"" + name + "$type\"]);")
-				  .AppendLine("this.controls[\"" + name + "\"] = Type.CreateInstance(__" + name + "Type, " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
+				cb.AppendLine("this.controls[\"" + name + "\"] = " + ContainerMember.MemberName + ".ResolveByTypeNameWithConstructorArg((string)" + ParserUtils.ConfigObjectName + "[\"" + name + "$type\"], " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 			else {
-				cb.AppendLine("this.controls[\"" + name + "\"] = new " + typeName + "(" + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
+				cb.AppendLine("this.controls[\"" + name + "\"] = " + ContainerMember.MemberName + ".ResolveWithConstructorArg(typeof(typeName), " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 		}
 

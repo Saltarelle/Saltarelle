@@ -1,4 +1,5 @@
 using System;
+using Saltarelle.Ioc;
 #if CLIENT
 using ControlDictionary = System.Dictionary;
 using ControlEntry      = System.DictionaryEntry;
@@ -104,9 +105,17 @@ namespace Saltarelle {
 			}
 		}
 
+        private IContainer container;
+#if SERVER
+        [ClientInject]
+#endif
+        public IContainer Container {
+            get { return container; }
+            set { container = value; }
+        }
+
 #if SERVER
 		public InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml) {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			this.getHtml       = getHtml;
 			this.namedElements = new StringList();
 		}
@@ -143,8 +152,7 @@ namespace Saltarelle {
 				Dictionary controlConfig = (Dictionary)dict["controls"];
 				foreach (DictionaryEntry de in controlConfig) {
 					Dictionary ncfg = (Dictionary)de.Value;
-					Type tp = Utils.FindType((string)ncfg["type"]);
-					this.controls[de.Key] = Type.CreateInstance(tp, ncfg["cfg"]);
+					this.controls[de.Key] = container.ResolveByTypeNameWithConstructorArg((string)ncfg["type"], ncfg["cfg"]);
 				}
 				this.namedElements = (StringList)dict["namedElements"];
 				isAttached = true;

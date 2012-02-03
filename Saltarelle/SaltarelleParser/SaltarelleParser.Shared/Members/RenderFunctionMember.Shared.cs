@@ -1,4 +1,5 @@
 ﻿using System;
+using Saltarelle.Ioc;
 #if CLIENT
 using FragmentList = System.ArrayList;
 using StringList   = System.ArrayList;
@@ -50,7 +51,7 @@ namespace Saltarelle.Members {
 			}
 		}
 
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
 		}
 		
 		public string Render(ITemplate tpl, IInstantiatedTemplateControl ctl) {

@@ -1,4 +1,5 @@
 ﻿using System;
+using Saltarelle.Ioc;
 
 namespace Saltarelle.Members {
 	public class FieldMember : IMember {
@@ -22,7 +23,7 @@ namespace Saltarelle.Members {
 			get { return new string[0]; }
 		}
 
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
 			throw ParserUtils.TemplateErrorException("Dynamically instantiated templates cannot have fields.");
 		}
 

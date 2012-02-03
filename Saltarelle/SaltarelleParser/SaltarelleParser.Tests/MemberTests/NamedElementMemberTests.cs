@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Saltarelle;
+using Saltarelle.Ioc;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;
@@ -90,9 +91,10 @@ namespace SaltarelleParser.Tests {
 		public void TestInstantiate_AddsNamedMember() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
+            var c   = mocks.StrictMock<IContainer>();
 			Expect.Call(() => ctl.AddNamedElement("TestId"));
 			mocks.ReplayAll();
-			new NamedElementMember("div", "TestId").Instantiate(tpl, ctl);
+			new NamedElementMember("div", "TestId").Instantiate(tpl, ctl, c);
 			mocks.VerifyAll();
 		}
 	}
