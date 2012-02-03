@@ -6,7 +6,7 @@ namespace Saltarelle.Ioc {
         object ResolveByTypeName(string typeName);
         Type FindType(string typeName);
         #if SERVER
-            T Resolve<T>(params object[] constructorArgs);
+            T Resolve<T>();
         #endif
         #if CLIENT
             object ResolveWithConstructorArg(Type objectType, object a0);

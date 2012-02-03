@@ -115,7 +115,8 @@
     <Compile Include="..\SaltarelleVersion.cs">
       <Link>Properties\SaltarelleVersion.cs</Link>
     </Compile>
-    <Compile Include="DefaultScriptManagerService.cs" />
+    <Compile Include="CoreServiceImplementations\DefaultContainer.cs" />
+    <Compile Include="CoreServiceImplementations\DefaultScriptManagerService.cs" />
     <Compile Include="HtmlExtensions.cs" />
     <Compile Include="IView.cs" />
     <Compile Include="ModuleUtils.cs" />
