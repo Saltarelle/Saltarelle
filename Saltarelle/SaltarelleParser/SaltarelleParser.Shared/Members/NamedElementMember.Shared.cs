@@ -21,7 +21,7 @@ namespace Saltarelle.Members {
 			get { return new string[0]; }
 		}
 		
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl) {
 			ctl.AddNamedElement(name);
 		}
 

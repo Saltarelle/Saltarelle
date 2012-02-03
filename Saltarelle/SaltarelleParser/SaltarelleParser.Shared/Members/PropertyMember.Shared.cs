@@ -41,7 +41,7 @@ namespace Saltarelle.Members {
 			get { return new string[0]; }
 		}
 
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl control, IContainer container) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl control) {
 			throw ParserUtils.TemplateErrorException("Cannot dynamically instantiate templates with properties.");
 		}
 		

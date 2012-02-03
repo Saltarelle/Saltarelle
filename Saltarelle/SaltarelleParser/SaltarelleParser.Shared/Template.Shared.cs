@@ -47,7 +47,7 @@ namespace Saltarelle {
 
 		string GetUniqueId();
 		
-		InstantiatedTemplateControl Instantiate(IContainer container);
+		InstantiatedTemplateControl Instantiate();
 
 		#if SERVER
 			string ServerInheritanceList { get; }
@@ -205,12 +205,12 @@ namespace Saltarelle {
 			return result;
 		}
 
-		public InstantiatedTemplateControl Instantiate(IContainer container) {
+		public InstantiatedTemplateControl Instantiate() {
 			MemberList orderedMembers = TopologicalSort(members);
 			InstantiatedTemplateControl ctl = new InstantiatedTemplateControl(delegate(IInstantiatedTemplateControl x) { return MainRenderFunction.Render(this, x); });
 			foreach (IMember m in orderedMembers) {
 				try {
-					m.Instantiate(this, ctl, container);
+					m.Instantiate(this, ctl);
 				}
 #if SERVER
 				catch (Exception ex) {

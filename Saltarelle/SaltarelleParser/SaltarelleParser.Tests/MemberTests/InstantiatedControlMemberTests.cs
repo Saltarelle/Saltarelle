@@ -112,7 +112,7 @@ namespace SaltarelleParser.Tests {
 			var cb = new CodeBuilder();
 
 			string expected = "{" + Environment.NewLine
-			                + "Namespace.Type c = (Namespace.Type)__Container.Resolve(typeof(Namespace.Type));" + Environment.NewLine
+			                + "Namespace.Type c = (Namespace.Type)ControlFactory.CreateControl(typeof(Namespace.Type));" + Environment.NewLine
 			                + "c.Prop1 = value1;" + Environment.NewLine
 			                + "c.Prop2 = value2;" + Environment.NewLine
 			                + "this.controls[\"CtlName\"] = c;" + Environment.NewLine
@@ -165,7 +165,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)__Container.ResolveWithConstructorArg(typeof(Namespace.Type), __cfg[\"CtlName\"]);" + Environment.NewLine;
+			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)ControlFactory.CreateControlWithConfig(typeof(Namespace.Type), __cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", false, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -177,7 +177,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)__Container.ResolveByTypeNameWithConstructorArg((string)__cfg[\"CtlName$type\"], __cfg[\"CtlName\"]);" + Environment.NewLine;
+			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)ControlFactory.CreateControlByTypeNameWithConfig((string)__cfg[\"CtlName$type\"], __cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -254,26 +254,32 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
             var container = mocks.StrictMock<IContainer>();
-            Expect.Call(container.ResolveByTypeName("SaltarelleParser.Tests.TestControlClass")).Return(new TestControlClass());
-			TestControlClass addedControl = null;
-			Expect.Call(() => ctl.AddControl(null, null)).IgnoreArguments().Constraints(Is.Equal("CtlName"), Is.TypeOf<TestControlClass>()).Do((Action<string, IControl>)((_, c) => addedControl = (TestControlClass)c));
-			mocks.ReplayAll();
-			CodeBuilder cb = new CodeBuilder();
-			new InstantiatedControlMember("CtlName", "SaltarelleParser.Tests.TestControlClass", false, propValues, new IMember[0]).Instantiate(tpl, ctl, container);
-			mocks.VerifyAll();
-			
-			Assert.AreEqual(42, addedControl.IntProperty);
-			Assert.AreEqual("Test value", addedControl.StringProperty);
-			Assert.IsTrue(new int[] { 20, 21 }.SequenceEqual(addedControl.ArrayProperty));
+            try {
+                ControlFactory.SetContainerFactory(() => container);
+
+                Expect.Call(container.ResolveByTypeName("SaltarelleParser.Tests.TestControlClass")).Return(new TestControlClass());
+			    TestControlClass addedControl = null;
+			    Expect.Call(() => ctl.AddControl(null, null)).IgnoreArguments().Constraints(Is.Equal("CtlName"), Is.TypeOf<TestControlClass>()).Do((Action<string, IControl>)((_, c) => addedControl = (TestControlClass)c));
+			    mocks.ReplayAll();
+			    CodeBuilder cb = new CodeBuilder();
+			    new InstantiatedControlMember("CtlName", "SaltarelleParser.Tests.TestControlClass", false, propValues, new IMember[0]).Instantiate(tpl, ctl);
+			    mocks.VerifyAll();
+
+			    Assert.AreEqual(42, addedControl.IntProperty);
+			    Assert.AreEqual("Test value", addedControl.StringProperty);
+			    Assert.IsTrue(new int[] { 20, 21 }.SequenceEqual(addedControl.ArrayProperty));
+            }
+            finally {
+                ControlFactory.SetContainerFactory(null);
+            }
 		}
 
 		[Test]
 		public void TestInstantiate_CustomInstantiateThrows() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
-            var container = mocks.StrictMock<IContainer>();
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), new IMember[0]).Instantiate(tpl, ctl, container), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), new IMember[0]).Instantiate(tpl, ctl), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 	}

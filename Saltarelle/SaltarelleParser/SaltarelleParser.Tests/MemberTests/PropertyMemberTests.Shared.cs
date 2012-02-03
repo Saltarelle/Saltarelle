@@ -155,9 +155,8 @@ namespace SaltarelleParser.Tests {
 		public void TestInstantiate_Throws() {
 			var tpl = mocks.StrictMock<ITemplate>();
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
-            var c   = mocks.StrictMock<IContainer>();
 			mocks.ReplayAll();
-			Globals.AssertThrows(() => new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, null).Instantiate(tpl, ctl, c), (TemplateErrorException ex) => true);
+			Globals.AssertThrows(() => new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, null).Instantiate(tpl, ctl), (TemplateErrorException ex) => true);
 			mocks.VerifyAll();
 		}
 	}

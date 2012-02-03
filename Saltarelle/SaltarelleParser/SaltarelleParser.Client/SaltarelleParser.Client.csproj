@@ -103,9 +103,6 @@
     <Compile Include="..\SaltarelleParser.Shared\IRenderFunction.Shared.cs">
       <Link>IRenderFunction.Shared.cs</Link>
     </Compile>
-    <Compile Include="..\SaltarelleParser.Shared\Members\ContainerPropertyMember.Shared.cs">
-      <Link>Members\ContainerPropertyMember.Shared.cs</Link>
-    </Compile>
     <Compile Include="..\saltarelleparser.shared\members\FieldMember.Shared.cs">
       <Link>Members\FieldMember.Shared.cs</Link>
     </Compile>
