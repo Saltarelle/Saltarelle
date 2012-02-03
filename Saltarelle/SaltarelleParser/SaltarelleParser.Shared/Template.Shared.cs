@@ -82,10 +82,12 @@ namespace Saltarelle {
 				serverUsings["System.Collections.Generic"] = null;
 				serverUsings["System.Text"] = null;
 				serverUsings["Saltarelle"] = null;
+				serverUsings["Saltarelle.Ioc"] = null;
 
 				clientUsings["System"] = null;
 				clientUsings["System.DHTML"] = null;
 				clientUsings["Saltarelle"] = null;
+				clientUsings["Saltarelle.Ioc"] = null;
 			#endif
 		}
 		
@@ -232,8 +234,7 @@ namespace Saltarelle {
 
 		internal static void WriteServerConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
 			cb.AppendLine("[Obsolete(@\"" + DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]")
-			  .AppendLine("public " + tpl.ClassName + "() {").Indent()
-			  .AppendLine("IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());");
+			  .AppendLine("public " + tpl.ClassName + "() {").Indent();
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
 			cb.AppendLine("Constructed();").Outdent()

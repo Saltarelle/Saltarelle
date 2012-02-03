@@ -36,7 +36,6 @@ namespace SaltarelleParser.Tests {
 			
 			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
                             +  "public TestClass() {" + Environment.NewLine
-			                +  "	IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
 			                +  "	Constructed();" + Environment.NewLine
@@ -263,6 +262,7 @@ namespace SaltarelleParser.Tests {
 			                 +     "using System.Collections.Generic;" + Environment.NewLine
 			                 +     "using System.Text;" + Environment.NewLine
 			                 +     "using Saltarelle;" + Environment.NewLine
+			                 +     "using Saltarelle.Ioc;" + Environment.NewLine
 			                 +     "using AddedNamespace.Server;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
@@ -307,7 +307,6 @@ namespace SaltarelleParser.Tests {
 			                 + Environment.NewLine
                              + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass() {" + Environment.NewLine
-			                 + p + "		IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                 + p + "		Constructed();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + p + "}" + Environment.NewLine
@@ -376,6 +375,7 @@ namespace SaltarelleParser.Tests {
 			string expected  =     "using System;" + Environment.NewLine
 			                 +     "using System.DHTML;" + Environment.NewLine
 			                 +     "using Saltarelle;" + Environment.NewLine
+			                 +     "using Saltarelle.Ioc;" + Environment.NewLine
 			                 +     "using AddedNamespace.Client;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
