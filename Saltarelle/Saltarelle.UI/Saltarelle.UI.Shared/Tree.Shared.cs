@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Saltarelle.Ioc;
+
 #endif
 #if CLIENT
 using System.DHTML;
@@ -127,9 +129,6 @@ namespace Saltarelle.UI {
 	}
 #endif
 
-	#if SERVER
-	[RequiresClientService(typeof(ISaltarelleUIService))]
-	#endif
 	public class Tree : IControl, IClientCreateControl, IResizableX, IResizableY {
 		private static TreeNode N(ITreeNode i) { return (TreeNode)(object)i; }
 		private static ITreeNode I(TreeNode n) { return (ITreeNode)(object)n; }
@@ -166,12 +165,21 @@ namespace Saltarelle.UI {
 		private int      width;
 		private int      height;
 		private int      tabIndex;
-		private string   blankImageUrl;
 		private bool     hasChecks;
 		private bool     enabled;
 		private TreeNode selectedNode;
 		private bool     enableDragDrop;
 		private bool     autoCheckHierarchy;
+
+        private ISaltarelleUIService uiService;
+
+        #if SERVER
+        [ClientInject]
+        #endif
+        public ISaltarelleUIService UIService {
+            get { return uiService; }
+            set { uiService = value; }
+        }
 
 		#if CLIENT
 			// Drag-drop fields
@@ -382,6 +390,7 @@ namespace Saltarelle.UI {
 		private void AppendNodeHtml(TreeNode n, StringBuilder sb) {
 			bool hasChildren = !Utils.IsNull(n.children) && Utils.ArrayLength(n.children) > 0;
 			string suffix = (hasChildren ? (n.expanded ? ExpandedSuffix : CollapsedSuffix) : LeafSuffix);
+            string blankImageUrl = uiService.BlankImageUrl;
 
 			sb.Append("<div class=\"" + ContainerClass + " " + ContainerClass + suffix + "\" id=\"" + NodeIdPrefix + Utils.ToStringInvariantInt(n.id) + "\">"
 			        +     "<div class=\"" + NodeClass + " " + NodeClass + suffix + "\">"
@@ -421,10 +430,6 @@ namespace Saltarelle.UI {
 			invisibleRoot = new TreeNode();
 			invisibleRoot.treeIfRoot = this;
 			invisibleRoot.expanded   = true;
-#if SERVER
-#warning TODO: Fix
-#endif
-//			blankImageUrl = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 			selectedNode  = null;
 			enabled       = true;
 			width         = 300;
@@ -483,8 +488,6 @@ namespace Saltarelle.UI {
 			enableDragDrop     = (bool)config["enableDragDrop"];
 			autoCheckHierarchy = (bool)config["autoCheckHierarchy"];
 			nextNodeId         = (int)config["nextNodeId"];
-            if (false); // TODO: Fix line below
-			// blankImageUrl      = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 
 			FixTreeAfterDeserialize(I(invisibleRoot));
 			invisibleRoot.treeIfRoot = this;

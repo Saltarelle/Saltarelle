@@ -7,8 +7,11 @@ namespace Saltarelle.UI {
 		public string BlankImageUrl { get { return blankImageUrl; } }
 
 #if SERVER
+        public DefaultSaltarelleUIProvider(IRouteService routes) {
+			blankImageUrl = routes.GetAssemblyResourceUrl(typeof(Saltarelle.UI.Resources).Assembly, Saltarelle.UI.Resources.BlankImage);
+        }
+
 		public void Setup() {
-//			blankImageUrl = Saltarelle.Mvc.MvcRouteService.GetAssemblyResourceUrl(typeof(Saltarelle.UI.Resources).Assembly, Saltarelle.UI.Resources.BlankImage);
 		}
 		
 		public object ConfigObject {
