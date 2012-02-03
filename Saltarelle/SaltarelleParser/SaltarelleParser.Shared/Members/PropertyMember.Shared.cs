@@ -1,3 +1,5 @@
+using Saltarelle.Ioc;
+
 namespace Saltarelle.Members {
 	public class PropertyMember : IMember {
 		private string name;

@@ -1,4 +1,5 @@
 ﻿using System;
+using Saltarelle.Ioc;
 
 namespace Saltarelle.Members {
 	public class FieldMember : IMember {

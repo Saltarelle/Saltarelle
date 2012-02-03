@@ -1,20 +1,17 @@
 using System;
 
 namespace Saltarelle.UI {
-#if SERVER
-	[GlobalService(typeof(ISaltarelleUIService))]
-#endif
 	public class DefaultSaltarelleUIProvider : ISaltarelleUIService
-	#if SERVER
-	, IGlobalService
-	#endif
 	{
 		private string blankImageUrl;
 		public string BlankImageUrl { get { return blankImageUrl; } }
 
 #if SERVER
+        public DefaultSaltarelleUIProvider(IRouteService routes) {
+			blankImageUrl = routes.GetAssemblyResourceUrl(typeof(Saltarelle.UI.Resources).Assembly, Saltarelle.UI.Resources.BlankImage);
+        }
+
 		public void Setup() {
-			blankImageUrl = Saltarelle.Mvc.Routes.GetAssemblyResourceUrl(typeof(Saltarelle.UI.Resources).Assembly, Saltarelle.UI.Resources.BlankImage);
 		}
 		
 		public object ConfigObject {

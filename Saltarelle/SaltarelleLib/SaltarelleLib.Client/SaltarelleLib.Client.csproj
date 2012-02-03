@@ -79,17 +79,20 @@
     <Compile Include="..\SaltarelleLib.Shared\ControlDocumentFragment.Shared.cs">
       <Link>ControlDocumentFragment.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\ControlFactory.Shared.cs">
+      <Link>Ioc\ControlFactory.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
       <Link>ControlInterfaces.Shared.cs</Link>
     </Compile>
-    <Compile Include="..\SaltarelleLib.Shared\GlobalServices\BuiltinServices\IScriptManagerService.cs">
-      <Link>GlobalServices\BuiltinServices\IScriptManagerService.cs</Link>
-    </Compile>
-    <Compile Include="..\SaltarelleLib.Shared\GlobalServices\IGlobalServicesProvider.Shared.cs">
-      <Link>GlobalServices\IGlobalServicesProvider.Shared.cs</Link>
-    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\InstantiatedTemplateControl.Shared.cs">
       <Link>InstantiatedTemplateControl.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarellelib.shared\ioc\IContainer.Shared.cs">
+      <Link>Ioc\IContainer.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\IScriptManagerService.cs">
+      <Link>IScriptManagerService.cs</Link>
     </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Position.Shared.cs">
       <Link>Position.Shared.cs</Link>
@@ -97,11 +100,15 @@
     <Compile Include="..\SaltarelleLib.Shared\Resizing.Shared.cs">
       <Link>Resizing.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\ScriptManagerConfig.Shared.cs">
+      <Link>ScriptManagerConfig.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Utils.Shared.cs">
       <Link>Utils.Shared.cs</Link>
     </Compile>
     <Compile Include="DefaultScriptManagerService.cs" />
-    <Compile Include="GlobalServices\GlobalServices.Client.cs" />
+    <Compile Include="GlobalServices.Client.cs" />
+    <Compile Include="Ioc\DefaultContainer.Client.cs" />
     <Compile Include="JQuerySharp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.Client.cs" />

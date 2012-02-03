@@ -1,4 +1,5 @@
 ﻿using System;
+using Saltarelle.Ioc;
 #if CLIENT
 using FragmentList = System.ArrayList;
 using StringList   = System.ArrayList;

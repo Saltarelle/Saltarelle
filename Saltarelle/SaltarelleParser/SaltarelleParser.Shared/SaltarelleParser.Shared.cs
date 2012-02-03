@@ -1,4 +1,5 @@
 ﻿using System;
+using Saltarelle.Ioc;
 #if SERVER
 using System.Text;
 using TypedMarkupParserImplDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.ITypedMarkupParserImpl>;
@@ -16,16 +17,55 @@ namespace Saltarelle {
 		TypedMarkupData ParseTypedMarkup(string markup);
 
         #if SERVER
-		    void RegisterTypesForClient(IScriptManagerService svc);
 		    object ConfigObject { get; }
         #endif
     }
 
-	public class SaltarelleParser : ISaltarelleParser {
-		private readonly INodeProcessor[] pluginNodeProcessors;
-		private readonly TypedMarkupParserImplDictionary pluginTypedMarkupParsers;
-		private readonly IUntypedMarkupParserImpl[] pluginUntypedMarkupParsers;
-		private readonly DocumentProcessor docProcessor;
+	#if SERVER
+    [ClientInjectProperty(typeof(IContainer), "Container")]
+    #endif
+    public class SaltarelleParser : ISaltarelleParser {
+		private INodeProcessor[] pluginNodeProcessors;
+		private TypedMarkupParserImplDictionary pluginTypedMarkupParsers;
+		private IUntypedMarkupParserImpl[] pluginUntypedMarkupParsers;
+		private DocumentProcessor docProcessor;
+
+        #if CLIENT
+            private Dictionary configObject;
+            private IContainer container;
+
+            private void EnsureInitialized() {
+                if (configObject == null)
+                    return;
+
+				string[]   npTypes = (string[])configObject["pluginNodeProcessors"];
+				Dictionary tmTypes = (Dictionary)configObject["pluginTypedMarkupParsers"];
+				string[]   umTypes = (string[])configObject["pluginUntypedMarkupParsers"];
+
+				pluginNodeProcessors       = new INodeProcessor[npTypes.Length];
+				pluginTypedMarkupParsers   = new TypedMarkupParserImplDictionary();
+				pluginUntypedMarkupParsers = new IUntypedMarkupParserImpl[umTypes.Length];
+
+				for (int i = 0; i < npTypes.Length; i++) {
+					pluginNodeProcessors[i] = (INodeProcessor)Container.CreateObjectByTypeName(npTypes[i]);
+				}
+				foreach (DictionaryEntry tm in tmTypes) {
+					pluginTypedMarkupParsers[tm.Key] = (ITypedMarkupParserImpl)Container.CreateObjectByTypeName((string)tm.Value);
+				}
+				for (int i = 0; i < umTypes.Length; i++) {
+					pluginUntypedMarkupParsers[i] = (IUntypedMarkupParserImpl)Container.CreateObjectByTypeName(umTypes[i]);
+				}
+
+			    docProcessor = new DocumentProcessor(pluginNodeProcessors, new TypedMarkupParser(pluginTypedMarkupParsers), new UntypedMarkupParser(pluginUntypedMarkupParsers));
+
+                configObject = null;
+            }
+
+            public IContainer Container {
+                get { return container; }
+                set { container = value; }
+            }
+        #endif
 
 		/// <summary>
 		/// On the server, an easier way to obtain a parser is through the SaltarelleParserFactory class.
@@ -34,25 +74,9 @@ namespace Saltarelle {
 			#if CLIENT
 				Dictionary cfg = Dictionary.GetDictionary(pluginNodeProcessors);
 				if (cfg.ContainsKey("pluginNodeProcessors")) {
-					// We have an [AlternateSignature] constructor which can cause us to be called with a config object instead of real parameters
-					string[]   npTypes         = (string[])cfg["pluginNodeProcessors"];
-					Dictionary tmTypes         = (Dictionary)cfg["pluginTypedMarkupParsers"];
-					string[]   umTypes         = (string[])cfg["pluginUntypedMarkupParsers"];
-					pluginNodeProcessors       = new INodeProcessor[npTypes.Length];
-					pluginTypedMarkupParsers   = new TypedMarkupParserImplDictionary();
-					pluginUntypedMarkupParsers = new IUntypedMarkupParserImpl[umTypes.Length];
-					for (int i = 0; i < npTypes.Length; i++) {
-						Type tp = Utils.FindType(npTypes[i]);
-						pluginNodeProcessors[i] = (INodeProcessor)Type.CreateInstance(tp);
-					}
-					foreach (DictionaryEntry tm in tmTypes) {
-						Type tp = Utils.FindType((string)tm.Value);
-						pluginTypedMarkupParsers[tm.Key] = (ITypedMarkupParserImpl)Type.CreateInstance(tp);
-					}
-					for (int i = 0; i < umTypes.Length; i++) {
-						Type tp = Utils.FindType(umTypes[i]);
-						pluginUntypedMarkupParsers[i] = (IUntypedMarkupParserImpl)Type.CreateInstance(tp);
-					}
+				    // We have an [AlternateSignature] constructor which can cause us to be called with a config object instead of real parameters
+                    configObject = cfg;
+                    return;
 				}
 			#endif
 			docProcessor = new DocumentProcessor(pluginNodeProcessors, new TypedMarkupParser(pluginTypedMarkupParsers), new UntypedMarkupParser(pluginUntypedMarkupParsers));
@@ -62,10 +86,16 @@ namespace Saltarelle {
 		}
 
 		public ITemplate ParseTemplate(XmlNode node) {
+            #if CLIENT
+                EnsureInitialized();
+            #endif
 			return docProcessor.Process(node);
 		}
 		
 		public IFragment ParseUntypedMarkup(string markup) {
+            #if CLIENT
+                EnsureInitialized();
+            #endif
 			return docProcessor.ParseUntypedMarkup(markup);
 		}
 		
@@ -73,21 +103,34 @@ namespace Saltarelle {
 			return docProcessor.ParseTypedMarkup(markup);
 		}
 
-		public INodeProcessor[] PluginNodeProcessors { get { return pluginNodeProcessors; } }
-		public TypedMarkupParserImplDictionary PluginTypedMarkupParsers { get { return pluginTypedMarkupParsers; } }
-		public IUntypedMarkupParserImpl[] PluginUntypedMarkupParsers { get { return pluginUntypedMarkupParsers; } }
+		public INodeProcessor[] PluginNodeProcessors {
+            get {
+                #if CLIENT
+                    EnsureInitialized();
+                #endif
+                return pluginNodeProcessors;
+            }
+        }
+
+		public TypedMarkupParserImplDictionary PluginTypedMarkupParsers {
+            get {
+                #if CLIENT
+                    EnsureInitialized();
+                #endif
+                return pluginTypedMarkupParsers;
+            }
+        }
+
+		public IUntypedMarkupParserImpl[] PluginUntypedMarkupParsers {
+            get {
+                #if CLIENT
+                    EnsureInitialized();
+                #endif
+                return pluginUntypedMarkupParsers;
+            }
+        }
 
 #if SERVER
-		public void RegisterTypesForClient(IScriptManagerService svc) {
-			svc.RegisterClientType(GetType());
-			foreach (var p in this.pluginNodeProcessors)
-				svc.RegisterClientType(p.GetType());
-			foreach (var p in this.pluginTypedMarkupParsers.Values)
-				svc.RegisterClientType(p.GetType());
-			foreach (var p in pluginUntypedMarkupParsers)
-				svc.RegisterClientType(p.GetType());
-		}
-		
 		public object ConfigObject {
 			get {
 				return new { pluginNodeProcessors       = pluginNodeProcessors.Select(x => x.GetType().FullName),

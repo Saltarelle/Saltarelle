@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Ajax;
 using System.Reflection;
-using System.ComponentModel;
+using Saltarelle.Ioc;
 using System.Web.UI;
 using System.Globalization;
 using System.Web.Routing;
@@ -24,6 +24,14 @@ namespace Saltarelle.Mvc
 		public const string ScriptDebugParam      = "debug";
     
 		private static Dictionary<string, string> mimeMap;
+
+        private IContainer container;
+        private IModuleUtils moduleUtils;
+
+        public SaltarelleController(IContainer container, IModuleUtils moduleUtils) {
+            this.container   = container;
+            this.moduleUtils = moduleUtils;
+        }
 
 		static SaltarelleController() {
 			try {
@@ -49,7 +57,7 @@ namespace Saltarelle.Mvc
 		private void InitializeDelegateData(AuthorizationContext filterContext) {
 			string typeName   = (string)filterContext.RouteData.Values[DelegateTypeNameParam],
 			       methodName = (string)filterContext.RouteData.Values[DelegateMethodParam];
-			Type t = Utils.FindType(typeName);
+			Type t = container.FindType(typeName);
 			var candidates = (  from mi in t.GetMethods((t.IsInterface ? BindingFlags.Instance : BindingFlags.Static) | BindingFlags.Public)
 			                   where mi.Name.Equals(methodName, StringComparison.InvariantCultureIgnoreCase)
 			                      && mi.GetCustomAttributes(typeof(AcceptVerbsAttribute), true).Cast<AcceptVerbsAttribute>().Any(attr => attr.IsValidForRequest(filterContext, mi))
@@ -167,7 +175,7 @@ namespace Saltarelle.Mvc
 				}
 			}
 			
-			object instance = methodInfo.DeclaringType.IsInterface ? GlobalServices.GetService(methodInfo.DeclaringType) : null;
+			object instance = methodInfo.DeclaringType.IsInterface ? container.ResolveService(methodInfo.DeclaringType) : null;
 			object result;
 			if (methodInfo.ReturnType == typeof(void)) {
 				methodInfo.Invoke(instance, parms);
@@ -187,7 +195,7 @@ namespace Saltarelle.Mvc
 		public ActionResult GetAssemblyScript(string assemblyName, string debug) {
 			Assembly asm;
 			if (Utils.TryFindAssembly(assemblyName, out asm)) {
-				string s = ModuleUtils.GetAssemblyScriptContent(asm, !string.IsNullOrEmpty(debug));
+				string s = moduleUtils.GetAssemblyScriptContent(asm, !string.IsNullOrEmpty(debug));
 				if (!Utils.IsNull(s))
 					return JavaScript(s);
 			}
@@ -198,7 +206,7 @@ namespace Saltarelle.Mvc
 		public ActionResult GetAssemblyCss(string assemblyName) {
 			Assembly asm;
 			if (Utils.TryFindAssembly(assemblyName, out asm)) {
-				string s = ModuleUtils.GetAssemblyCss(asm);
+				string s = moduleUtils.GetAssemblyCss(asm);
 				if (!Utils.IsNull(s))
 					return Content(s, "text/css");
 			}

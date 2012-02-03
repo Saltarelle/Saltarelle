@@ -11,11 +11,12 @@ using System.Reflection.Emit;
 using Mono.Cecil;
 
 namespace Saltarelle.Mvc {
-	public static class ModuleUtils {
-		private static object scriptLock = new object();
-		private static object cssLock    = new object();
+	public class ModuleUtils : IModuleUtils {
+	    private readonly IRouteService routes;
+	    private object scriptLock = new object();
+		private object cssLock    = new object();
 		
-		private static IEnumerable<Assembly> GetClientReferencedAssembliesAssumingLock(Assembly asm) {
+		private IEnumerable<Assembly> GetClientReferencedAssembliesAssumingLock(Assembly asm) {
 			AssemblyDefinition def = GetClientAssemblyAssumingLock(asm);
 			if (def == null)
 				return new Assembly[0];
@@ -28,12 +29,12 @@ namespace Saltarelle.Mvc {
 			       .Select(x => Assembly.Load(new AssemblyName(x.FullName) { Name = x.Name.Substring(0, x.Name.Length - 7) }));
 		}
 
-		private static Dictionary<Assembly, ReadOnlyCollection<Assembly>> assemblyDependencies = new Dictionary<Assembly, ReadOnlyCollection<Assembly>>();
-		private static Dictionary<Assembly, string> debugAssemblyScripts = new Dictionary<Assembly, string>();
-		private static Dictionary<Assembly, string> releaseAssemblyScripts = new Dictionary<Assembly, string>();
-		private static Dictionary<Assembly, string> assemblyCss = new Dictionary<Assembly, string>();
+		private Dictionary<Assembly, ReadOnlyCollection<Assembly>> assemblyDependencies = new Dictionary<Assembly, ReadOnlyCollection<Assembly>>();
+		private Dictionary<Assembly, string> debugAssemblyScripts = new Dictionary<Assembly, string>();
+		private Dictionary<Assembly, string> releaseAssemblyScripts = new Dictionary<Assembly, string>();
+		private Dictionary<Assembly, string> assemblyCss = new Dictionary<Assembly, string>();
 
-		private static IList<Assembly> GetClientDependencies(Assembly asm) {
+		private IList<Assembly> GetClientDependencies(Assembly asm) {
 			lock (scriptLock) {
 				ReadOnlyCollection<Assembly> result;
 				if (!assemblyDependencies.TryGetValue(asm, out result)) {
@@ -51,14 +52,14 @@ namespace Saltarelle.Mvc {
 			}
 		}
 		
-		private static AssemblyDefinition GetClientAssemblyAssumingLock(Assembly asm) {
+		private AssemblyDefinition GetClientAssemblyAssumingLock(Assembly asm) {
 			if (asm.IsDynamic)
 				return null;
 			string name = asm.GetManifestResourceNames().FirstOrDefault(s => s.EndsWith("Client.dll"));
 			return !Utils.IsNull(name) ? AssemblyDefinition.ReadAssembly(asm.GetManifestResourceStream(name)) : null;
 		}
 		
-		private static string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {
+		private string GetAssemblyScriptAssumingLock(Assembly asm, bool debug) {
 			if (asm.IsDynamic)
 				return null;
 		
@@ -72,7 +73,7 @@ namespace Saltarelle.Mvc {
 			return null;
 		}
 
-		public static string GetAssemblyScriptContent(Assembly asm, bool debug) {
+		public string GetAssemblyScriptContent(Assembly asm, bool debug) {
 			string s;
 			lock (scriptLock) {
 				var x = (debug ? debugAssemblyScripts : releaseAssemblyScripts);
@@ -83,18 +84,18 @@ namespace Saltarelle.Mvc {
 			return s;
 		}
 
-		private static string GetLessVariableDefinitions(Assembly asm) {
+		private string GetLessVariableDefinitions(Assembly asm) {
 			return string.Join(Environment.NewLine,
 			                   asm.GetCustomAttributes(typeof(CssResourceAttribute), false)
 			                      .Cast<CssResourceAttribute>()
-			                      .Select(a => "@" + a.CssVariableName + ": url(" + Routes.GetAssemblyResourceUrl(asm, a.PublicResourceName) + ");")
+			                      .Select(a => "@" + a.CssVariableName + ": url(" + routes.GetAssemblyResourceUrl(asm, a.PublicResourceName) + ");")
 			           .Concat(asm.GetCustomAttributes(typeof(ImportCssResourceAttribute), false)
 			                      .Cast<ImportCssResourceAttribute>()
-			                      .Select(a => "@" + a.CssVariableName + ": url(" + Routes.GetAssemblyResourceUrl(a.ResourceAssembly, a.PublicResourceName) + ");"))
+			                      .Select(a => "@" + a.CssVariableName + ": url(" + routes.GetAssemblyResourceUrl(a.ResourceAssembly, a.PublicResourceName) + ");"))
 			           .ToArray());
 		}
 		
-		private static string GenerateAssemblyCss(Assembly asm) {
+		private string GenerateAssemblyCss(Assembly asm) {
 			if (asm.IsDynamic)
 				return null;
 
@@ -108,7 +109,7 @@ namespace Saltarelle.Mvc {
 			return null;
 		}
 		
-		public static string GetAssemblyCss(Assembly assembly) {
+		public string GetAssemblyCss(Assembly assembly) {
 			lock (cssLock) {
 				string s;
 				if (!assemblyCss.TryGetValue(assembly, out s)) {
@@ -118,26 +119,30 @@ namespace Saltarelle.Mvc {
 			}
 		}
 		
-		public static string GetCss(string lessSource, Assembly contextAssembly) {
+		public string GetCss(string lessSource, Assembly contextAssembly) {
 			var engine = new EngineFactory().GetEngine();
 			return engine.TransformToCss((!Utils.IsNull(contextAssembly) ? GetLessVariableDefinitions(contextAssembly) + Environment.NewLine : "") + lessSource, "Module.less");
 		}
 		
-		private static void AddAssembliesInCorrectOrder(Assembly asm, IList<Assembly> l) {
+		private void AddAssembliesInCorrectOrder(Assembly asm, IList<Assembly> l) {
 			if (!l.Contains(asm)) {
 				// add all references (recursively) before adding the current one
 				foreach (var dep in GetClientDependencies(asm))
 					AddAssembliesInCorrectOrder(dep, l);
-				if (ModuleUtils.GetAssemblyScriptContent(asm, true) != null)
+				if (GetAssemblyScriptContent(asm, true) != null)
 					l.Add(asm);
 			}
 		}
 		
-		public static IList<Assembly> TopologicalSortAssembliesWithDependencies(IEnumerable<Assembly> list) {
+		public IList<Assembly> TopologicalSortAssembliesWithDependencies(IEnumerable<Assembly> list) {
 			IList<Assembly> result = new List<Assembly>();
 			foreach (Assembly a in list)
 				AddAssembliesInCorrectOrder(a, result);
 			return result;
 		}
+
+        public ModuleUtils(IRouteService routes) {
+            this.routes = routes;
+        }
 	}
 }

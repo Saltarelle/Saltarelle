@@ -24,7 +24,6 @@ namespace Saltarelle {
 			defaultImplementers["pos"]  = new PositionMarkupParser();
 			defaultImplementers["bool"] = new BoolMarkupParser();
 			defaultImplementers["code"] = new CodeMarkupParser();
-			defaultImplementers["enum"] = new EnumMarkupParser();
 		}
 
 		private TypedMarkupParserImplDictionary implementers;

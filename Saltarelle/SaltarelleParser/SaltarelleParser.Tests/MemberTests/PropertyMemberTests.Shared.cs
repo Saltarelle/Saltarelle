@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Saltarelle;
+using Saltarelle.Ioc;
 using Saltarelle.NodeProcessors;
 using Rhino.Mocks;
 using Saltarelle.Members;

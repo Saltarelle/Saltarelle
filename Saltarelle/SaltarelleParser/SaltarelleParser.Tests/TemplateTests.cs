@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Saltarelle;
 using Rhino.Mocks;
 using Saltarelle.Fragments;
+using Saltarelle.Ioc;
 using Is = Rhino.Mocks.Constraints.Is;
 
 namespace SaltarelleParser.Tests {
@@ -33,7 +34,8 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
-			string expected =  "public TestClass() {" + Environment.NewLine
+			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
+                            +  "public TestClass() {" + Environment.NewLine
 			                +  "	IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
@@ -66,7 +68,8 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
-			string expected =  "public TestClass(object config) {" + Environment.NewLine
+			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
+			                +  "public TestClass(object config) {" + Environment.NewLine
 			                +  "	if (!Script.IsUndefined(config)) {" + Environment.NewLine
 			                +  "		Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine
 			                +  "		this.id = (string)__cfg[\"id\"];" + Environment.NewLine
@@ -302,6 +305,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
+                             + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass() {" + Environment.NewLine
 			                 + p + "		IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                 + p + "		Constructed();" + Environment.NewLine
@@ -434,6 +438,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	[AlternateSignature]" + Environment.NewLine
 			                 + p + "	public extern TestClass();" + Environment.NewLine
 			                 : "")
+                             + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass(object config) {" + Environment.NewLine
 			                 + p + "		if (!Script.IsUndefined(config)) {" + Environment.NewLine
 			                 + p + "			Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine
@@ -579,8 +584,8 @@ namespace SaltarelleParser.Tests {
 			var tpl = new Template();
 
 			IInstantiatedTemplateControl ctl = null;
-			var m1 = mocks.StrictMock<IMember>();
-			var m2 = mocks.StrictMock<IMember>();
+			var m1  = mocks.StrictMock<IMember>();
+			var m2  = mocks.StrictMock<IMember>();
 			Expect.Call(m1.Name).Return("m1").Repeat.Any();
 			Expect.Call(m2.Name).Return("m2").Repeat.Any();
 			Expect.Call(m1.Dependencies).Return(new string[] { });
@@ -588,19 +593,16 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(() => m1.Instantiate(null, null)).IgnoreArguments().Constraints(Is.Same(tpl), Is.NotNull()).Do((Action<ITemplate, IInstantiatedTemplateControl>)((_, c) => { ctl = c; } ));
 			Expect.Call(() => m2.Instantiate(null, null)).IgnoreArguments().Constraints(Is.Same(tpl), Is.Matching((IInstantiatedTemplateControl x) => object.ReferenceEquals(x, ctl)));
 			tpl.MainRenderFunction.AddFragment(new LiteralFragment("X"));
-			
-			Globals.RunWithMockedScriptManager(mocks, scr => {
-				Expect.Call(() => scr.RegisterClientType(typeof(InstantiatedTemplateControl)));
-				mocks.ReplayAll();
 
-				tpl.AddMember(m1);
-				tpl.AddMember(m2);
+			mocks.ReplayAll();
+
+			tpl.AddMember(m1);
+			tpl.AddMember(m2);
 			
-				var actual = tpl.Instantiate();
-				Assert.AreSame(ctl, actual);
-				actual.Id = "SomeId";
-				Assert.AreEqual("X", actual.Html);
-			});
+			var actual = tpl.Instantiate();
+			Assert.AreSame(ctl, actual);
+			actual.Id = "SomeId";
+			Assert.AreEqual("X", actual.Html);
 
 			mocks.VerifyAll();
 		}

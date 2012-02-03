@@ -199,22 +199,6 @@ namespace Saltarelle {
 			Type.SetProperty(o, property, value);
 		}
 
-		public static Type FindType(string typeName) {
-			Type tp = TryFindType(typeName);
-			if (Utils.IsNull(tp))
-				throw new Exception("The type " + typeName + " does not exist");
-			return tp;
-		}
-
-		public static Type TryFindType(string typeName) {
-			try {
-				return Type.GetType(typeName) ?? null;	// We can get 'undefined' if the namespace is defined, but the type is not ...
-			}
-			catch (Exception) {
-				return null;	// ... and we can get an exception if the namespace is not defined.
-			}
-		}
-		
 		public static Exception ArgumentException(string argument) {
 			throw new Exception("Argument is invalid: " + argument);
 		}

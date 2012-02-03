@@ -137,7 +137,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public ControlListControl() {
-			GlobalServices.Provider.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 

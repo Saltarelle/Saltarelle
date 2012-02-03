@@ -12,7 +12,7 @@ using System.Web.Configuration;
 using System.Configuration;
 
 namespace Saltarelle.Mvc {
-	public static class Routes {
+	public class MvcRouteService : IRouteService {
 		public const string AssemblyScriptsRouteName   = "AssemblyScripts";
 		public const string AssemblyCssRouteName       = "AssemblyCss";
 		public const string AssemblyResourcesRouteName = "AssemblyResources";
@@ -80,36 +80,37 @@ namespace Saltarelle.Mvc {
 			RegisterSingle(routes, DelegateRouteName,          config.Routes.Delegate,          (SaltarelleController c) => c.Delegate(null, null), null);
 		}
 		
-		public static string GetVirtualPath(string routeName, RouteValueDictionary routeValues) {
-			return RouteTable.Routes.GetVirtualPath(new RequestContext(new HttpContextWrapper(HttpContext.Current), new RouteData()), routeName, routeValues).VirtualPath;
+		public string GetVirtualPath(string routeName, IDictionary<string, object> routeValues) {
+            var rvd = (routeValues != null ? new RouteValueDictionary(routeValues) : new RouteValueDictionary());
+			return RouteTable.Routes.GetVirtualPath(new RequestContext(new HttpContextWrapper(HttpContext.Current), new RouteData()), routeName, rvd).VirtualPath;
 		}
 		
-		public static string GetVirtualPath(string routeName) {
-			return GetVirtualPath(routeName, new RouteValueDictionary());
+		public string GetVirtualPath(string routeName) {
+			return GetVirtualPath(routeName, null);
 		}
 
-		public static string GetAssemblyResourceUrl(Assembly asm, string resourcePublicName) {
+		public string GetAssemblyResourceUrl(Assembly asm, string resourcePublicName) {
 			return GetVirtualPath(AssemblyResourcesRouteName, new RouteValueDictionary() { { SaltarelleController.AssemblyNameParam, asm.GetName().Name }, { SaltarelleController.ResourceNameParam, resourcePublicName } });
 		}
 
-		public static string GetAssemblyScriptUrl(Assembly asm) {
+		public string GetAssemblyScriptUrl(Assembly asm) {
 			return GetVirtualPath(AssemblyScriptsRouteName, new RouteValueDictionary() { { SaltarelleController.AssemblyNameParam, asm.GetName().Name } });
 		}
 
-		public static string GetAssemblyCssUrl(Assembly asm) {
+		public string GetAssemblyCssUrl(Assembly asm) {
 			return GetVirtualPath(AssemblyCssRouteName, new RouteValueDictionary() { { SaltarelleController.AssemblyNameParam, asm.GetName().Name } });
 		}
 
-		public static string GetDelegateUrl(MethodInfo mi) {
+		public string GetDelegateUrl(MethodInfo mi) {
 			return GetVirtualPath(DelegateRouteName, new RouteValueDictionary() { { SaltarelleController.DelegateTypeNameParam, mi.DeclaringType.FullName }, { SaltarelleController.DelegateMethodParam, mi.Name } });
 		}
 		
-		public static string GetDelegateUrlTemplate(Type type) {
+		public string GetDelegateUrlTemplate(Type type) {
 			string ph = "__METHOD_NAME__PH_";
 			return GetVirtualPath(DelegateRouteName, new RouteValueDictionary() { { SaltarelleController.DelegateTypeNameParam, type.FullName }, { SaltarelleController.DelegateMethodParam, ph } }).Replace(ph, "{0}");
 		}
 
-		public static string GetDelegateUrl<T>(Expression<Func<T>> method) {
+		public string GetDelegateUrl<T>(Expression<Func<T>> method) {
 			return GetDelegateUrl(((MethodCallExpression)method.Body).Method);
 		}
 	}
