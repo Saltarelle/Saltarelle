@@ -126,7 +126,7 @@ namespace Saltarelle.Members {
 		private void WriteNonTransferConstructorCode(CodeBuilder cb) {
 			if (!customInstantiate) {
 				cb.AppendLine("{");
-				cb.AppendLine(typeName + " c = " + ContainerMember.MemberName + ".Resolve(typeof(" + typeName + "));");
+				cb.AppendLine(typeName + " c = (" + typeName + ")" + ContainerPropertyMember.MemberName + ".Resolve(typeof(" + typeName + "));");
 				foreach (var kvp in additionalProperties)	
 					cb.AppendLine("c." + kvp.Key + " = " + kvp.Value.InitializerString + ";");
 				cb.AppendLine("this.controls[\"" + name + "\"] = c;");
@@ -136,10 +136,10 @@ namespace Saltarelle.Members {
 		
 		private void WriteTransferConstructorCode(CodeBuilder cb) {
 			if (customInstantiate) {
-				cb.AppendLine("this.controls[\"" + name + "\"] = " + ContainerMember.MemberName + ".ResolveByTypeNameWithConstructorArg((string)" + ParserUtils.ConfigObjectName + "[\"" + name + "$type\"], " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
+				cb.AppendLine("this.controls[\"" + name + "\"] = (" + TypeName + ")" + ContainerPropertyMember.MemberName + ".ResolveByTypeNameWithConstructorArg((string)" + ParserUtils.ConfigObjectName + "[\"" + name + "$type\"], " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 			else {
-				cb.AppendLine("this.controls[\"" + name + "\"] = " + ContainerMember.MemberName + ".ResolveWithConstructorArg(typeof(typeName), " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
+				cb.AppendLine("this.controls[\"" + name + "\"] = (" + TypeName + ")" + ContainerPropertyMember.MemberName + ".ResolveWithConstructorArg(typeof(" + TypeName + "), " + ParserUtils.ConfigObjectName + "[\"" + name + "\"]);");
 			}
 		}
 

@@ -228,8 +228,11 @@ namespace Saltarelle {
 		}
 
 #if SERVER
+        internal const string DoNotCallConstructorMessage = "Do not construct this type directly. Always use IContainer.Resolve*()";
+
 		internal static void WriteServerConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
-			cb.AppendLine("public " + tpl.ClassName + "() {").Indent()
+			cb.AppendLine("[Obsolete(@\"" + DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]")
+			  .AppendLine("public " + tpl.ClassName + "() {").Indent()
 			  .AppendLine("IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());");
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
@@ -238,7 +241,8 @@ namespace Saltarelle {
 		}
 		
 		internal static void WriteClientConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
-			cb.AppendLine("public " + tpl.ClassName + "(object config) {").Indent()
+			cb.AppendLine("[Obsolete(@\"" + DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]")
+              .AppendLine("public " + tpl.ClassName + "(object config) {").Indent()
 			  .AppendLine("if (!Script.IsUndefined(config)) {").Indent()
 			  .AppendLine("Dictionary " + ParserUtils.ConfigObjectName + " = Dictionary.GetDictionary(config);")
 			  .AppendLine("this.id = (string)" + ParserUtils.ConfigObjectName + "[\"id\"];");

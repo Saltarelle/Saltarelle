@@ -78,6 +78,7 @@
     <Compile Include="FragmentTests\InstantiatedControlFragmentTests.cs" />
     <Compile Include="FragmentTests\IdFragmentTests.cs" />
     <Compile Include="FragmentTests\LiteralFragmentTests.cs" />
+    <Compile Include="MemberTests\ContainerPropertyMemberTests.cs" />
     <Compile Include="MemberTests\PropertyMemberTests.Shared.cs" />
     <Compile Include="MemberTests\RenderFunctionMemberTests.cs" />
     <Compile Include="MemberTests\NamedElementMemberTests.cs" />

@@ -2,7 +2,7 @@ using System;
 using Saltarelle.Ioc;
 
 namespace Saltarelle.Members {
-	public class ContainerMember : IMember {
+	public class ContainerPropertyMember : IMember {
         public static string MemberName = "__Container";
 
         public string Name { get { return MemberName; } }
@@ -17,7 +17,7 @@ namespace Saltarelle.Members {
 
 #if SERVER
 		public override bool Equals(object obj) {
-			return obj is ContainerMember;
+			return obj is ContainerPropertyMember;
 		}
 
 		public override int GetHashCode() {
@@ -32,11 +32,11 @@ namespace Saltarelle.Members {
 			switch (point) {
 				case MemberCodePoint.ServerDefinition:
 				case MemberCodePoint.ClientDefinition:
-                    cb.AppendLine("private IContainer _" + Name + ";");
+                    cb.AppendLine("private Saltarelle.Ioc.IContainer _" + Name + ";");
                     if (point == MemberCodePoint.ServerDefinition)
                         cb.AppendLine("[Saltarelle.Ioc.ClientInject]");
 
-                    cb.AppendLine("public IContainer " + Name + " {").Indent()
+                    cb.AppendLine("public Saltarelle.Ioc.IContainer " + Name + " {").Indent()
                       .AppendLine("get { return _" + Name + "; }")
                       .AppendLine("set { _" + Name + " = value; }").Outdent()
                       .AppendLine("}")

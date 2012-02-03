@@ -483,7 +483,8 @@ namespace Saltarelle.UI {
 			enableDragDrop     = (bool)config["enableDragDrop"];
 			autoCheckHierarchy = (bool)config["autoCheckHierarchy"];
 			nextNodeId         = (int)config["nextNodeId"];
-			blankImageUrl      = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
+            if (false); // TODO: Fix line below
+			// blankImageUrl      = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 
 			FixTreeAfterDeserialize(I(invisibleRoot));
 			invisibleRoot.treeIfRoot = this;

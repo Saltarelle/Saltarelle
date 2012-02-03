@@ -34,7 +34,8 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
-			string expected =  "public TestClass() {" + Environment.NewLine
+			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
+                            +  "public TestClass() {" + Environment.NewLine
 			                +  "	IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                +  "	[a]" + Environment.NewLine
 			                +  "	[b]" + Environment.NewLine
@@ -67,7 +68,8 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
-			string expected =  "public TestClass(object config) {" + Environment.NewLine
+			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
+			                +  "public TestClass(object config) {" + Environment.NewLine
 			                +  "	if (!Script.IsUndefined(config)) {" + Environment.NewLine
 			                +  "		Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine
 			                +  "		this.id = (string)__cfg[\"id\"];" + Environment.NewLine
@@ -303,6 +305,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
+                             + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass() {" + Environment.NewLine
 			                 + p + "		IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());" + Environment.NewLine
 			                 + p + "		Constructed();" + Environment.NewLine
@@ -435,6 +438,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	[AlternateSignature]" + Environment.NewLine
 			                 + p + "	public extern TestClass();" + Environment.NewLine
 			                 : "")
+                             + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass(object config) {" + Environment.NewLine
 			                 + p + "		if (!Script.IsUndefined(config)) {" + Environment.NewLine
 			                 + p + "			Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine

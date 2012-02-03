@@ -97,9 +97,6 @@
     <Compile Include="..\SaltarelleLib.Shared\GlobalServices\BuiltinServices\IScriptManagerService.cs">
       <Link>GlobalServices\BuiltinServices\IScriptManagerService.cs</Link>
     </Compile>
-    <Compile Include="..\SaltarelleLib.Shared\GlobalServices\IGlobalServicesProvider.Shared.cs">
-      <Link>GlobalServices\IGlobalServicesProvider.Shared.cs</Link>
-    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\InstantiatedTemplateControl.Shared.cs">
       <Link>InstantiatedTemplateControl.Shared.cs</Link>
     </Compile>
