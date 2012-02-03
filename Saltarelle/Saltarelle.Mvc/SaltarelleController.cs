@@ -26,9 +26,11 @@ namespace Saltarelle.Mvc
 		private static Dictionary<string, string> mimeMap;
 
         private IContainer container;
+        private IModuleUtils moduleUtils;
 
-        public SaltarelleController(IContainer container) {
-            this.container = container;
+        public SaltarelleController(IContainer container, IModuleUtils moduleUtils) {
+            this.container   = container;
+            this.moduleUtils = moduleUtils;
         }
 
 		static SaltarelleController() {
@@ -193,7 +195,7 @@ namespace Saltarelle.Mvc
 		public ActionResult GetAssemblyScript(string assemblyName, string debug) {
 			Assembly asm;
 			if (Utils.TryFindAssembly(assemblyName, out asm)) {
-				string s = ModuleUtils.GetAssemblyScriptContent(asm, !string.IsNullOrEmpty(debug));
+				string s = moduleUtils.GetAssemblyScriptContent(asm, !string.IsNullOrEmpty(debug));
 				if (!Utils.IsNull(s))
 					return JavaScript(s);
 			}
@@ -204,7 +206,7 @@ namespace Saltarelle.Mvc
 		public ActionResult GetAssemblyCss(string assemblyName) {
 			Assembly asm;
 			if (Utils.TryFindAssembly(assemblyName, out asm)) {
-				string s = ModuleUtils.GetAssemblyCss(asm);
+				string s = moduleUtils.GetAssemblyCss(asm);
 				if (!Utils.IsNull(s))
 					return Content(s, "text/css");
 			}

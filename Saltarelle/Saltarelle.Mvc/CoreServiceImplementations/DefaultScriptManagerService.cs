@@ -27,11 +27,14 @@ namespace Saltarelle {
 		private static ReadOnlyCollection<string> addScriptsBeforeAssemblyScripts;
 		private static ReadOnlyCollection<string> addScriptsAfterAssemblyScripts;
 
-		static DefaultScriptManagerService() {
+        private static bool initialized;
+        private static object initLock = new object();
+
+		private static void Initialize(IRouteService routes) {
 			var cfg = SaltarelleConfig.GetFromWebConfig();
 			debugScripts = cfg.Scripts.Debug;
 
-			var allScripts = cfg.Scripts.Cast<ScriptElement>().Select(elem => {
+			var allScripts = cfg.Scripts.Select(elem => {
 				string url;
 
 				if (!string.IsNullOrEmpty(elem.Assembly)) {
@@ -49,7 +52,7 @@ namespace Saltarelle {
 					var res = asm.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == elem.Resource);
 					if (Utils.IsNull(res))
 						throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' does not contain a resource named '" + elem.Resource + "'.");
-					url = Routes.GetAssemblyResourceUrl(asm, res.PublicResourceName);
+					url = routes.GetAssemblyResourceUrl(asm, res.PublicResourceName);
 				}
 				else if (!string.IsNullOrEmpty(elem.Url)) {
 					if (VirtualPathUtility.IsAppRelative(elem.Url))
@@ -66,7 +69,21 @@ namespace Saltarelle {
 			addScriptsBeforeAssemblyScripts = (from x in allScripts where x.Position == ScriptPosition.BeforeAssemblyScripts select x.Url).ToList().AsReadOnly();
 			addScriptsAfterAssemblyScripts  = (from x in allScripts where x.Position == ScriptPosition.AfterAssemblyScripts select x.Url).ToList().AsReadOnly();
 		}
-	
+
+        private static void EnsureInitialized(IRouteService routes) {
+            if (!initialized) {
+                lock (initLock) {
+                    if (!initialized) {
+                        Initialize(routes);
+                        initialized = true;
+                    }
+                }
+            }
+        }
+
+        private IRouteService routes;
+        private IModuleUtils moduleUtils;
+
         private static readonly ConcurrentDictionary<Type, List<Tuple<string, Type>>> _propertiesToInjectCache = new ConcurrentDictionary<Type, List<Tuple<string, Type>>>();
 
 		private HashSet<Assembly>          registeredAssemblies    = new HashSet<Assembly>();
@@ -108,7 +125,7 @@ namespace Saltarelle {
 		}
 
         public IEnumerable<string> GetAllRequiredIncludes() {
-            return earlyAdditionalIncludes.Concat(ModuleUtils.TopologicalSortAssembliesWithDependencies(registeredAssemblies).Select(a => Routes.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
+            return earlyAdditionalIncludes.Concat(moduleUtils.TopologicalSortAssembliesWithDependencies(registeredAssemblies).Select(a => routes.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
         }
 
         public IHtmlString GetMarkup() {
@@ -154,9 +171,13 @@ namespace Saltarelle {
             }
 		}
 
-	    public DefaultScriptManagerService() {
+	    public DefaultScriptManagerService(IRouteService routes, IModuleUtils moduleUtils) {
+            EnsureInitialized(routes);
+            this.routes = routes;
+            this.moduleUtils = moduleUtils;
+
 			earlyAdditionalIncludes.AddRange(addScriptsBeforeCoreScripts);
-			earlyAdditionalIncludes.AddRange((debugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => Routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
+			earlyAdditionalIncludes.AddRange((debugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
 			earlyAdditionalIncludes.AddRange(addScriptsBeforeAssemblyScripts);
 			lateAdditionalIncludes.AddRange(addScriptsAfterAssemblyScripts);
 	    }
