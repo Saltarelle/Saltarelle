@@ -105,15 +105,6 @@ namespace Saltarelle {
 			}
 		}
 
-        private IContainer container;
-#if SERVER
-        [ClientInject]
-#endif
-        public IContainer Container {
-            get { return container; }
-            set { container = value; }
-        }
-
 #if SERVER
 		public InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml) {
 			this.getHtml       = getHtml;
@@ -152,7 +143,7 @@ namespace Saltarelle {
 				Dictionary controlConfig = (Dictionary)dict["controls"];
 				foreach (DictionaryEntry de in controlConfig) {
 					Dictionary ncfg = (Dictionary)de.Value;
-					this.controls[de.Key] = container.ResolveByTypeNameWithConstructorArg((string)ncfg["type"], ncfg["cfg"]);
+					this.controls[de.Key] = ControlFactory.CreateControlByTypeNameWithConfig((string)ncfg["type"], ncfg["cfg"]);
 				}
 				this.namedElements = (StringList)dict["namedElements"];
 				isAttached = true;

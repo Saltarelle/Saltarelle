@@ -1,16 +1,16 @@
 ﻿using System;
 using System.DHTML;
+using Saltarelle.Ioc;
 
 namespace Saltarelle {
 	public class DefaultScriptManagerService : IScriptManagerService {
-		private int nextUniqueId;
+		private int       nextUniqueId;
 		private ArrayList includedScripts;
-		private Dictionary topLevelControls;
-		
-		public DefaultScriptManagerService(object config) {
-			Dictionary cfg = Dictionary.GetDictionary(config);
-			this.nextUniqueId = (int)cfg["nextUniqueId"];
-			this.topLevelControls = new Dictionary();
+		private ArrayList topLevelControls;
+
+		public DefaultScriptManagerService(int nextUniqueId) {
+			this.nextUniqueId     = nextUniqueId;
+			this.topLevelControls = new ArrayList();
 
 			includedScripts = new ArrayList();
 			JQueryProxy.jQuery("script").each(delegate(int _, DOMElement el) {
@@ -34,13 +34,17 @@ namespace Saltarelle {
 			return "id" + Utils.ToStringInvariantInt(nextUniqueId++);
 		}
 		
-		public void RegisterTopLevelControl(string id, IControl control) {
-			if (!string.IsNullOrEmpty(id))
-				topLevelControls[id] = control;
+		public void RegisterTopLevelControl(IControl control) {
+			topLevelControls.Add(control);
 		}
 		
 		public IControl GetTopLevelControl(string id) {
-			return (IControl)topLevelControls[id] ?? null;	// ?? null is required to convert from undefined to null.
+            for (int i = 0; i < topLevelControls.Length; i++) {
+                IControl c = (IControl)topLevelControls[i];
+                if (c.Id == id)
+                    return c;
+            }
+			return null;
 		}
 	}
 }

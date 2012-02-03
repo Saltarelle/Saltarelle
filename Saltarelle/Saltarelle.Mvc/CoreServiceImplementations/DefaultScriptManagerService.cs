@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Text;
 using System.Web;
 using System.IO;
 using System.Linq;
+using Saltarelle.Ioc;
 using Saltarelle.Mvc;
+using Saltarelle.Mvc.CoreServiceImplementations;
 using dotless.Core;
 using dotless.Core.configuration;
 using System.Web.Configuration;
@@ -63,99 +67,98 @@ namespace Saltarelle {
 			addScriptsAfterAssemblyScripts  = (from x in allScripts where x.Position == ScriptPosition.AfterAssemblyScripts select x.Url).ToList().AsReadOnly();
 		}
 	
-		private HashSet<Assembly>  registeredAssemblies    = new HashSet<Assembly>();
-		private HashSet<Type>      registeredServices      = new HashSet<Type>();
-		private List<string>       earlyAdditionalIncludes = new List<string>();
-		private List<string>       lateAdditionalIncludes  = new List<string>();
-		private List<Func<string>> startupScripts          = new List<Func<string>>();
-		private List<Action>       beforeRenderCallbacks   = new List<Action>();
-		private Dictionary<string, IControl> topLevelControls = new Dictionary<string, IControl>();
+        private static readonly ConcurrentDictionary<Type, List<Tuple<string, Type>>> _propertiesToInjectCache = new ConcurrentDictionary<Type, List<Tuple<string, Type>>>();
+
+		private HashSet<Assembly>          registeredAssemblies    = new HashSet<Assembly>();
+		private Dictionary<Type, IService> registeredServices      = new Dictionary<Type, IService>();
+		private List<string>               earlyAdditionalIncludes = new List<string>();
+		private List<string>               lateAdditionalIncludes  = new List<string>();
+		private List<IControl>             topLevelControls        = new List<IControl>();
+
+		public string GetUniqueId() {
+			return "id" + Utils.ToStringInvariantInt(nextUniqueId++);
+		}
+		
+		public IControl GetTopLevelControl(string id) {
+			return topLevelControls.SingleOrDefault(c => c.Id == id);
+		}
+
+		public void RegisterTopLevelControl(IControl control) {
+            if (!string.IsNullOrEmpty(control.Id) && GetTopLevelControl(control.Id) != null)
+                throw new ArgumentException("A control with the id " + control.Id + " already exists.", "control");
+            topLevelControls.Add(control);
+		}
+
+        public void RegisterClientService(Type serviceType, IService implementer) {
+            if (!serviceType.IsInterface || serviceType == typeof(IService))
+                throw new InvalidOperationException("Transferred services must be interfaces, and must not be the IService interface (tried to register type " + serviceType.FullName + ").");
+            if (registeredServices.ContainsKey(serviceType))
+                throw new InvalidOperationException("An instance has already been registered for the service " + serviceType.FullName);
+            registeredServices.Add(serviceType, implementer);
+        }
 
 		public void RegisterClientAssembly(Assembly asm) {
 			registeredAssemblies.Add(asm);
 		}
-		
-		public void RegisterClientService(Type serviceType) {
-			if (serviceType == null)
-				throw new ArgumentNullException("serviceType");
-			this.RegisterClientType(serviceType);
-			registeredServices.Add(serviceType);
-		}
-		
-		public bool IsClientServiceRegistered(Type serviceType) {
-			return registeredServices.Contains(serviceType);
-		}
 
-		public IEnumerable<string> GetAllRequiredIncludes() {
-#warning TODO: Fix
-//			var asms = registeredAssemblies.Concat(GlobalServices.AllLoadedServices.Select(kvp => kvp.Value.GetType().Assembly));
-            var asms = registeredAssemblies;
-			return earlyAdditionalIncludes.Concat(ModuleUtils.TopologicalSortAssembliesWithDependencies(asms).Select(a => Routes.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
-		}
-		
 		public void AddScriptInclude(string url, bool includeBeforeAssemblyScripts) {
 			List<string> l = (includeBeforeAssemblyScripts ? earlyAdditionalIncludes : lateAdditionalIncludes);
 			if (!l.Contains(url))
 				l.Add(url);
 		}
-		
-		public void AddStartupScript(Func<string> scriptRetriever) {
-			startupScripts.Add(scriptRetriever);
+
+        public IEnumerable<string> GetAllRequiredIncludes() {
+            return earlyAdditionalIncludes.Concat(ModuleUtils.TopologicalSortAssembliesWithDependencies(registeredAssemblies).Select(a => Routes.GetAssemblyScriptUrl(a))).Concat(lateAdditionalIncludes);
+        }
+
+        public IHtmlString GetMarkup() {
+            var sb = new StringBuilder();
+
+			foreach (var script in GetAllRequiredIncludes()) {
+				sb.AppendLine("<script language=\"javascript\" type=\"text/javascript\" src=\"" + script + "\"></script>");
+			}
+
+			sb.AppendLine("<script language=\"javascript\" type=\"text/javascript\">");
+			sb.AppendLine("$(function() {");
+				sb.AppendLine("\tSaltarelle.GlobalServices.initialize(" + Utils.InitScript(ConfigObject) + ");");
+
+			sb.AppendLine("});");
+			sb.AppendLine("</script>");
+
+            return new HtmlString(sb.ToString());
+        }
+
+        public ControlDocumentFragment CreateControlDocumentFragment(IContainer container, IControl control) {
+			control.Id = Guid.NewGuid().ToString().Replace("-", "");
+            container.ApplyToScriptManager(this);
+            return new ControlDocumentFragment(GetAllRequiredIncludes().ToArray(), ConfigObject, control.GetType().FullName, control.Html, control.ConfigObject);
+        }
+
+		object IService.ConfigObject {
+            get { return this.ConfigObject; }
+        }
+
+		public ScriptManagerConfig ConfigObject {
+			get {
+                return new ScriptManagerConfig {
+                    nextUniqueId = nextUniqueId,
+                    injections = (  from a in registeredAssemblies
+                                    from t in a.GetTypes()
+                                     let l = Helpers.FindPropertiesToInject(t)
+                                   where l.Count > 0
+                                  select new { t.FullName, rows = (IList<ScriptManagerConfigInjectedPropertyRow>)l.Select(x => new ScriptManagerConfigInjectedPropertyRow { propertyName = x.Item1, typeName = x.Item2.FullName }).ToList() }
+                                 ).ToDictionary(x => x.FullName, x => x.rows),
+                    services = registeredServices.ToDictionary(s => s.Key.FullName, s => new ScriptManagerConfigServiceEntry { type = s.Value.GetType().FullName, config = s.Value.ConfigObject }),
+                    controls = topLevelControls.Select(c => new ScriptManagerConfigControlRow { type = c.GetType().FullName, config = c.ConfigObject }).ToArray()
+                };
+            }
 		}
 
-		public void RegisterTopLevelControl(string id, IControl control) {
-			if (!string.IsNullOrEmpty(id))
-				topLevelControls[id] = control;
-			string fmt = (!string.IsNullOrEmpty(id) ? "Saltarelle.GlobalServices.getService(" + typeof(IScriptManagerService).FullName + ").registerTopLevelControl(" + Utils.ScriptStr(id) + ", {0});" : "{0}");
-			startupScripts.Add(() => string.Format(fmt, "new " + control.GetType().FullName + "(" + Utils.InitScript(control.ConfigObject) + ")"));
-		}
-		
-		public void RegisterTopLevelControl(IControl control) {
-			RegisterTopLevelControl(null, control);
-		}
-		
-		public IControl GetTopLevelControl(string id) {
-			IControl c;
-			topLevelControls.TryGetValue(id, out c);
-			return c;
-		}
-		
-		public IEnumerable<string> GetStartupScripts() {
-			return          registeredServices
-#warning TODO: Fix
-//			               .Select(svc => new { svc, impl = GlobalServices.GetService(svc) })
-			               .Select(svc => new { svc, impl = (object)null })
-			               .Select(x => "if (typeof(Saltarelle) != 'undefined' && !Saltarelle.GlobalServices.hasService(" + x.svc.FullName + ")) Saltarelle.GlobalServices.setService(" + x.svc.FullName + ", new " + x.impl.GetType().FullName + "(" + (x.impl is ITransferrableService ? Utils.InitScript((x.impl as ITransferrableService).ConfigObject) : "") + "));")
-			       .Concat(startupScripts.Select(f => f()).Where(s => !string.IsNullOrEmpty(s)));
-		}
-		
-		public string GetUniqueId() {
-			return "id" + Utils.ToStringInvariantInt(nextUniqueId++);
-		}
-		
-		public void RegisterBeforeRenderCallback(Action action) {
-			beforeRenderCallbacks.Add(action);
-		}
-		
-		public void ExecuteBeforeRenderCallbacks() {
-			// The callback might register new callbacks, so make sure we handle that.
-			while (beforeRenderCallbacks.Count > 0) {
-				var oldCallbacks = beforeRenderCallbacks;
-				beforeRenderCallbacks = new List<Action>();
-				foreach (var a in oldCallbacks)
-					a();
-			}
-		}
-		
-		public object ConfigObject {
-			get { return new { nextUniqueId }; }
-		}
-		
-		public void Setup() {
+	    public DefaultScriptManagerService() {
 			earlyAdditionalIncludes.AddRange(addScriptsBeforeCoreScripts);
 			earlyAdditionalIncludes.AddRange((debugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => Routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
 			earlyAdditionalIncludes.AddRange(addScriptsBeforeAssemblyScripts);
 			lateAdditionalIncludes.AddRange(addScriptsAfterAssemblyScripts);
-		}
+	    }
 	}
 }

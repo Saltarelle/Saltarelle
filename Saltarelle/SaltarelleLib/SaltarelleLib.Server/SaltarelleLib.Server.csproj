@@ -97,20 +97,23 @@
     <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
       <Link>ControlInterfaces.Shared.cs</Link>
     </Compile>
-    <Compile Include="..\SaltarelleLib.Shared\GlobalServices\BuiltinServices\IScriptManagerService.cs">
-      <Link>GlobalServices\BuiltinServices\IScriptManagerService.cs</Link>
-    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\InstantiatedTemplateControl.Shared.cs">
       <Link>InstantiatedTemplateControl.Shared.cs</Link>
     </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Ioc\IContainer.Shared.cs">
       <Link>Ioc\IContainer.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\IScriptManagerService.cs">
+      <Link>IScriptManagerService.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Position.Shared.cs">
       <Link>Position.Shared.cs</Link>
     </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Resizing.Shared.cs">
       <Link>Resizing.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\ScriptManagerConfig.Shared.cs">
+      <Link>ScriptManagerConfig.Shared.cs</Link>
     </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Utils.Shared.cs">
       <Link>Utils.Shared.cs</Link>
@@ -124,7 +127,7 @@
     <Compile Include="Configuration\ScriptElement.cs" />
     <Compile Include="Configuration\ScriptElementCollection.cs" />
     <Compile Include="CssResourceAttribute.cs" />
-    <Compile Include="GlobalServices\ITransferrableService.Server.cs" />
+    <Compile Include="Ioc\IService.Server.cs" />
     <Compile Include="ImportCssResourceAttribute.cs" />
     <Compile Include="Ioc\ClientInjectAttribute.cs" />
     <Compile Include="Ioc\ClientInjectPropertyAttribute.cs" />

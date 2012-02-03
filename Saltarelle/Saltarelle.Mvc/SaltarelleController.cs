@@ -173,7 +173,7 @@ namespace Saltarelle.Mvc
 				}
 			}
 			
-			object instance = methodInfo.DeclaringType.IsInterface ? container.Resolve(methodInfo.DeclaringType) : null;
+			object instance = methodInfo.DeclaringType.IsInterface ? container.ResolveService(methodInfo.DeclaringType) : null;
 			object result;
 			if (methodInfo.ReturnType == typeof(void)) {
 				methodInfo.Invoke(instance, parms);

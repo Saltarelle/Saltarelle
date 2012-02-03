@@ -17,7 +17,6 @@ namespace Saltarelle {
 		TypedMarkupData ParseTypedMarkup(string markup);
 
         #if SERVER
-		    void RegisterTypesForClient(IScriptManagerService svc);
 		    object ConfigObject { get; }
         #endif
     }
@@ -48,13 +47,13 @@ namespace Saltarelle {
 				pluginUntypedMarkupParsers = new IUntypedMarkupParserImpl[umTypes.Length];
 
 				for (int i = 0; i < npTypes.Length; i++) {
-					pluginNodeProcessors[i] = (INodeProcessor)Container.ResolveByTypeName(npTypes[i]);
+					pluginNodeProcessors[i] = (INodeProcessor)Container.CreateObjectByTypeName(npTypes[i]);
 				}
 				foreach (DictionaryEntry tm in tmTypes) {
-					pluginTypedMarkupParsers[tm.Key] = (ITypedMarkupParserImpl)Container.ResolveByTypeName((string)tm.Value);
+					pluginTypedMarkupParsers[tm.Key] = (ITypedMarkupParserImpl)Container.CreateObjectByTypeName((string)tm.Value);
 				}
 				for (int i = 0; i < umTypes.Length; i++) {
-					pluginUntypedMarkupParsers[i] = (IUntypedMarkupParserImpl)Container.ResolveByTypeName(umTypes[i]);
+					pluginUntypedMarkupParsers[i] = (IUntypedMarkupParserImpl)Container.CreateObjectByTypeName(umTypes[i]);
 				}
 
 			    docProcessor = new DocumentProcessor(pluginNodeProcessors, new TypedMarkupParser(pluginTypedMarkupParsers), new UntypedMarkupParser(pluginUntypedMarkupParsers));
@@ -132,16 +131,6 @@ namespace Saltarelle {
         }
 
 #if SERVER
-		public void RegisterTypesForClient(IScriptManagerService svc) {
-			svc.RegisterClientType(GetType());
-			foreach (var p in this.pluginNodeProcessors)
-				svc.RegisterClientType(p.GetType());
-			foreach (var p in this.pluginTypedMarkupParsers.Values)
-				svc.RegisterClientType(p.GetType());
-			foreach (var p in pluginUntypedMarkupParsers)
-				svc.RegisterClientType(p.GetType());
-		}
-		
 		public object ConfigObject {
 			get {
 				return new { pluginNodeProcessors       = pluginNodeProcessors.Select(x => x.GetType().FullName),

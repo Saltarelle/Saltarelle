@@ -7,6 +7,7 @@ using System.Web;
 using System.IO;
 using System.Linq;
 using Saltarelle.Mvc;
+using Saltarelle.Mvc.CoreServiceImplementations;
 using dotless.Core;
 using dotless.Core.configuration;
 using System.Web.Configuration;
@@ -16,77 +17,73 @@ using System.Configuration;
 // ReSharper disable CheckNamespace
 namespace Saltarelle.Ioc {
 // ReSharper restore CheckNamespace
-	public class DefaultContainer : IContainer, ITransferrableService {
-        private static ConcurrentDictionary<Type, List<Tuple<string, Type>>> _propertiesToInjectCache = new ConcurrentDictionary<Type, List<Tuple<string, Type>>>();
-
-        private static List<Tuple<string, Type>> CalcPropertiesToInject(Type type) {
-            return         type.GetCustomAttributes(typeof(ClientInjectPropertyAttribute), true)
-                           .Select(a => Tuple.Create(((ClientInjectPropertyAttribute)a).PropertyName, ((ClientInjectPropertyAttribute)a).PropertyType))
-                   .Concat(type.GetProperties()
-                           .Where(p => p.GetCustomAttributes(typeof(ClientInjectAttribute), true).Length > 0)
-                           .Select(p => Tuple.Create(p.Name, p.PropertyType)))
-                   .ToList();
-        }
-
-        private static List<Tuple<string, Type>> FindPropertiesToInject(Type type) {
-            List<Tuple<string, Type>> result;
-            if (_propertiesToInjectCache.TryGetValue(type, out result))
-                return result;
-            result = CalcPropertiesToInject(type);
-            _propertiesToInjectCache.TryAdd(type, result);
-            return result;
-        }
+	public class DefaultContainer : IContainer {
 
 	    private readonly Func<string, Type> _findType;
-	    private readonly Func<Type, object> _resolve;
+	    private readonly Func<Type, object> _resolveService;
+        private readonly Func<Type, object> _createObject;
 
-        private readonly HashSet<Type> _registeredTypes = new HashSet<Type>();
+        private readonly List<object> _createdObjects = new List<object>();
 
-	    public DefaultContainer(Func<string, Type> findType, Func<Type, object> resolve) {
-	        _findType = findType;
-	        _resolve = resolve;
+	    public DefaultContainer(Func<string, Type> findType, Func<Type, object> resolveService, Func<Type, object> createObject) {
+	        _findType       = findType;
+	        _resolveService = resolveService;
+            _createObject   = createObject;
 	    }
 
-	    public object Resolve(Type objectType) {
-            _registeredTypes.Add(objectType);
-	        return _resolve(objectType);
+	    public object ResolveService(Type objectType) {
+	        return _resolveService(objectType);
 	    }
 
-	    public object ResolveByTypeName(string typeName) {
-	        return Resolve(FindType(typeName));
+	    public object ResolveServiceByTypeName(string typeName) {
+	        return ResolveService(FindType(typeName));
+	    }
+
+	    public T ResolveService<T>() {
+	        return (T)ResolveService(typeof(T));
+	    }
+
+	    public object CreateObject(Type objectType) {
+            var result = _createObject(objectType);
+            _createdObjects.Add(result);
+            return result;
+	    }
+
+	    public object CreateObjectByTypeName(string typeName) {
+	        return CreateObject(FindType(typeName));
 	    }
 
 	    public Type FindType(string typeName) {
 	        return _findType(typeName);
 	    }
 
-	    public T Resolve<T>() {
-	        return (T)Resolve(typeof(T));
+	    public T CreateObject<T>() {
+            return (T)CreateObject(typeof(T));
 	    }
 
-        private void EnsureAllRequiredTypesRegistered(IEnumerable<Type> types) {
-            // This method is required because 1) not all resolving might be done through us (we're likely to be a facade for eg. Windsor), and 2) the server might not use a dependency required by the client.
-            var missing = new HashSet<Type>(types.SelectMany(t => FindPropertiesToInject(t)).Select(p => p.Item2));
-            missing.ExceptWith(_registeredTypes);
-            if (missing.Count > 0) {
-                foreach (var m in missing)
-                    Resolve(m);
-                EnsureAllRequiredTypesRegistered(missing);
+        private void GatherServices(IEnumerable<object> objects, Dictionary<Type, IService> services) {
+            var serviceTypes = objects.Select(o => o.GetType()).Distinct().SelectMany(Helpers.FindPropertiesToInject).Select(p => p.Item2).Distinct();
+            var newObjects = new List<object>();
+            foreach (var st in serviceTypes) {
+                if (!services.ContainsKey(st)) {
+                    var svc = ResolveService(st);
+                    if (!(svc is IService))
+                        throw new InvalidOperationException("The service type " + svc.GetType().FullName + ", implementing the service " + st.FullName + ", does not implement IService.");
+                    services[st] = (IService)svc;
+                    newObjects.Add(svc);
+                }
             }
+            if (newObjects.Count > 0)
+                GatherServices(newObjects, services);
         }
 
-	    public object ConfigObject {
-            get {
-                EnsureAllRequiredTypesRegistered(_registeredTypes);
-
-                var injections = (  from t in _registeredTypes
-                                     let props = FindPropertiesToInject(t)
-                                   where props.Count > 0
-                                  select new { type = t, properties = props.Select(x => new { name = x.Item1, type = x.Item2 }).ToList() }
-                                 ).ToList();
-
-                return new { injections };
-            }
+	    public void ApplyToScriptManager(IScriptManagerService scriptManager) {
+            var services = new Dictionary<Type, IService>();
+            GatherServices(_createdObjects, services);
+            foreach (var asm in _createdObjects.Union(services.Values).Select(o => o.GetType().Assembly).Distinct())
+                scriptManager.RegisterClientAssembly(asm);
+            foreach (var svc in services)
+                scriptManager.RegisterClientService(svc.Key, svc.Value);
 	    }
 	}
 }

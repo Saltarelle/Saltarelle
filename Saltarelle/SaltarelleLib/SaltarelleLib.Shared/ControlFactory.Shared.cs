@@ -6,15 +6,15 @@ namespace Saltarelle.Ioc {
         private static Func<IContainer> _containerFactory;
 
         public static IControl CreateControl(Type controlType) {
-            return (IControl)_containerFactory().Resolve(controlType);
+            return (IControl)_containerFactory().CreateObject(controlType);
         }
 
         public static IControl CreateControlByTypeName(string typeName) {
-            return (IControl)_containerFactory().ResolveByTypeName(typeName);
+            return (IControl)_containerFactory().CreateObjectByTypeName(typeName);
         }
 
         public static T CreateControl<T>() where T : IControl {
-            return (T)_containerFactory().Resolve<T>();
+            return (T)_containerFactory().CreateObject<T>();
         }
 
         public static void SetContainerFactory(Func<IContainer> containerFactory) {
@@ -26,19 +26,19 @@ namespace Saltarelle.Ioc {
         private static IContainer _container;
 
         public static IControl CreateControl(Type controlType) {
-            return (IControl)_container.Resolve(controlType);
+            return (IControl)_container.CreateObject(controlType);
         }
 
         public static IControl CreateControlByTypeName(string typeName) {
-            return (IControl)_container.ResolveByTypeName(typeName);
+            return (IControl)_container.CreateObjectByTypeName(typeName);
         }
 
         public static IControl CreateControlWithConfig(Type controlType, object config) {
-            return (IControl)_container.ResolveWithConstructorArg(controlType, config);
+            return (IControl)_container.CreateObjectWithConstructorArg(controlType, config);
         }
 
         public static IControl CreateControlByTypeNameWithConfig(string typeName, object config) {
-            return (IControl)_container.ResolveByTypeNameWithConstructorArg(typeName, config);
+            return (IControl)_container.CreateObjectByTypeNameWithConstructorArg(typeName, config);
         }
 
         public static void SetContainer(IContainer container) {

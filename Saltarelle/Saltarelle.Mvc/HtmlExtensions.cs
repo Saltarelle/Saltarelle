@@ -3,28 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using Saltarelle.Ioc;
 
 namespace Saltarelle.Mvc {
 	public static class HtmlExtensions {
 		public static void Scripts(this HtmlHelper helper) {
-			var writer = helper.ViewContext.HttpContext.Response.Output;
-#warning TODO: Fix
-/*			var sm = GlobalServices.GetService<IScriptManagerService>();
-			
-			sm.ExecuteBeforeRenderCallbacks();
+            var sm = DependencyResolver.Current.GetService<IScriptManagerService>();
+            var c  = DependencyResolver.Current.GetService<IContainer>();
+            c.ApplyToScriptManager(sm);
 
-			foreach (var script in sm.GetAllRequiredIncludes()) {
-				writer.WriteLine("<script language=\"javascript\" type=\"text/javascript\" src=\"" + script + "\"></script>");
-			}
-
-			writer.WriteLine("<script language=\"javascript\" type=\"text/javascript\">");
-			writer.WriteLine("$(function() {");
-			foreach (var s in sm.GetStartupScripts())
-				writer.WriteLine("\t" + s);
-
-			writer.WriteLine("\tif (typeof(init) == 'function') init();");
-			writer.WriteLine("});");
-			writer.WriteLine("</script>");*/
+            helper.ViewContext.Writer.Write(sm.GetMarkup().ToString());
 		}
 	}
 }

@@ -257,7 +257,7 @@ namespace SaltarelleParser.Tests {
             try {
                 ControlFactory.SetContainerFactory(() => container);
 
-                Expect.Call(container.ResolveByTypeName("SaltarelleParser.Tests.TestControlClass")).Return(new TestControlClass());
+                Expect.Call(container.CreateObjectByTypeName("SaltarelleParser.Tests.TestControlClass")).Return(new TestControlClass());
 			    TestControlClass addedControl = null;
 			    Expect.Call(() => ctl.AddControl(null, null)).IgnoreArguments().Constraints(Is.Equal("CtlName"), Is.TypeOf<TestControlClass>()).Do((Action<string, IControl>)((_, c) => addedControl = (TestControlClass)c));
 			    mocks.ReplayAll();

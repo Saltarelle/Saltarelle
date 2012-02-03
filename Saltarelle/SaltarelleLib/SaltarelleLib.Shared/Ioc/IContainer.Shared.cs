@@ -2,15 +2,21 @@ using System;
 
 namespace Saltarelle.Ioc {
     public interface IContainer {
-        object Resolve(Type objectType);
-        object ResolveByTypeName(string typeName);
+        object ResolveService(Type objectType);
+        object ResolveServiceByTypeName(string typeName);
+
+        object CreateObject(Type objectType);
+        object CreateObjectByTypeName(string typeName);
+
         Type FindType(string typeName);
         #if SERVER
-            T Resolve<T>();
+            T ResolveService<T>();
+            T CreateObject<T>();
+            void ApplyToScriptManager(IScriptManagerService scriptManager);
         #endif
         #if CLIENT
-            object ResolveWithConstructorArg(Type objectType, object a0);
-            object ResolveByTypeNameWithConstructorArg(string typeName, object a0);
+            object CreateObjectWithConstructorArg(Type objectType, object a0);
+            object CreateObjectByTypeNameWithConstructorArg(string typeName, object a0);
         #endif
     }
 }
