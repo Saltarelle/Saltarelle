@@ -131,6 +131,9 @@ namespace Saltarelle {
         public IHtmlString GetMarkup() {
             var sb = new StringBuilder();
 
+			foreach (var svc in registeredServices)
+				svc.Value.BeforeWriteScripts(this);
+
 			foreach (var script in GetAllRequiredIncludes()) {
 				sb.AppendLine("<script language=\"javascript\" type=\"text/javascript\" src=\"" + script + "\"></script>");
 			}
@@ -148,11 +151,9 @@ namespace Saltarelle {
         public ControlDocumentFragment CreateControlDocumentFragment(IContainer container, IControl control) {
 			control.Id = Guid.NewGuid().ToString().Replace("-", "");
             container.ApplyToScriptManager(this);
+			foreach (var svc in registeredServices)
+				svc.Value.BeforeWriteScripts(this);
             return new ControlDocumentFragment(GetAllRequiredIncludes().ToArray(), ConfigObject, control.GetType().FullName, control.Html, control.ConfigObject);
-        }
-
-		object IService.ConfigObject {
-            get { return this.ConfigObject; }
         }
 
 		public ScriptManagerConfig ConfigObject {

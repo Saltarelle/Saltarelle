@@ -10,9 +10,6 @@ using System.Web;
 
 namespace Saltarelle {
 	public interface IScriptManagerService
-    #if SERVER
-    : IService // In general, service interfaces shouldn't derive from ITransferrableService, but I'll make an exception for the script manager.
-    #endif
     {
 		/// <summary>
 		/// Get a uniqe id, suitable for assignment to a new control.
