@@ -97,6 +97,9 @@
     <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
       <Link>ControlInterfaces.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\INotifyCreated.cs">
+      <Link>Ioc\INotifyCreated.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\InstantiatedTemplateControl.Shared.cs">
       <Link>InstantiatedTemplateControl.Shared.cs</Link>
     </Compile>

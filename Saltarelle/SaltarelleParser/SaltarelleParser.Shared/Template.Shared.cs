@@ -232,20 +232,30 @@ namespace Saltarelle {
 #if SERVER
         internal const string DoNotCallConstructorMessage = "Do not construct this type directly. Always use IContainer.Resolve*()";
 
-		internal static void WriteServerConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteServerConstructor(CodeBuilder cb, ITemplate tpl) {
 			cb.AppendLine("[Obsolete(@\"" + DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]")
-			  .AppendLine("public " + tpl.ClassName + "() {").Indent();
+			  .AppendLine("public " + tpl.ClassName + "() {")
+			  .AppendLine("}");
+		}
+
+		internal static void WriteServerDependenciesAvailable(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+			cb.AppendLine("public void DependenciesAvailable() {").Indent();
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
 			cb.AppendLine("Constructed();").Outdent()
 			  .AppendLine("}");
 		}
 		
-		internal static void WriteClientConstructor(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteClientConstructor(CodeBuilder cb, ITemplate tpl) {
 			cb.AppendLine("[Obsolete(@\"" + DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]")
-              .AppendLine("public " + tpl.ClassName + "(object config) {").Indent()
-			  .AppendLine("if (!Script.IsUndefined(config)) {").Indent()
-			  .AppendLine("Dictionary " + ParserUtils.ConfigObjectName + " = Dictionary.GetDictionary(config);")
+			  .AppendLine("public " + tpl.ClassName + "(object config) {").Indent()
+			  .AppendLine(ParserUtils.ConfigObjectName + " = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);")
+			  .Outdent().AppendLine("}");
+		}
+
+		internal static void WriteClientDependenciesAvailable(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+			cb.AppendLine("public void DependenciesAvailable() {").Indent()
+			  .AppendLine("if (!Utils.IsNull(" + ParserUtils.ConfigObjectName + ")) {").Indent()
 			  .AppendLine("this.id = (string)" + ParserUtils.ConfigObjectName + "[\"id\"];");
 
 			foreach (var m in orderedMembers)
@@ -336,7 +346,7 @@ namespace Saltarelle {
 			StringBuilder sb = new StringBuilder();
 			if (!string.IsNullOrEmpty(inherits))
 				sb.Append(inherits);
-			sb.Append((Utils.IsStringBuilderEmpty(sb) ? "" : ", ") + "IControl" + (enableClientCreate ? ", IClientCreateControl" : ""));
+			sb.Append((Utils.IsStringBuilderEmpty(sb) ? "" : ", ") + "IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : ""));
 			if (!Utils.IsNull(interfaces)) {
 				for (int i = 0; i < interfaces.Count; i++) {
 					sb.Append(", " + interfaces[i]);
@@ -379,7 +389,9 @@ namespace Saltarelle {
 			  .AppendLine("}").Outdent()
 			  .AppendLine("}").AppendLine();
 
-			WriteServerConstructor(cb, this, orderedMembers);
+			WriteServerConstructor(cb, this);
+			cb.AppendLine();
+			WriteServerDependenciesAvailable(cb, this, orderedMembers);
 			
 			cb.Outdent().AppendLine("}");
 			if (!string.IsNullOrEmpty(nmspace))
@@ -400,7 +412,9 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ClientInheritanceList)
 			  .Append(" {").AppendLine().Indent()
-			  .AppendLine("private Dictionary controls = new Dictionary();").AppendLine()
+			  .AppendLine("private Dictionary controls = new Dictionary();")
+			  .AppendLine("private Dictionary " + ParserUtils.ConfigObjectName + ";")
+			  .AppendLine()
 			  .AppendLine("private Position position;")
 			  .AppendLine("public Position Position {").Indent()
 			  .AppendLine("get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }")
@@ -436,7 +450,9 @@ namespace Saltarelle {
 				  .AppendLine("[AlternateSignature]")
 				  .AppendLine("public extern " + className + "();");
 			}
-			WriteClientConstructor(cb, this, orderedMembers);
+			WriteClientConstructor(cb, this);
+			cb.AppendLine();
+			WriteClientDependenciesAvailable(cb, this, orderedMembers);
 			
 			cb.Outdent().AppendLine("}");
 			if (!string.IsNullOrEmpty(nmspace))

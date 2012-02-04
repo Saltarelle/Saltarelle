@@ -33,6 +33,8 @@ namespace Saltarelle.Ioc {
                     Utils.SetPropertyValue(o, r.propertyName, ResolveServiceByTypeName(r.typeName));
                 }
             }
+			if (o is INotifyCreated)
+				((INotifyCreated)o).DependenciesAvailable();
         }
 
         public object ResolveService(Type objectType) {

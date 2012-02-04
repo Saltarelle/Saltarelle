@@ -25,7 +25,13 @@ namespace Saltarelle.Ioc {
 
         private readonly List<object> _createdObjects = new List<object>();
 
-	    public DefaultContainer(Func<string, Type> findType, Func<Type, object> resolveService, Func<Type, object> createObject) {
+	    /// <summary>
+	    /// Constructs an instance.
+	    /// </summary>
+	    /// <param name="findType">Function used to retrieve a type by its name.</param>
+	    /// <param name="resolveService">Function used to resolve a service. When this method creates an object (directly or indirectly), it must make sure to call INotifyCreate.DependenciesAvailable (if applicable).</param>
+	    /// <param name="createObject">Function used to create an object. When this method creates an object, it must make sure to call INotifyCreate.DependenciesAvailable (if applicable).</param>
+		public DefaultContainer(Func<string, Type> findType, Func<Type, object> resolveService, Func<Type, object> createObject) {
 	        _findType       = findType;
 	        _resolveService = resolveService;
             _createObject   = createObject;

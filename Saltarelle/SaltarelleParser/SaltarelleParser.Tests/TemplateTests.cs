@@ -29,26 +29,69 @@ namespace SaltarelleParser.Tests {
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
 			
-			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
-			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
-
 			mocks.ReplayAll();
 			
 			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
                             +  "public TestClass() {" + Environment.NewLine
-			                +  "	[a]" + Environment.NewLine
-			                +  "	[b]" + Environment.NewLine
-			                +  "	Constructed();" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
-			Template.WriteServerConstructor(cb, tpl, new List<IMember>() { m1, m2 });
+			Template.WriteServerConstructor(cb, tpl);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			
 			mocks.VerifyAll();
 		}
 
-		private void TestWriteClientConstructor_Works(bool enableClientCreate) {
+		[Test]
+		public void TestWriteServerDependenciesAvailable_Works() {
+			CodeBuilder cb = new CodeBuilder();
+
+			var tpl = new Template();
+			tpl.ClassName = "TestClass";
+
+			var m1 = mocks.StrictMock<IMember>();
+			var m2 = mocks.StrictMock<IMember>();
+			
+			Expect.Call(() => m1.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[a]")));
+			Expect.Call(() => m2.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb)).Do((Action<ITemplate, MemberCodePoint, CodeBuilder>)((_, __, x) => x.AppendLine("[b]")));
+
+			mocks.ReplayAll();
+			
+			string expected =  "public void DependenciesAvailable() {" + Environment.NewLine
+			                +  "	[a]" + Environment.NewLine
+			                +  "	[b]" + Environment.NewLine
+			                +  "	Constructed();" + Environment.NewLine
+			                +  "}" + Environment.NewLine;
+
+			Template.WriteServerDependenciesAvailable(cb, tpl, new List<IMember>() { m1, m2 });
+			Assert.AreEqual(expected, cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			
+			mocks.VerifyAll();
+		}
+
+		[Test]
+		public void TestWriteClientConstructor_Works() {
+			CodeBuilder cb = new CodeBuilder();
+
+			var tpl = new Template();
+			tpl.ClassName = "TestClass";
+
+			mocks.ReplayAll();
+			
+			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
+			                +  "public TestClass(object config) {" + Environment.NewLine
+			                +  "	__cfg = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);" + Environment.NewLine
+			                +  "}" + Environment.NewLine;
+
+			Template.WriteClientConstructor(cb, tpl);
+			Assert.AreEqual(expected, cb.ToString());
+			Assert.AreEqual(0, cb.IndentLevel);
+			
+			mocks.VerifyAll();
+		}
+
+		private void TestWriteClientDependenciesAvailable_Works(bool enableClientCreate) {
 			CodeBuilder cb = new CodeBuilder();
 
 			var tpl = new Template();
@@ -67,10 +110,8 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
-			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
-			                +  "public TestClass(object config) {" + Environment.NewLine
-			                +  "	if (!Script.IsUndefined(config)) {" + Environment.NewLine
-			                +  "		Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine
+			string expected =  "public void DependenciesAvailable() {" + Environment.NewLine
+			                +  "	if (!Utils.IsNull(__cfg)) {" + Environment.NewLine
 			                +  "		this.id = (string)__cfg[\"id\"];" + Environment.NewLine
 			                +  "		m1 = f2();" + Environment.NewLine
 			                +  "		m2 = g2();" + Environment.NewLine
@@ -88,7 +129,7 @@ namespace SaltarelleParser.Tests {
 			                +  "	}" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
-			Template.WriteClientConstructor(cb, tpl, new List<IMember>() { m1, m2 });
+			Template.WriteClientDependenciesAvailable(cb, tpl, new List<IMember>() { m1, m2 });
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			
@@ -96,13 +137,13 @@ namespace SaltarelleParser.Tests {
 		}
 
 		[Test]
-		public void TestWriteClientConstructor_WorksEnableClientCreate() {
-			TestWriteClientConstructor_Works(true);
+		public void TestWriteClientDependenciesAvailable_WorksEnableClientCreate() {
+			TestWriteClientDependenciesAvailable_Works(true);
 		}
 
 		[Test]
-		public void TestWriteClientConstructor_WorksDisableClientCreate() {
-			TestWriteClientConstructor_Works(false);
+		public void TestWriteClientDependenciesAvailable_WorksDisableClientCreate() {
+			TestWriteClientDependenciesAvailable_Works(false);
 		}
 		
 		[Test]
@@ -266,7 +307,7 @@ namespace SaltarelleParser.Tests {
 			                 +     "using AddedNamespace.Server;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
-			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
+			                 + p + "public partial class TestClass : IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
 			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position = PositionHelper.NotPositioned;" + Environment.NewLine
@@ -307,6 +348,9 @@ namespace SaltarelleParser.Tests {
 			                 + Environment.NewLine
                              + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass() {" + Environment.NewLine
+			                 + p + "	}" + Environment.NewLine
+			                 + Environment.NewLine
+			                 + p + "	public void DependenciesAvailable() {" + Environment.NewLine
 			                 + p + "		Constructed();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + p + "}" + Environment.NewLine
@@ -379,8 +423,9 @@ namespace SaltarelleParser.Tests {
 			                 +     "using AddedNamespace.Client;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
-			                 + p + "public partial class TestClass : IControl" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
+			                 + p + "public partial class TestClass : IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
 			                 + p + "	private Dictionary controls = new Dictionary();" + Environment.NewLine
+			                 + p + "	private Dictionary __cfg;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position;" + Environment.NewLine
 			                 + p + "	public Position Position {" + Environment.NewLine
@@ -438,10 +483,13 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	[AlternateSignature]" + Environment.NewLine
 			                 + p + "	public extern TestClass();" + Environment.NewLine
 			                 : "")
-                             + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
+			                 + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass(object config) {" + Environment.NewLine
-			                 + p + "		if (!Script.IsUndefined(config)) {" + Environment.NewLine
-			                 + p + "			Dictionary __cfg = Dictionary.GetDictionary(config);" + Environment.NewLine
+			                 + p + "		__cfg = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);" + Environment.NewLine
+			                 + p + "	}" + Environment.NewLine
+			                 + Environment.NewLine
+			                 + p + "	public void DependenciesAvailable() {" + Environment.NewLine
+			                 + p + "		if (!Utils.IsNull(__cfg)) {" + Environment.NewLine
 			                 + p + "			this.id = (string)__cfg[\"id\"];" + Environment.NewLine
 			                 + p + "			Constructed();" + Environment.NewLine
 			                 + p + "			AttachSelf();" + Environment.NewLine
