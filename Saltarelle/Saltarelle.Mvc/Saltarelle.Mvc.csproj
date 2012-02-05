@@ -115,9 +115,7 @@
     <Compile Include="..\SaltarelleVersion.cs">
       <Link>Properties\SaltarelleVersion.cs</Link>
     </Compile>
-    <Compile Include="CoreServiceImplementations\DefaultContainer.cs" />
     <Compile Include="CoreServiceImplementations\DefaultScriptManagerService.cs" />
-    <Compile Include="CoreServiceImplementations\Helpers.cs" />
     <Compile Include="HtmlExtensions.cs" />
     <Compile Include="IModuleUtils.cs" />
     <Compile Include="ModuleUtils.cs" />
@@ -272,6 +270,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

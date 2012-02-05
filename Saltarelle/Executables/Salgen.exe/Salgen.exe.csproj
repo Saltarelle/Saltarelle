@@ -61,6 +61,12 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\packages\Castle.Core.3.0.0.4001\lib\net40-client\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\..\packages\Castle.Windsor.3.0.0.4001\lib\net40\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
@@ -82,6 +88,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Saltarelle.CastleWindsor\Saltarelle.CastleWindsor.csproj">
+      <Project>{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}</Project>
+      <Name>Saltarelle.CastleWindsor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
       <Project>{23878C4C-4B77-4F13-B821-BECCA3E0BA98}</Project>
       <Name>SaltarelleLib.Server</Name>
@@ -99,6 +109,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommandLine.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -126,7 +137,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)packages-manual\ILMerge\ilmerge.exe" /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"
+    <PostBuildEvent>"$(SolutionDir)packages-manual\ILMerge\ilmerge.exe" /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll" "$(TargetDir)Castle.Core.dll" "$(TargetDir)Castle.Windsor.dll" "$(TargetDir)Saltarelle.CastleWindsor.dll"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

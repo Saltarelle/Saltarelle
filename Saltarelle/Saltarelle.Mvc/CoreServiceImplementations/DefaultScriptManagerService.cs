@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using Saltarelle.Ioc;
 using Saltarelle.Mvc;
-using Saltarelle.Mvc.CoreServiceImplementations;
 using dotless.Core;
 using dotless.Core.configuration;
 using System.Web.Configuration;
@@ -106,12 +105,24 @@ namespace Saltarelle {
             topLevelControls.Add(control);
 		}
 
+		public IService GetClientServiceImplementer(Type serviceType) {
+			IService result;
+			registeredServices.TryGetValue(serviceType, out result);
+			return result;
+		}
+
         public void RegisterClientService(Type serviceType, IService implementer) {
             if (!serviceType.IsInterface || serviceType == typeof(IService))
                 throw new InvalidOperationException("Transferred services must be interfaces, and must not be the IService interface (tried to register type " + serviceType.FullName + ").");
             if (registeredServices.ContainsKey(serviceType))
                 throw new InvalidOperationException("An instance has already been registered for the service " + serviceType.FullName);
             registeredServices.Add(serviceType, implementer);
+        }
+
+        public void RegisterClientService<TService>(TService implementer) {
+			if (!(implementer is IService))
+				throw new ArgumentException("The service (type " + implementer.GetType() + ") does not implement IService.");
+			RegisterClientService(typeof(TService), (IService)implementer);
         }
 
 		public void RegisterClientAssembly(Assembly asm) {

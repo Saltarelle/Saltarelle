@@ -45,6 +45,8 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "VSIntegrationInstaller", "V
 		{7F4D6EFF-9248-4B68-9CEC-DA5D572AC687} = {7F4D6EFF-9248-4B68-9CEC-DA5D572AC687}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saltarelle.CastleWindsor", "Saltarelle.CastleWindsor\Saltarelle.CastleWindsor.csproj", "{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug With Installer|Any CPU = Debug With Installer|Any CPU
@@ -238,6 +240,21 @@ Global
 		{03D6209D-0765-4B22-9787-34BD6FC3E0EF}.Release|Mixed Platforms.Build.0 = Release|x86
 		{03D6209D-0765-4B22-9787-34BD6FC3E0EF}.Release|x86.ActiveCfg = Release|x86
 		{03D6209D-0765-4B22-9787-34BD6FC3E0EF}.Release|x86.Build.0 = Release|x86
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug With Installer|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug With Installer|Any CPU.Build.0 = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug With Installer|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug With Installer|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug With Installer|x86.ActiveCfg = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

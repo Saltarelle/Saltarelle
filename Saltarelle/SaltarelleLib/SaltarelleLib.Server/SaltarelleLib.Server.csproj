@@ -97,6 +97,9 @@
     <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
       <Link>ControlInterfaces.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\IInstantiable.Shared.cs">
+      <Link>IInstantiable.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\INotifyCreated.cs">
       <Link>Ioc\INotifyCreated.cs</Link>
     </Compile>
@@ -130,6 +133,8 @@
     <Compile Include="Configuration\ScriptElement.cs" />
     <Compile Include="Configuration\ScriptElementCollection.cs" />
     <Compile Include="CssResourceAttribute.cs" />
+    <Compile Include="Ioc\Helpers.cs" />
+    <Compile Include="Ioc\DefaultContainer.cs" />
     <Compile Include="Ioc\IService.Server.cs" />
     <Compile Include="ImportCssResourceAttribute.cs" />
     <Compile Include="Ioc\ClientInjectAttribute.cs" />

@@ -2,11 +2,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Saltarelle.Ioc;
 
-namespace Saltarelle.Mvc.CoreServiceImplementations {
-    internal class Helpers {
+namespace Saltarelle.Ioc {
+    public class Helpers {
         private static readonly ConcurrentDictionary<Type, List<Tuple<string, Type>>> _propertiesToInjectCache = new ConcurrentDictionary<Type, List<Tuple<string, Type>>>();
 
         private static List<Tuple<string, Type>> CalcPropertiesToInject(Type type) {

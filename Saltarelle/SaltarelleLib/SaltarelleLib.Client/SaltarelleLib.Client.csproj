@@ -85,6 +85,9 @@
     <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
       <Link>ControlInterfaces.Shared.cs</Link>
     </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\IInstantiable.Shared.cs">
+      <Link>IInstantiable.Shared.cs</Link>
+    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\INotifyCreated.cs">
       <Link>Ioc\INotifyCreated.cs</Link>
     </Compile>

@@ -22,7 +22,11 @@ using System.Text;
 using System.Reflection;
 #endif
 namespace Saltarelle {
-	public interface ITemplate {
+	public interface ITemplate
+#if SERVER
+		: IInstantiable
+#endif
+	{
 		IRenderFunction MainRenderFunction { get; }
 
 		string ServerInherits { get; set; }
@@ -47,8 +51,6 @@ namespace Saltarelle {
 
 		string GetUniqueId();
 		
-		InstantiatedTemplateControl Instantiate();
-
 		#if SERVER
 			string ServerInheritanceList { get; }
 			string ClientInheritanceList { get; }
@@ -58,7 +60,7 @@ namespace Saltarelle {
 		#endif
 	}
 
-	public class Template : ITemplate {
+	public class Template : ITemplate, IInstantiable {
 		public const string MainRenderFunctionName = "GetHtml";
 	
 		private readonly MemberDictionary members = new MemberDictionary();
@@ -207,7 +209,7 @@ namespace Saltarelle {
 			return result;
 		}
 
-		public InstantiatedTemplateControl Instantiate() {
+		public IControl Instantiate() {
 			MemberList orderedMembers = TopologicalSort(members);
 			InstantiatedTemplateControl ctl = new InstantiatedTemplateControl(delegate(IInstantiatedTemplateControl x) { return MainRenderFunction.Render(this, x); });
 			foreach (IMember m in orderedMembers) {

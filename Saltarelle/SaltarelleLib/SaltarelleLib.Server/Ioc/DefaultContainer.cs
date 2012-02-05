@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Reflection;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Web;
-using System.IO;
 using System.Linq;
-using Saltarelle.Mvc;
-using Saltarelle.Mvc.CoreServiceImplementations;
-using dotless.Core;
-using dotless.Core.configuration;
-using System.Web.Configuration;
-using Saltarelle.Configuration;
-using System.Configuration;
 
-// ReSharper disable CheckNamespace
 namespace Saltarelle.Ioc {
-// ReSharper restore CheckNamespace
 	public class DefaultContainer : IContainer {
 
 	    private readonly Func<string, Type> _findType;

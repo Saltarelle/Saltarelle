@@ -43,7 +43,7 @@ namespace Saltarelle.Configuration {
             return result;
         }
 
-        public IEnumerable<Assembly> LoadPluginsInNoContext(string rootPath) {
+        public IList<Assembly> LoadPluginsInNoContext(string rootPath) {
             var result = new List<Assembly>();
             if (!Utils.IsNull(Plugins)) {
 				foreach (PluginElement p in Plugins) {

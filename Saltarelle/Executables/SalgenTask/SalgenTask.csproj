@@ -61,6 +61,12 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\packages\Castle.Core.3.0.0.4001\lib\net40-client\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\..\packages\Castle.Windsor.3.0.0.4001\lib\net40\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities" />
     <Reference Include="System" />
@@ -92,11 +98,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Saltarelle.snk" />
+    <None Include="packages.config" />
     <None Include="Saltarelle.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Saltarelle.CastleWindsor\Saltarelle.CastleWindsor.csproj">
+      <Project>{0AA9C36A-8C09-4EEF-80BB-963C27EB112E}</Project>
+      <Name>Saltarelle.CastleWindsor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
       <Project>{23878C4C-4B77-4F13-B821-BECCA3E0BA98}</Project>
       <Name>SaltarelleLib.Server</Name>
@@ -133,6 +144,6 @@
     <XmlPoke XmlInputPath="$(TargetDir)saltarelle.targets" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.microsoft.com/developer/msbuild/2003' /&gt;" Query="//x:UsingTask/@AssemblyFile" Value="$(TargetFileName)" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)packages-manual\ILMerge\ilmerge.exe" /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll"</PostBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)packages-manual\ILMerge\ilmerge.exe" /targetplatform:v4,C:\Windows\Microsoft.NET\Framework\v4.0.30319 "/keyfile:$(SolutionDir)Saltarelle.snk" "/out:$(TargetPath)" "$(ProjectDir)@(IntermediateAssembly)" "$(TargetDir)SaltarelleLib.dll" "$(TargetDir)SaltarelleParser.dll" "$(TargetDir)Newtonsoft.Json.dll" "$(TargetDir)Castle.Core.dll" "$(TargetDir)Castle.Windsor.dll" "$(TargetDir)Saltarelle.CastleWindsor.dll"</PostBuildEvent>
   </PropertyGroup>
 </Project>

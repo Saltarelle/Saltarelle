@@ -5,7 +5,12 @@ using System.Text;
 using System.Xml;
 using System.Linq;
 using System.Reflection;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
+using Saltarelle.CastleWindsor;
 using Saltarelle.Configuration;
+using Saltarelle.Ioc;
+using Saltarelle.CastleWindsor.ExtensionMethods;
 
 namespace Saltarelle {
 	[Serializable]
@@ -27,7 +32,13 @@ namespace Saltarelle {
                 }
                 else
                     plugins = new Assembly[0];
-                parser = SaltarelleParserFactory.CreateParserWithPlugins(plugins);
+
+				var windsorContainer = new WindsorContainer();
+				ContainerFactory.PrepareWindsorContainer(windsorContainer);
+				foreach (var p in plugins)
+					windsorContainer.Register(AllTypes.FromAssembly(p).RegisterPlugins());
+				var container = ContainerFactory.CreateContainer(windsorContainer);
+                parser = SaltarelleParserFactory.CreateParserWithPlugins(plugins, container);
             }
 
             public void ProcessWorkItem(WorkItem workItem) {
@@ -134,7 +145,7 @@ namespace Saltarelle {
 
         private static Assembly ResolveAssembly(string name) {
             var parsedName = new AssemblyName(name);
-            if (parsedName.Name == "SaltarelleLib" || parsedName.Name == "SaltarelleParser" || parsedName.Name == "Newtonsoft.Json")
+            if (parsedName.Name == "SaltarelleLib" || parsedName.Name == "SaltarelleParser" || parsedName.Name == "Newtonsoft.Json" || parsedName.Name == "Castle.Core" || parsedName.Name == "Castle.Windsor" || parsedName.Name == "Saltarelle.CastleWindsor")
                 return Assembly.GetExecutingAssembly(); // These assemblies are ILMerged.
             return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == parsedName.Name);    // Allow other plugins to be referenced, even though they have all been loaded without context.
         }
