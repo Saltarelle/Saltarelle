@@ -9,7 +9,7 @@ namespace Saltarelle.Ioc {
 	    private readonly Func<Type, object> _resolveService;
         private readonly Func<Type, object> _createObject;
 
-        private readonly List<object> _createdObjects = new List<object>();
+        private List<object> _createdObjects = new List<object>();
 
 	    /// <summary>
 	    /// Constructs an instance.
@@ -53,25 +53,42 @@ namespace Saltarelle.Ioc {
             return (T)CreateObject(typeof(T));
 	    }
 
-        private void GatherServices(IEnumerable<object> objects, Dictionary<Type, IService> services) {
+        private List<IService> GatherServices(IEnumerable<object> objects, Dictionary<Type, IService> services) {
             var serviceTypes = objects.Select(o => o.GetType()).Distinct().SelectMany(Helpers.FindPropertiesToInject).Select(p => p.Item2).Distinct();
-            var newObjects = new List<object>();
+            var createdServices = new List<IService>();
             foreach (var st in serviceTypes) {
                 if (!services.ContainsKey(st)) {
                     var svc = ResolveService(st);
                     if (!(svc is IService))
                         throw new InvalidOperationException("The service type " + svc.GetType().FullName + ", implementing the service " + st.FullName + ", does not implement IService.");
                     services[st] = (IService)svc;
-                    newObjects.Add(svc);
+                    createdServices.Add((IService)svc);
                 }
             }
-            if (newObjects.Count > 0)
-                GatherServices(newObjects, services);
+            if (createdServices.Count > 0)
+                createdServices.AddRange(GatherServices(createdServices, services));
+			return createdServices;
         }
+
+		private void GatherServicesAndInvokeBeforeWriteScriptsCallbacks(IScriptManagerService scriptManager, Dictionary<Type, IService> services) {
+			var allCreatedObjects = _createdObjects;
+			while (_createdObjects.Count > 0) {
+				var current = _createdObjects;
+				_createdObjects = new List<object>();
+				foreach (var o in current.OfType<IBeforeWriteScriptsCallback>())
+					o.BeforeWriteScripts(scriptManager);
+				var newServices = GatherServices(current, services);
+				foreach (var o in newServices.OfType<IBeforeWriteScriptsCallback>())
+					o.BeforeWriteScripts(scriptManager);
+
+				allCreatedObjects.AddRange(_createdObjects);	// This iteration might have caused new types to be created. In that case, add them to the set and continue the loop.
+			}
+			_createdObjects = allCreatedObjects;
+		}
 
 	    public void ApplyToScriptManager(IScriptManagerService scriptManager) {
             var services = new Dictionary<Type, IService>();
-            GatherServices(_createdObjects, services);
+            GatherServicesAndInvokeBeforeWriteScriptsCallbacks(scriptManager, services);
             foreach (var asm in _createdObjects.Union(services.Values).Select(o => o.GetType().Assembly).Distinct())
                 scriptManager.RegisterClientAssembly(asm);
             foreach (var svc in services)
