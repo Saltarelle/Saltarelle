@@ -37,12 +37,12 @@ namespace Saltarelle.Members {
 				this.dependencies[i] = dependencies[i].Name;
 		}
 
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
 			if (CustomInstantiate)
 				throw ParserUtils.TemplateErrorException("Dynamically instantiated templates cannot have customInstantiate controls.");
 			IControl newCtl;
 
-			newCtl = (IControl)ControlFactory.CreateControlByTypeName(typeName);
+			newCtl = (IControl)container.CreateObjectByTypeName(typeName);
 
 			foreach (AdditionalPropertiesEntry prop in additionalProperties)
 				Utils.SetPropertyValue(newCtl, prop.Key, ((TypedMarkupData)prop.Value).ValueRetriever());

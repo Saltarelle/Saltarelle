@@ -91,9 +91,6 @@
     <Compile Include="..\SaltarelleLib.Shared\ControlDocumentFragment.Shared.cs">
       <Link>ControlDocumentFragment.Shared.cs</Link>
     </Compile>
-    <Compile Include="..\SaltarelleLib.Shared\ControlFactory.Shared.cs">
-      <Link>Ioc\ControlFactory.Shared.cs</Link>
-    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
       <Link>ControlInterfaces.Shared.cs</Link>
     </Compile>

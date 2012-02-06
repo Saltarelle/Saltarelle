@@ -30,7 +30,7 @@ namespace Saltarelle {
 
 	public delegate string InstantiatedTemplateControlGetHtmlDelegate(IInstantiatedTemplateControl ctl);
 
-	public sealed class InstantiatedTemplateControl : IInstantiatedTemplateControl, IControl
+	public sealed class InstantiatedTemplateControl : IInstantiatedTemplateControl, IControl, INotifyCreated
 	#if CLIENT
 		, IClientCreateControl
 	#endif
@@ -40,6 +40,12 @@ namespace Saltarelle {
 		private ControlDictionary controls = new ControlDictionary();
 		private StringList namedElements;
 		private InstantiatedTemplateControlGetHtmlDelegate getHtml;
+
+		private IContainer container;
+		#if SERVER
+		[ClientInject]
+		#endif
+		public IContainer Container { get { return container; } set { container = value; } }
 		
 		#if CLIENT
 			private bool isAttached = false;
@@ -121,6 +127,9 @@ namespace Saltarelle {
 				return new { id, controls = controlConfig, namedElements };
 			}
 		}
+
+		public void DependenciesAvailable() {
+		}
 #endif
 
 #if CLIENT
@@ -128,7 +137,22 @@ namespace Saltarelle {
 
 		[AlternateSignature]
 		public extern InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml);
+
+		private Dictionary config;
 		
+		public void DependenciesAvailable() {
+			if (!Utils.IsNull(config)) {
+				this.id = (string)config["id"];
+				Dictionary controlConfig = (Dictionary)config["controls"];
+				foreach (DictionaryEntry de in controlConfig) {
+					Dictionary ncfg = (Dictionary)de.Value;
+					this.controls[de.Key] = (IControl)Container.CreateObjectByTypeNameWithConstructorArg((string)ncfg["type"], ncfg["cfg"]);
+				}
+				this.namedElements = (StringList)config["namedElements"];
+				isAttached = true;
+			}
+		}
+
 		/// <summary>
 		/// This constructor should only be used for initialization on load
 		/// </summary>
@@ -136,17 +160,10 @@ namespace Saltarelle {
 			if (Type.GetScriptType(config) == "function") {
 				this.getHtml       = (InstantiatedTemplateControlGetHtmlDelegate)config;
 				this.namedElements = new StringList();
+				this.config = null;
 			}
 			else {
-				Dictionary dict = Dictionary.GetDictionary(config);
-				this.id = (string)dict["id"];
-				Dictionary controlConfig = (Dictionary)dict["controls"];
-				foreach (DictionaryEntry de in controlConfig) {
-					Dictionary ncfg = (Dictionary)de.Value;
-					this.controls[de.Key] = ControlFactory.CreateControlByTypeNameWithConfig((string)ncfg["type"], ncfg["cfg"]);
-				}
-				this.namedElements = (StringList)dict["namedElements"];
-				isAttached = true;
+				this.config = Dictionary.GetDictionary(config);
 			}
 		}
 

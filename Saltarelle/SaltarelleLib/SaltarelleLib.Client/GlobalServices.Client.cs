@@ -8,7 +8,6 @@ namespace Saltarelle {
         public static void Initialize(ScriptManagerConfig config) {
             if (container == null) {
                 container = new DefaultContainer();
-                ControlFactory.SetContainer(container);
             }
             if (scriptManager == null)
                 scriptManager = new DefaultScriptManagerService(config.nextUniqueId);
@@ -16,7 +15,7 @@ namespace Saltarelle {
             container.RegisterInjections(config.injections);
 
             foreach (ScriptManagerConfigControlRow c in config.controls) {
-                scriptManager.RegisterTopLevelControl(ControlFactory.CreateControlByTypeNameWithConfig(c.type, c.config));
+                scriptManager.RegisterTopLevelControl((IControl)container.CreateObjectByTypeNameWithConstructorArg(c.type, c.config));
             }
         }
 

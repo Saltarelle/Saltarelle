@@ -58,7 +58,8 @@ namespace Saltarelle {
 		/// </summary>
 		/// <param name="tpl">The template that is being instantiated.</param>
 		/// <param name="control">The control into which the template is being instantiated.</param>
-		void Instantiate(ITemplate tpl, IInstantiatedTemplateControl control);
+		/// <param name="container">Container in which the instantiated control lives</param>
+		void Instantiate(ITemplate tpl, IInstantiatedTemplateControl control, IContainer container);
 
 		#if SERVER
 			/// <summary>

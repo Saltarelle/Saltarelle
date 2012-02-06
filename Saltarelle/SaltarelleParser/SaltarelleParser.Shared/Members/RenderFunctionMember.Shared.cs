@@ -51,7 +51,7 @@ namespace Saltarelle.Members {
 			}
 		}
 
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
 		}
 		
 		public string Render(ITemplate tpl, IInstantiatedTemplateControl ctl) {

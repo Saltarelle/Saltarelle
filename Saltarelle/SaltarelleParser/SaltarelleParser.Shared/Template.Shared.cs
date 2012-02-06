@@ -209,12 +209,12 @@ namespace Saltarelle {
 			return result;
 		}
 
-		public IControl Instantiate() {
+		public IControl Instantiate(IContainer container) {
 			MemberList orderedMembers = TopologicalSort(members);
 			InstantiatedTemplateControl ctl = new InstantiatedTemplateControl(delegate(IInstantiatedTemplateControl x) { return MainRenderFunction.Render(this, x); });
 			foreach (IMember m in orderedMembers) {
 				try {
-					m.Instantiate(this, ctl);
+					m.Instantiate(this, ctl, container);
 				}
 #if SERVER
 				catch (Exception ex) {

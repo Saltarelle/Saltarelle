@@ -93,7 +93,7 @@ namespace SaltarelleParser.Tests {
 			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
 			Expect.Call(() => ctl.AddNamedElement("TestId"));
 			mocks.ReplayAll();
-			new NamedElementMember("div", "TestId").Instantiate(tpl, ctl);
+			new NamedElementMember("div", "TestId").Instantiate(tpl, ctl, mocks.StrictMock<IContainer>());
 			mocks.VerifyAll();
 		}
 	}

@@ -634,12 +634,13 @@ namespace SaltarelleParser.Tests {
 			IInstantiatedTemplateControl ctl = null;
 			var m1  = mocks.StrictMock<IMember>();
 			var m2  = mocks.StrictMock<IMember>();
+			var container = mocks.StrictMock<IContainer>();
 			Expect.Call(m1.Name).Return("m1").Repeat.Any();
 			Expect.Call(m2.Name).Return("m2").Repeat.Any();
 			Expect.Call(m1.Dependencies).Return(new string[] { });
 			Expect.Call(m2.Dependencies).Return(new string[] { "m1" });
-			Expect.Call(() => m1.Instantiate(null, null)).IgnoreArguments().Constraints(Is.Same(tpl), Is.NotNull()).Do((Action<ITemplate, IInstantiatedTemplateControl>)((_, c) => { ctl = c; } ));
-			Expect.Call(() => m2.Instantiate(null, null)).IgnoreArguments().Constraints(Is.Same(tpl), Is.Matching((IInstantiatedTemplateControl x) => object.ReferenceEquals(x, ctl)));
+			Expect.Call(() => m1.Instantiate(null, null, container)).IgnoreArguments().Constraints(Is.Same(tpl), Is.NotNull(), Is.Same(container)).Do((Action<ITemplate, IInstantiatedTemplateControl, IContainer>)((_, c, __) => { ctl = c; } ));
+			Expect.Call(() => m2.Instantiate(null, null, container)).IgnoreArguments().Constraints(Is.Same(tpl), Is.Matching((IInstantiatedTemplateControl x) => object.ReferenceEquals(x, ctl)), Is.Same(container));
 			tpl.MainRenderFunction.AddFragment(new LiteralFragment("X"));
 
 			mocks.ReplayAll();
@@ -647,7 +648,7 @@ namespace SaltarelleParser.Tests {
 			tpl.AddMember(m1);
 			tpl.AddMember(m2);
 			
-			var actual = tpl.Instantiate();
+			var actual = tpl.Instantiate(container);
 			Assert.AreSame(ctl, actual);
 			actual.Id = "SomeId";
 			Assert.AreEqual("X", actual.Html);
