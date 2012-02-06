@@ -112,7 +112,7 @@ namespace SaltarelleParser.Tests {
 			var cb = new CodeBuilder();
 
 			string expected = "{" + Environment.NewLine
-			                + "Namespace.Type c = (Namespace.Type)ControlFactory.CreateControl(typeof(Namespace.Type));" + Environment.NewLine
+			                + "Namespace.Type c = (Namespace.Type)Container.CreateObject(typeof(Namespace.Type));" + Environment.NewLine
 			                + "c.Prop1 = value1;" + Environment.NewLine
 			                + "c.Prop2 = value2;" + Environment.NewLine
 			                + "this.controls[\"CtlName\"] = c;" + Environment.NewLine
@@ -165,7 +165,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)ControlFactory.CreateControlWithConfig(typeof(Namespace.Type), __cfg[\"CtlName\"]);" + Environment.NewLine;
+			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)Container.CreateObjectWithConstructorArg(typeof(Namespace.Type), __cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", false, new Dictionary<string, TypedMarkupData>() { { "Prop1", new TypedMarkupData("value1") }, { "Prop2", new TypedMarkupData("value2") } }, new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -177,7 +177,7 @@ namespace SaltarelleParser.Tests {
 			var tpl = mocks.StrictMock<ITemplate>();
 			mocks.ReplayAll();
 			var cb = new CodeBuilder();
-			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)ControlFactory.CreateControlByTypeNameWithConfig((string)__cfg[\"CtlName$type\"], __cfg[\"CtlName\"]);" + Environment.NewLine;
+			string expected = "this.controls[\"CtlName\"] = (Namespace.Type)Container.CreateObjectByTypeNameWithConstructorArg((string)__cfg[\"CtlName$type\"], __cfg[\"CtlName\"]);" + Environment.NewLine;
 			new InstantiatedControlMember("CtlName", "Namespace.Type", true, new Dictionary<string, TypedMarkupData>(), new IMember[0]).WriteCode(tpl, MemberCodePoint.TransferConstructor, cb);
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
