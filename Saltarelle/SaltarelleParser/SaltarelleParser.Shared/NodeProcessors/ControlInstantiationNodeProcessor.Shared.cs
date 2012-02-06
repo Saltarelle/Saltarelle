@@ -75,8 +75,10 @@ namespace Saltarelle.NodeProcessors {
 				});
 			}
 			
-			IMember controlMember = new InstantiatedControlMember(id, type, customInstantiate, additionalProperties, dependencies);
+			if (!template.HasMember("Container"))
+				template.AddMember(new PropertyMember("Container", "IContainer", "IContainer", AccessModifier._Public, "_container", "IContainer", "IContainer", true, true, null, true));
 
+			IMember controlMember = new InstantiatedControlMember(id, type, customInstantiate, additionalProperties, dependencies);
 			template.AddMember(controlMember);
 
 			currentRenderFunction.AddFragment(new InstantiatedControlFragment(id, customInstantiate, numInnerFragments));

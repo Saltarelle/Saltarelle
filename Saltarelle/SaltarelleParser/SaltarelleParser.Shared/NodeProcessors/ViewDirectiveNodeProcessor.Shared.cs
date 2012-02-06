@@ -35,8 +35,8 @@ namespace Saltarelle.NodeProcessors {
 
 			template.AddServerInterface(viewInterface);
 			template.AddMember(new FieldMember("model", serverType, clientType));
-			template.AddMember(new PropertyMember("Model", serverType, null, AccessModifier._Public, "model", serverType, null, true, true, "ModelChanged"));
-			template.AddMember(new PropertyMember("Saltarelle.Mvc.IView.Model", "object", null, AccessModifier._None, "model", serverType, null, true, true, "ModelChanged"));
+			template.AddMember(new PropertyMember("Model", serverType, null, AccessModifier._Public, "model", serverType, null, true, true, "ModelChanged", false));
+			template.AddMember(new PropertyMember("Saltarelle.Mvc.IView.Model", "object", null, AccessModifier._None, "model", serverType, null, true, true, "ModelChanged", false));
 
 			return true;
 		}

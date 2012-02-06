@@ -35,10 +35,36 @@ namespace SaltarelleParser.Tests {
 		[Test]
 		public void TestTryProcess_AttributesExceptCustomInstantiateMapCorrectly() {
 			Expect.Call(template.HasMember("TestId")).Return(false);
+			Expect.Call(template.HasMember("Container")).Return(true);
 			Expect.Call(() => template.AddMember(new InstantiatedControlMember("TestId", "Namespace.TestType", false, new Dictionary<string, TypedMarkupData>() { { "Attr1", new TypedMarkupData("value1") }, { "Attr2", new TypedMarkupData("value2") } }, new IMember[0])));
 			Expect.Call(() => renderFunction.AddDependency(null)).IgnoreArguments().Constraints(Property.Value("Name", "TestId"));
 			mocks.ReplayAll();
 			Assert.IsTrue(new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"TestId\" type=\"Namespace.TestType\" Attr1=\"value1\" Attr2=\"value2\"/>"), false, template, renderFunction));
+			Assert.AreEqual("[CONTROL id=TestId inner=0]", ConcatenatedFragments);
+			mocks.VerifyAll();
+		}
+
+		[Test]
+		public void TestTryProcess_ContainerMemberIsAddedIfItDoesNotExist() {
+			Expect.Call(template.HasMember("TestId")).Return(false);
+			Expect.Call(template.HasMember("Container")).Return(false);
+			Expect.Call(() => template.AddMember(new InstantiatedControlMember("TestId", "Namespace.TestType", false, new Dictionary<string, TypedMarkupData>(), new IMember[0])));
+			Expect.Call(() => template.AddMember(new PropertyMember("Container", "IContainer", "IContainer", AccessModifier._Public, "_container", "IContainer", "IContainer", true, true, null, true)));
+			Expect.Call(() => renderFunction.AddDependency(null)).IgnoreArguments().Constraints(Property.Value("Name", "TestId"));
+			mocks.ReplayAll();
+			Assert.IsTrue(new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"TestId\" type=\"Namespace.TestType\"/>"), false, template, renderFunction));
+			Assert.AreEqual("[CONTROL id=TestId inner=0]", ConcatenatedFragments);
+			mocks.VerifyAll();
+		}
+
+		[Test]
+		public void TestTryProcess_ContainerMemberIsNotAddedTwice() {
+			Expect.Call(template.HasMember("TestId")).Return(false);
+			Expect.Call(template.HasMember("Container")).Return(true);
+			Expect.Call(() => template.AddMember(new InstantiatedControlMember("TestId", "Namespace.TestType", false, new Dictionary<string, TypedMarkupData>(), new IMember[0])));
+			Expect.Call(() => renderFunction.AddDependency(null)).IgnoreArguments().Constraints(Property.Value("Name", "TestId"));
+			mocks.ReplayAll();
+			Assert.IsTrue(new ControlInstantiationNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<control id=\"TestId\" type=\"Namespace.TestType\"/>"), false, template, renderFunction));
 			Assert.AreEqual("[CONTROL id=TestId inner=0]", ConcatenatedFragments);
 			mocks.VerifyAll();
 		}
@@ -60,6 +86,7 @@ namespace SaltarelleParser.Tests {
 		
 		[Test]
 		public void TestTryProcess_CustomInstantiateMapCorrectly() {
+			Expect.Call(template.HasMember("Container")).Return(true);
 			Expect.Call(template.HasMember("TestId")).Return(false);
 			Expect.Call(() => template.AddMember(new InstantiatedControlMember("TestId", "Namespace.TestType", true, new Dictionary<string, TypedMarkupData>(), new IMember[0])));
 			Expect.Call(() => renderFunction.AddDependency(null)).IgnoreArguments().Constraints(Property.Value("Name", "TestId"));
@@ -80,6 +107,7 @@ namespace SaltarelleParser.Tests {
 		[Test]
 		public void TestTryProcess_MissingIdCausesDefault() {
 			Expect.Call(template.GetUniqueId()).Return("_test_id");
+			Expect.Call(template.HasMember("Container")).Return(true);
 			Expect.Call(template.HasMember("_test_id")).Return(false);
 			Expect.Call(() => template.AddMember(new InstantiatedControlMember("_test_id", "Namespace.TestType", false, new Dictionary<string, TypedMarkupData>(), new IMember[0])));
 			Expect.Call(() => renderFunction.AddDependency(null)).IgnoreArguments().Constraints(Property.Value("Name", "_test_id"));
@@ -141,6 +169,7 @@ namespace SaltarelleParser.Tests {
 				Expect.Call(() => template.AddMember(CreateRenderFunction("TestId_inner4", "", new IFragment[0]))).Do((Action<IMember>)(m => f4= m));
 				Expect.Call(() => docProcessor.ProcessRecursive(null, null, null)).Do((Action<XmlNode, ITemplate, IRenderFunction>)((n, tpl, f) => { Assert.AreEqual(n, n4); Assert.AreEqual(tpl, template); f.AddFragment(new LiteralFragment("[n4]")); })).IgnoreArguments();
 
+				Expect.Call(template.HasMember("Container")).Return(true);
 				Expect.Call(() => template.AddMember(null)).IgnoreArguments().Constraints(Is.Matching((InstantiatedControlMember m) =>
 				                                                                                      m.Name == "TestId" &&
 				                                                                                      m.TypeName == "TestType" &&

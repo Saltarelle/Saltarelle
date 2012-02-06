@@ -12,8 +12,9 @@ namespace Saltarelle.Members {
 		private bool   hasGetter;
 		private bool   hasSetter;
 		private string valueChangedHookName;
+		private bool   clientInject;
 		
-		public PropertyMember(string name, string serverType, string clientType, AccessModifier accessModifier, string backingFieldName, string backingFieldServerType, string backingFieldClientType, bool hasGetter, bool hasSetter, string valueChangedHookName) {
+		public PropertyMember(string name, string serverType, string clientType, AccessModifier accessModifier, string backingFieldName, string backingFieldServerType, string backingFieldClientType, bool hasGetter, bool hasSetter, string valueChangedHookName, bool clientInject) {
 			if (string.IsNullOrEmpty(name)) throw Utils.ArgumentException("name");
 			if (string.IsNullOrEmpty(backingFieldName)) throw Utils.ArgumentException("backingFieldName");
 			if (!hasGetter && !hasSetter) throw Utils.ArgumentException("Must have getter or setter.");
@@ -31,6 +32,7 @@ namespace Saltarelle.Members {
 			this.hasGetter = hasGetter;
 			this.hasSetter = hasSetter;
 			this.valueChangedHookName = valueChangedHookName;
+			this.clientInject = clientInject;
 		}
 	
 		public string Name {
@@ -46,7 +48,9 @@ namespace Saltarelle.Members {
 		}
 		
 #if SERVER
-		private void WriteDefinition(CodeBuilder cb, string type, string backingFieldType) {
+		private void WriteDefinition(CodeBuilder cb, string type, string backingFieldType, bool isServer) {
+			if (isServer && clientInject)
+				cb.AppendLine("[ClientInject]");
 			cb.Append(AccessModifierHelper.WriteDeclarator(accessModifier, type, name)).AppendLine(" {").Indent();
 			if (hasGetter)
 				cb.AppendLine("get { return " + (type != backingFieldType ? "(" + type + ")" : "") + backingFieldName + "; }");
@@ -59,11 +63,11 @@ namespace Saltarelle.Members {
 			switch (point) {
 				case MemberCodePoint.ClientDefinition:
 					if (!Utils.IsNull(clientType))
-						WriteDefinition(cb, clientType, backingFieldClientType);
+						WriteDefinition(cb, clientType, backingFieldClientType, false);
 					break;
 				case MemberCodePoint.ServerDefinition:
 					if (!Utils.IsNull(serverType))
-						WriteDefinition(cb, serverType, backingFieldServerType);
+						WriteDefinition(cb, serverType, backingFieldServerType, true);
 					break;
 			}
 		}

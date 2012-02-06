@@ -36,9 +36,9 @@ namespace SaltarelleParser.Tests {
 			Expect.Call(template.HasMember("model")).Return(false);
 			Expect.Call(() => template.AddMember(new FieldMember("model", actualServerType, hasClientType ? "ClientType" : null)));
 			Expect.Call(template.HasMember("Model")).Return(false);
-			Expect.Call(() => template.AddMember(new PropertyMember("Model", actualServerType, null, AccessModifier._Public, "model", actualServerType, null, true, true, "ModelChanged")));
+			Expect.Call(() => template.AddMember(new PropertyMember("Model", actualServerType, null, AccessModifier._Public, "model", actualServerType, null, true, true, "ModelChanged", false)));
 			Expect.Call(template.HasMember("Saltarelle.Mvc.IView.Model")).Return(false);
-			Expect.Call(() => template.AddMember(new PropertyMember("Saltarelle.Mvc.IView.Model", "object", null, AccessModifier._None, "model", actualServerType, null, true, true, "ModelChanged")));
+			Expect.Call(() => template.AddMember(new PropertyMember("Saltarelle.Mvc.IView.Model", "object", null, AccessModifier._None, "model", actualServerType, null, true, true, "ModelChanged", false)));
 			mocks.ReplayAll();
 
 			new ViewDirectiveNodeProcessor().TryProcess(docProcessor, Globals.GetXmlNode("<?view" + (hasServerType ? " modelType=\"ServerType\"" : "") + (hasClientType ? " clientModelType=\"ClientType\"" : "") + "?>"), true, template, renderFunction);
