@@ -191,7 +191,7 @@ Task Configure -Depends Generate-VersionInfo {
 }
 
 Function Determine-PathVersion($RefCommit, $RefVersion, $Path) {
-	$revision = ((git log "$RefCommit..HEAD" --pretty=format:"%H" -- "$Path") | Measure-Object).Count # Number of commits since our reference commit
+	$revision = ((git log "$RefCommit..HEAD" --pretty=format:"%H" -- (@($Path) | % { """$_""" })) | Measure-Object).Count # Number of commits since our reference commit
 	if ($revision -gt 0) {
 		New-Object System.Version($RefVersion.Major, $RefVersion.Minor, $RefVersion.Build, $revision)
 	}
@@ -220,9 +220,9 @@ Task Determine-Version {
 		$refVersion = New-Object System.Version("0.0.0")
 	}
 	
-	$script:LibVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleLib"
+	$script:LibVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleLib","$base_dir\Saltarelle\Executables","$base_dir\Saltarelle\SaltarelleParser"
+	$script:ExecutablesVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Executables","$base_dir\Saltarelle\SaltarelleLib","$base_dir\Saltarelle\SaltarelleParser"
 	$script:ParserVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleParser"
-	$script:ExecutablesVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Executables"
 	$script:UIVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.UI"
 	$script:MvcVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.Mvc"
 	$script:CastleWindsorVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.CastleWindsor"
