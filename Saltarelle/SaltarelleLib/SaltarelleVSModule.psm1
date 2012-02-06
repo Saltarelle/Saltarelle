@@ -11,8 +11,8 @@ Function New-SaltarellePair([Parameter(Mandatory=$true)][string]$Name, [string]$
 	
 	$folderProject = $solution.AddSolutionFolder($Name)
 	$folder = Get-Interface $folderProject.Object ([EnvDTE80.SolutionFolder])
-	$folder.AddFromTemplate($template, "$baseDir\$Name.Client", "$Name.Client.csproj", $false)
-	$folder.AddFromTemplate($template, "$baseDir\$Name.Server", "$Name.Server.csproj", $false)
+	$folder.AddFromTemplate($template, "$baseDir\$Name.Client", "$Name.Client", $false)
+	$folder.AddFromTemplate($template, "$baseDir\$Name.Server", "$Name.Server", $false)
 
 	Install-Package -ProjectName "$Name.Client" -Id "SaltarelleCore"
 	Install-Package -ProjectName "$Name.Server" -Id "SaltarelleCore"
