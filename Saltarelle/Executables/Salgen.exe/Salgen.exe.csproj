@@ -78,11 +78,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
-    </Compile>
     <Compile Include="..\ExecutablesCommon.cs">
       <Link>ExecutablesCommon.cs</Link>
+    </Compile>
+    <Compile Include="..\ExecutablesVersion.cs">
+      <Link>Properties\ExecutablesVersion.cs</Link>
     </Compile>
     <Compile Include="SalgenExe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

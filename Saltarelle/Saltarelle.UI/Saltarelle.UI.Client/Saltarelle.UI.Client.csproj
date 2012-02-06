@@ -73,9 +73,6 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
-    </Compile>
     <Compile Include="..\Saltarelle.UI.Shared\ControlListControl.Shared.cs">
       <Link>ControlListControl.Shared.cs</Link>
     </Compile>
@@ -111,6 +108,9 @@
     </Compile>
     <Compile Include="..\Saltarelle.UI.Shared\UIUtils.Shared.cs">
       <Link>UIUtils.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleUIVersion.cs">
+      <Link>Properties\SaltarelleUIVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIUtils.Client.cs" />

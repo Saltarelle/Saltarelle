@@ -73,9 +73,6 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
-    </Compile>
     <Compile Include="..\SaltarelleLib.Shared\ControlDocumentFragment.Shared.cs">
       <Link>ControlDocumentFragment.Shared.cs</Link>
     </Compile>
@@ -108,6 +105,9 @@
     </Compile>
     <Compile Include="..\SaltarelleLib.Shared\Utils.Shared.cs">
       <Link>Utils.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLibVersion.cs">
+      <Link>Properties\SaltarelleLibVersion.cs</Link>
     </Compile>
     <Compile Include="DefaultScriptManagerService.cs" />
     <Compile Include="GlobalServices.Client.cs" />

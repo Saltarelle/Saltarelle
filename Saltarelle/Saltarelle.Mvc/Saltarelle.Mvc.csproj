@@ -112,9 +112,6 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
-    </Compile>
     <Compile Include="CoreServiceImplementations\DefaultScriptManagerService.cs" />
     <Compile Include="HtmlExtensions.cs" />
     <Compile Include="IModuleUtils.cs" />
@@ -123,6 +120,7 @@
     <Compile Include="Resources\Resources.cs" />
     <Compile Include="MvcRouteService.cs" />
     <Compile Include="SaltarelleController.cs" />
+    <Compile Include="Properties\SaltarelleMvcVersion.cs" />
     <Compile Include="VersionedRoute.cs" />
     <None Include="..\Saltarelle.snk" />
     <None Include="packages.config" />

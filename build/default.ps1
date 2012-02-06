@@ -29,13 +29,13 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 	}
 	md "$out_dir\Publish"
 	
-	$dependencyVersion = New-Object System.Version($script:version.Major, $script:version.Minor)
+	$dependencyVersion = New-Object System.Version($script:ProductVersion.Major, $script:ProductVersion.Minor)
 	
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>SaltarelleCore</id>
-		<version>$script:version</version>
+		<version>$script:LibVersion</version>
 		<title>Saltarelle Core Library</title>
 		<description>Saltarelle Core Library</description>
 		<authors>$authors</authors>
@@ -72,7 +72,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>SaltarelleParser</id>
-		<version>$script:version</version>
+		<version>$script:ParserVersion</version>
 		<title>Saltarelle Parser</title>
 		<description>Saltarelle Parser</description>
 		<authors>$authors</authors>
@@ -98,7 +98,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>SaltarelleUI</id>
-		<version>$script:version</version>
+		<version>$script:UIVersion</version>
 		<title>Saltarelle UI</title>
 		<description>Saltarelle UI</description>
 		<authors>$authors</authors>
@@ -124,14 +124,39 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
 		<id>SaltarelleMvc</id>
-		<version>$script:version</version>
-		<title>Saltarelle Mvc Interop</title>
-		<description>Saltarelle Mvc Interop</description>
+		<version>$script:MvcVersion</version>
+		<title>Saltarelle Mvc Libraries</title>
+		<description>Saltarelle Mvc Libraries</description>
 		<authors>$authors</authors>
 		<dependencies>
 			<dependency id="dotless" version="1.2.2.0" />
 			<dependency id="Mono.Cecil" version="0.9.5.2" />
 			<dependency id="SaltarelleCore" version="$dependencyVersion" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" target="lib"/>
+	</files>
+</package>
+"@ >"$out_dir\SaltarelleMvc.nuspec"
+
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleMvc.nuspec" -OutputDirectory "$out_dir\Publish" }
+	rm "$out_dir\SaltarelleMvc.nuspec" > $null
+
+@"
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>SaltarelleCastleWindsor</id>
+		<version>$script:CastleWindsorVersion</version>
+		<title>Saltarelle Castle Windsor Bindings</title>
+		<description>Saltarelle Castle Windsor Bindings</description>
+		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="Castle.Windsor" version="3.0.0.4001" />
+			<dependency id="SaltarelleCore" version="$dependencyVersion" />
+			<dependency id="SaltarelleParser" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -165,6 +190,16 @@ Task Run-Tests {
 Task Configure -Depends Generate-VersionInfo {
 }
 
+Function Determine-PathVersion($RefCommit, $RefVersion, $Path) {
+	$revision = ((git log "$RefCommit..HEAD" --pretty=format:"%H" -- "$Path") | Measure-Object).Count # Number of commits since our reference commit
+	if ($revision -gt 0) {
+		New-Object System.Version($RefVersion.Major, $RefVersion.Minor, $RefVersion.Build, $revision)
+	}
+	else {
+		$RefVersion
+	}
+}
+
 Task Determine-Version {
 	$refcommit = % {
 	(git log --decorate=full --simplify-by-decoration --pretty=oneline HEAD |           # Append items from the log
@@ -176,38 +211,52 @@ Task Determine-Version {
 	Select-Object -First 1
 	
 	If ($refcommit | Select-String "^$release_tag_pattern`$") {
-		$ver = New-Object System.Version(($refcommit -replace "^$release_tag_pattern`$","`$1"))
-		If ($ver.Build -eq -1) {
-			$ver = New-Object System.Version($ver.Major, $ver.Minor, 0)
+		$refVersion = New-Object System.Version(($refcommit -replace "^$release_tag_pattern`$","`$1"))
+		If ($refVersion.Build -eq -1) {
+			$refVersion = New-Object System.Version($ver.Major, $ver.Minor, 0)
 		}
 	}
 	else {
-		$ver = New-Object System.Version("0.0.0")
+		$refVersion = New-Object System.Version("0.0.0")
 	}
 	
-	$revision = ((git log "$refcommit..HEAD" --pretty=format:"%H") | Measure-Object).Count # Number of commits since our reference commit
-	if ($revision -gt 0) {
-		$ver = New-Object System.Version($ver.Major, $ver.Minor, $ver.Build, $revision)
-	}
-	
-	$script:version = $ver
-	$script:ProductVersion = New-Object System.Version($ver.Major, $ver.Minor, $ver.Build)
+	$script:LibVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleLib"
+	$script:ParserVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleParser"
+	$script:ExecutablesVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Executables"
+	$script:UIVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.UI"
+	$script:MvcVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.Mvc"
+	$script:CastleWindsorVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.CastleWindsor"
+	$script:ProductVersion = New-Object System.Version($script:ExecutablesVersion.Major, $script:ExecutablesVersion.Minor, $script:ExecutablesVersion.Build)
 
-	"Version: $script:version"
-	"ProductVersion: $script:ProductVersion"
+	"Lib version: $script:LibVersion"
+	"Parser version: $script:ParserVersion"
+	"Executables version: $script:ExecutablesVersion"
+	"UI version: $script:UIVersion"
+	"Mvc version: $script:MvcVersion"
+	"CastleWindsor version: $script:CastleWindsorVersion"
+	"Product version: $script:ProductVersion"
+}
+
+Function Generate-VersionFile($Path, $Version) {
+@"
+[assembly: System.Reflection.AssemblyVersion("$Version")]
+[assembly: System.Reflection.AssemblyFileVersion("$Version")]
+"@ | Out-File $Path -Encoding "UTF8"
 }
 
 Task Generate-VersionInfo -Depends Determine-Version {
-@"
-[assembly: System.Reflection.AssemblyVersion("$script:version")]
-[assembly: System.Reflection.AssemblyFileVersion("$script:version")]
-"@ | Out-File "$base_dir\Saltarelle\SaltarelleVersion.cs" -Encoding "UTF8"
+	Generate-VersionFile -Path "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLibVersion.cs" -Version $script:LibVersion
+	Generate-VersionFile -Path "$base_dir\Saltarelle\SaltarelleParser\SaltarelleParserVersion.cs" -Version $script:ParserVersion
+	Generate-VersionFile -Path "$base_dir\Saltarelle\Executables\ExecutablesVersion.cs" -Version $script:ExecutablesVersion
+	Generate-VersionFile -Path "$base_dir\Saltarelle\Saltarelle.UI\SaltarelleUIVersion.cs" -Version $script:UIVersion
+	Generate-VersionFile -Path "$base_dir\Saltarelle\Saltarelle.Mvc\Properties\SaltarelleMvcVersion.cs" -Version $script:MvcVersion
+	Generate-VersionFile -Path "$base_dir\Saltarelle\Saltarelle.CastleWindsor\Properties\SaltarelleCastleWindsorVersion.cs" -Version $script:CastleWindsorVersion
 
 @"
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
 	<?define ProductVersion="$script:ProductVersion"?>
-	<?define AssemblyVersion="$script:version"?>
+	<?define AssemblyVersion="$script:ExecutablesVersion"?>
 </Include>
 "@ | Out-File "$base_dir\Saltarelle\VSIntegrationInstaller\Version.wxi" -Encoding UTF8
 }

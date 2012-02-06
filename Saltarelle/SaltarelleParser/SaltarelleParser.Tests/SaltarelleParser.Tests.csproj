@@ -69,8 +69,8 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\..\SaltarelleVersion.cs">
-      <Link>Properties\SaltarelleVersion.cs</Link>
+    <Compile Include="..\SaltarelleParserVersion.cs">
+      <Link>Properties\SaltarelleParserVersion.cs</Link>
     </Compile>
     <Compile Include="FragmentTests\CodeExpressionFragmentTests.cs" />
     <Compile Include="FragmentTests\CodeFragmentTests.cs" />
