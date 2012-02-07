@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace Saltarelle {
 	internal class Arguments {
-		private static readonly Regex splitter = new Regex(@"^-{1,2}|^/|=|:", RegexOptions.IgnoreCase|RegexOptions.Compiled);
+		private static readonly Regex splitter = new Regex(@"^-{1,2}|^/|=", RegexOptions.IgnoreCase|RegexOptions.Compiled);
 		private static readonly Regex remover = new Regex(@"^['""]?(.*?)['""]?$", RegexOptions.IgnoreCase|RegexOptions.Compiled);
 
 		private Dictionary<string, string> parameters = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
@@ -20,7 +20,7 @@ namespace Saltarelle {
 			// Valid parameters forms:
 			// {-,/,--}param{ ,=,:}((",')value(",'))
 			// Examples: 
-			// -param1 value1 --param2 /param3:"Test-:-work" /param4=happy -param5 '--=nice=--'
+			// -param1 value1 --param2 /param4=happy -param5 '--=nice=--'
 			foreach(string currentArg in args) {
 				// Look for new parameters (-,/ or --) and a possible enclosed value (=,:)
 				var parts = splitter.Split(currentArg, 3);
