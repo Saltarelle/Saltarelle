@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Web;
 using System.Xml;
 using System.Linq;
 using System.Reflection;
@@ -36,7 +37,7 @@ namespace Saltarelle {
 				var windsorContainer = new WindsorContainer();
 				ContainerFactory.PrepareWindsorContainer(windsorContainer);
 				foreach (var p in plugins)
-					windsorContainer.Register(AllTypes.FromAssembly(p).RegisterPlugins());
+					windsorContainer.RegisterPluginsFromAssembly(p);
 				var container = ContainerFactory.CreateContainer(windsorContainer);
                 parser = SaltarelleParserFactory.CreateParserWithPlugins(plugins, container);
             }
@@ -108,7 +109,7 @@ namespace Saltarelle {
 		}
 
         private static void ExecuteInSeparateAppDomain(Action<Executor> action) {
-            var setup = new AppDomainSetup() { ApplicationBase = Path.GetDirectoryName(new Uri(typeof(ExecutablesCommon).Assembly.CodeBase).AbsolutePath) };
+            var setup = new AppDomainSetup() { ApplicationBase = HttpUtility.UrlDecode(Path.GetDirectoryName(new Uri(typeof(ExecutablesCommon).Assembly.CodeBase).AbsolutePath)) };
             var newDomain = AppDomain.CreateDomain("Executor", null, setup);
             newDomain.AssemblyResolve += (sender, eventArgs) => ResolveAssembly(eventArgs.Name);
 

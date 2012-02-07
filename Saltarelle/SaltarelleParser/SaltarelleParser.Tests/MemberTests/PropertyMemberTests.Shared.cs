@@ -26,7 +26,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, null, false).WriteCode(tpl, MemberCodePoint.ServerDefinition, cb);
-			Assert.AreEqual("public Namespace.ServerType TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace.ServerType field;" + Environment.NewLine
+			              + "public Namespace.ServerType TestId {" + Environment.NewLine
 			              + "\tget { return field; }" + Environment.NewLine
 			              + "\tset { field = value; }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());
@@ -40,7 +41,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, "TestValueChanged", false).WriteCode(tpl, MemberCodePoint.ServerDefinition, cb);
-			Assert.AreEqual("public Namespace.ServerType TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace.ServerType field;" + Environment.NewLine
+			              + "public Namespace.ServerType TestId {" + Environment.NewLine
 			              + "\tget { return field; }" + Environment.NewLine
 			              + "\tset { field = value; TestValueChanged(); }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());
@@ -54,7 +56,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace1.ServerPropertyType", "Namespace1.ClientPropertyType", AccessModifier._Public, "field", "Namespace2.ServerFieldType", "Namespace2.ClientFieldType", true, true, null, false).WriteCode(tpl, MemberCodePoint.ServerDefinition, cb);
-			Assert.AreEqual("public Namespace1.ServerPropertyType TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace2.ServerFieldType field;" + Environment.NewLine
+			              + "public Namespace1.ServerPropertyType TestId {" + Environment.NewLine
 			              + "\tget { return (Namespace1.ServerPropertyType)field; }" + Environment.NewLine
 			              + "\tset { field = (Namespace2.ServerFieldType)value; }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());
@@ -68,7 +71,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("ISomeInterface.TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._None, "field", "Namespace.ServerType", "Namespace.ClientType", true, false, null, false).WriteCode(tpl, MemberCodePoint.ServerDefinition, cb);
-			Assert.AreEqual("Namespace.ServerType ISomeInterface.TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace.ServerType field;" + Environment.NewLine
+			              + "Namespace.ServerType ISomeInterface.TestId {" + Environment.NewLine
 			              + "\tget { return field; }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -81,7 +85,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._ProtectedInternal, "field", "Namespace.ServerType", "Namespace.ClientType", false, true, null, false).WriteCode(tpl, MemberCodePoint.ServerDefinition, cb);
-			Assert.AreEqual("protected internal Namespace.ServerType TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace.ServerType field;" + Environment.NewLine
+			              + "protected internal Namespace.ServerType TestId {" + Environment.NewLine
 			              + "\tset { field = value; }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
@@ -105,7 +110,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, null, true).WriteCode(tpl, MemberCodePoint.ServerDefinition, cb);
-			Assert.AreEqual("[ClientInject]" + Environment.NewLine
+			Assert.AreEqual("private Namespace.ServerType field;" + Environment.NewLine
+			              + "[ClientInject]" + Environment.NewLine
 			              + "public Namespace.ServerType TestId {" + Environment.NewLine
 			              + "\tget { return field; }" + Environment.NewLine
 			              + "\tset { field = value; }" + Environment.NewLine
@@ -120,7 +126,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, null, false).WriteCode(tpl, MemberCodePoint.ClientDefinition, cb);
-			Assert.AreEqual("public Namespace.ClientType TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace.ClientType field;" + Environment.NewLine
+			              + "public Namespace.ClientType TestId {" + Environment.NewLine
 			              + "\tget { return field; }" + Environment.NewLine
 			              + "\tset { field = value; }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());
@@ -134,7 +141,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace1.ServerPropertyType", "Namespace1.ClientPropertyType", AccessModifier._Public, "field", "Namespace2.ServerFieldType", "Namespace2.ClientFieldType", true, true, null, false).WriteCode(tpl, MemberCodePoint.ClientDefinition, cb);
-			Assert.AreEqual("public Namespace1.ClientPropertyType TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace2.ClientFieldType field;" + Environment.NewLine
+			              + "public Namespace1.ClientPropertyType TestId {" + Environment.NewLine
 			              + "\tget { return (Namespace1.ClientPropertyType)field; }" + Environment.NewLine
 			              + "\tset { field = (Namespace2.ClientFieldType)value; }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());
@@ -159,7 +167,8 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, null, true).WriteCode(tpl, MemberCodePoint.ClientDefinition, cb);
-			Assert.AreEqual("public Namespace.ClientType TestId {" + Environment.NewLine
+			Assert.AreEqual("private Namespace.ClientType field;" + Environment.NewLine
+			              + "public Namespace.ClientType TestId {" + Environment.NewLine
 			              + "\tget { return field; }" + Environment.NewLine
 			              + "\tset { field = value; }" + Environment.NewLine
 			              + "}" + Environment.NewLine + Environment.NewLine, cb.ToString());

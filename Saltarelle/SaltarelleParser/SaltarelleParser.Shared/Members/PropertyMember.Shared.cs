@@ -49,6 +49,7 @@ namespace Saltarelle.Members {
 		
 #if SERVER
 		private void WriteDefinition(CodeBuilder cb, string type, string backingFieldType, bool isServer) {
+			cb.AppendLine(string.Format("private {0} {1};", isServer ? backingFieldServerType : backingFieldClientType, backingFieldName));
 			if (isServer && clientInject)
 				cb.AppendLine("[ClientInject]");
 			cb.Append(AccessModifierHelper.WriteDeclarator(accessModifier, type, name)).AppendLine(" {").Indent();
