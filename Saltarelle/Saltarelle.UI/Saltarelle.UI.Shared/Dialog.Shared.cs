@@ -4,6 +4,8 @@ using System.Collections.Generic;
 #endif
 #if CLIENT
 using System.DHTML;
+using Saltarelle.Ioc;
+
 #endif
 
 namespace Saltarelle.UI {
@@ -495,6 +497,12 @@ namespace Saltarelle.UI {
 	public abstract class ControlDialogBase : DialogBase {
 		private IControl containedControl;
 		
+		private IContainer container;
+		#if SERVER
+		[ClientInject]
+		#endif
+		public IContainer Container { get { return container; } set { container = value; } }
+
 		public override string Id {
 			get { return base.Id; }
 			set {
@@ -528,8 +536,7 @@ namespace Saltarelle.UI {
 		}
 
 		protected override void InitConfig(Dictionary config) {
-			Type tp = Type.GetType((string)config["containedControlType"]);
-			containedControl = (IControl)Type.CreateInstance(tp, config["containedControlData"]);
+			containedControl = (IControl)container.CreateObjectByTypeNameWithConstructorArg((string)config["containedControlType"], config["containedControlData"]);
 			base.InitConfig(config);
 		}
 

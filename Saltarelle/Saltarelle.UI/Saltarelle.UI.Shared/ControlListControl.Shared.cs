@@ -1,6 +1,7 @@
 using System;
 using Saltarelle;
 #if CLIENT
+using Saltarelle.Ioc;
 using StringList = System.ArrayList;
 using ControlList = System.ArrayList;
 using ObjectList = System.ArrayList;
@@ -29,6 +30,12 @@ namespace Saltarelle.UI {
 		#if CLIENT
 			private bool isAttached;
 		#endif
+
+		private IContainer container;
+		#if SERVER
+		[ClientInject]
+		#endif
+		public IContainer Container { get { return container; } set { container = value; } }
 		
 		public string Id {
 			get { return id; }
@@ -186,8 +193,7 @@ namespace Saltarelle.UI {
 			StringList controlTypes = (StringList)config["controlTypes"];
 			ArrayList  controlCfg   = (ArrayList)config["controlCfg"];
 			for (int i = 0; i < controlTypes.Length; i++) {
-				Type tp = Type.GetType((string)controlTypes[i]);
-				controls.Add(Type.CreateInstance(tp, controlCfg[i]));
+				controls.Add(Container.CreateObjectByTypeNameWithConstructorArg((string)controlTypes[i], controlCfg[i]));
 			}
 
 			Attach();
