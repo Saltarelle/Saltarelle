@@ -11,7 +11,7 @@ using TypedMarkupParserImplEntry      = System.DictionaryEntry;
 
 namespace Saltarelle {
 	public interface ITypedMarkupParser {
-		TypedMarkupData ParseMarkup(string markup);
+		TypedMarkupData ParseMarkup(string markup, ITemplate template);
 	}
 
 	public class TypedMarkupParser : ITypedMarkupParser {
@@ -38,7 +38,7 @@ namespace Saltarelle {
 			}
 		}
 	
-		public TypedMarkupData ParseMarkup(string markup) {
+		public TypedMarkupData ParseMarkup(string markup, ITemplate template) {
 			bool isArray = false;
 			string markupExceptArr;
 			if (markup.StartsWith("arr:")) {
@@ -59,7 +59,7 @@ namespace Saltarelle {
 			if (!implementers.ContainsKey(prefix))
 				throw ParserUtils.TemplateErrorException(ParserUtils.MakeTypedMarkupErrorMessage2(markup));
 
-			return ((ITypedMarkupParserImpl)implementers[prefix]).Parse(prefix, isArray, Utils.Substring(markupExceptArr, colon + 1, markupExceptArr.Length - colon - 1));
+			return ((ITypedMarkupParserImpl)implementers[prefix]).Parse(prefix, isArray, Utils.Substring(markupExceptArr, colon + 1, markupExceptArr.Length - colon - 1), template);
 		}
 	}
 }

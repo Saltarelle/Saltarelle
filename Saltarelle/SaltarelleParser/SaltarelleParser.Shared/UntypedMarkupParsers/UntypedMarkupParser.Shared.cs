@@ -2,7 +2,7 @@ using Saltarelle.UntypedMarkupParsers;
 
 namespace Saltarelle {
 	public interface IUntypedMarkupParser {
-		IFragment ParseMarkup(string markup);
+		IFragment ParseMarkup(string markup, ITemplate template);
 	}
 
 	public class UntypedMarkupParser : IUntypedMarkupParser {
@@ -21,9 +21,9 @@ namespace Saltarelle {
 				parsers[i + numPluginImplementers] = defaultParsers[i];
 		}
 
-		public IFragment ParseMarkup(string markup) {
+		public IFragment ParseMarkup(string markup, ITemplate template) {
 			foreach (IUntypedMarkupParserImpl p in parsers) {
-				IFragment f = p.TryParse(markup);
+				IFragment f = p.TryParse(markup, template);
 				if (!Utils.IsNull(f))
 					return f;
 			}

@@ -9,7 +9,7 @@ namespace Saltarelle.TypedMarkupParsers {
 			return "@\"" + value.Replace("\"", "\"\"") + "\"";
 		}
 	
-		public TypedMarkupData Parse(string registeredPrefix, bool isArray, string value) {
+		public TypedMarkupData Parse(string registeredPrefix, bool isArray, string value, ITemplate template) {
 			if (isArray) {
 				StringBuilder sb = new StringBuilder();
 				sb.Append("new string[] {");

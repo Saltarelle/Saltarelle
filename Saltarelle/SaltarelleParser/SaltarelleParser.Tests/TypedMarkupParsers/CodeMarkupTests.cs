@@ -11,19 +11,19 @@ namespace SaltarelleParser.Tests {
 	public class CodeMarkupParserTests {
 		[Test]
 		public void TestParse_Works() {
-			var actual = new CodeMarkupParser().Parse("code", false, " some code ");
+			var actual = new CodeMarkupParser().Parse("code", false, " some code ", null);
 			Assert.AreEqual(" some code ", actual.InitializerString);
 			Globals.AssertThrows(() => actual.ValueRetriever(), (TemplateErrorException ex) => true);
 		}
 
 		[Test]
 		public void TestParse_ThrowsIfEmpty() {
-			Globals.AssertThrows(() => new CodeMarkupParser().Parse("code", true, " "), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("code", true, " "));
+			Globals.AssertThrows(() => new CodeMarkupParser().Parse("code", true, " ", null), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("code", true, " "));
 		}
 
 		[Test]
 		public void TestParse_ThrowsIfArray() {
-			Globals.AssertThrows(() => new CodeMarkupParser().Parse("code", true, "some code"), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("code", true, "some code"));
+			Globals.AssertThrows(() => new CodeMarkupParser().Parse("code", true, "some code", null), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("code", true, "some code"));
 		}
 	}
 }

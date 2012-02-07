@@ -21,21 +21,21 @@ namespace SaltarelleParser.Tests {
 
 		[Test]
 		public void TestParse_NotPositionedWorks() {
-			var actual = new PositionMarkupParser().Parse("pos", false, "np");
+			var actual = new PositionMarkupParser().Parse("pos", false, "np", null);
 			Assert.AreEqual("PositionHelper.NotPositioned", actual.InitializerString);
 			AssertPositionsEqual(PositionHelper.NotPositioned, (Position)actual.ValueRetriever());
 		}
 
 		[Test]
 		public void TestParse_FixedWorks() {
-			var actual = new PositionMarkupParser().Parse("pos", false, "fixed");
+			var actual = new PositionMarkupParser().Parse("pos", false, "fixed", null);
 			Assert.AreEqual("PositionHelper.Fixed", actual.InitializerString);
 			AssertPositionsEqual(PositionHelper.Fixed, (Position)actual.ValueRetriever());
 		}
 
 		[Test]
 		public void TestParse_LeftTopWorks() {
-			var actual = new PositionMarkupParser().Parse("pos", false, "lt(42, 53)");
+			var actual = new PositionMarkupParser().Parse("pos", false, "lt(42, 53)", null);
 			Assert.AreEqual("PositionHelper.LeftTop(42, 53)", actual.InitializerString);
 			AssertPositionsEqual(PositionHelper.LeftTop(42, 53), (Position)actual.ValueRetriever());
 		}
@@ -43,21 +43,21 @@ namespace SaltarelleParser.Tests {
 		[Test]
 		public void TestParse_InvalidValuesThrow() {
 			foreach (string value in new[] { "bad", "lt", "lt(1, 2, 3)", "lt(1, x)", "lt(x, 1)", "lt(1)" }) {
-				Globals.AssertThrows(() => new PositionMarkupParser().Parse("pos", false, value), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("pos", false, value));
+				Globals.AssertThrows(() => new PositionMarkupParser().Parse("pos", false, value, null), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("pos", false, value));
 			}
 		}
 
 		[Test]
 		public void TestParse_ValidArrayValuesWork() {
-			var actual = new PositionMarkupParser().Parse("pos", true, "");
+			var actual = new PositionMarkupParser().Parse("pos", true, "", null);
 			Assert.AreEqual("new Position[] { }", actual.InitializerString);
 			AssertPositionsEqual(new Position[0], (Position[])actual.ValueRetriever());
 
-			actual = new PositionMarkupParser().Parse("pos", true, "lt(23, 45)");
+			actual = new PositionMarkupParser().Parse("pos", true, "lt(23, 45)", null);
 			Assert.AreEqual("new Position[] { PositionHelper.LeftTop(23, 45) }", actual.InitializerString);
 			AssertPositionsEqual(new Position[] { PositionHelper.LeftTop(23, 45) }, (Position[])actual.ValueRetriever());
 
-			actual = new PositionMarkupParser().Parse("pos", true, "np | lt(23, 45) | fixed");
+			actual = new PositionMarkupParser().Parse("pos", true, "np | lt(23, 45) | fixed", null);
 			Assert.AreEqual("new Position[] { PositionHelper.NotPositioned, PositionHelper.LeftTop(23, 45), PositionHelper.Fixed }", actual.InitializerString);
 			AssertPositionsEqual(new Position[] { PositionHelper.NotPositioned, PositionHelper.LeftTop(23, 45), PositionHelper.Fixed }, (Position[])actual.ValueRetriever());
 		}
@@ -65,7 +65,7 @@ namespace SaltarelleParser.Tests {
 		[Test]
 		public void TestParse_InvalidArrayValueThrows() {
 			string value = "np | bad | fixed";
-			Globals.AssertThrows(() => new PositionMarkupParser().Parse("pos", true, value), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("pos", true, value));
+			Globals.AssertThrows(() => new PositionMarkupParser().Parse("pos", true, value, null), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage("pos", true, value));
 		}
 	}
 }

@@ -25,10 +25,10 @@ namespace SaltarelleParser.Tests {
 		[Test]
 		public void TestParse_ValidNonArrayValueWorks() {
 			TypedMarkupData result = new TypedMarkupData("", delegate { return new object(); });
-			Expect.Call(strImplementer.Parse("str", false, "some:value")).Return(result);
+			Expect.Call(strImplementer.Parse("str", false, "some:value", null)).Return(result);
 			mocks.ReplayAll();
 
-			var actual = parser.ParseMarkup("str:some:value");
+			var actual = parser.ParseMarkup("str:some:value", null);
 
 			Assert.AreSame(result, actual);
 			mocks.VerifyAll();
@@ -37,10 +37,10 @@ namespace SaltarelleParser.Tests {
 		[Test]
 		public void TestParse_ValidArrayValueOldSyntaxWorks() {
 			TypedMarkupData result = new TypedMarkupData("", delegate { return new object(); });
-			Expect.Call(strImplementer.Parse("str", true, "some:value")).Return(result);
+			Expect.Call(strImplementer.Parse("str", true, "some:value", null)).Return(result);
 			mocks.ReplayAll();
 
-			var actual = parser.ParseMarkup("arr:str:some:value");
+			var actual = parser.ParseMarkup("arr:str:some:value", null);
 
 			Assert.AreSame(result, actual);
 			mocks.VerifyAll();
@@ -49,10 +49,10 @@ namespace SaltarelleParser.Tests {
 		[Test]
 		public void TestParse_ValidArrayValueNewSyntaxWorks() {
 			TypedMarkupData result = new TypedMarkupData("", delegate { return new object(); });
-			Expect.Call(strImplementer.Parse("str", true, "some:value")).Return(result);
+			Expect.Call(strImplementer.Parse("str", true, "some:value", null)).Return(result);
 			mocks.ReplayAll();
 
-			var actual = parser.ParseMarkup("str[]:some:value");
+			var actual = parser.ParseMarkup("str[]:some:value", null);
 
 			Assert.AreSame(result, actual);
 			mocks.VerifyAll();
@@ -62,7 +62,7 @@ namespace SaltarelleParser.Tests {
 		public void TestParse_ErrorIfNoPrefix() {
 			mocks.ReplayAll();
 			string value = "some value";
-			Globals.AssertThrows(() => parser.ParseMarkup(value), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage2(value));
+			Globals.AssertThrows(() => parser.ParseMarkup(value, null), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage2(value));
 			mocks.VerifyAll();
 		}
 
@@ -70,7 +70,7 @@ namespace SaltarelleParser.Tests {
 		public void TestParse_ErrorIfArrIsTheOnlyPrefix() {
 			mocks.ReplayAll();
 			string value = "arr:some value";
-			Globals.AssertThrows(() => parser.ParseMarkup(value), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage2(value));
+			Globals.AssertThrows(() => parser.ParseMarkup(value, null), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage2(value));
 			mocks.VerifyAll();
 		}
 
@@ -78,7 +78,7 @@ namespace SaltarelleParser.Tests {
 		public void TestParse_ErrorIfBadPrefix() {
 			mocks.ReplayAll();
 			string value = "bad:some value";
-			Globals.AssertThrows(() => parser.ParseMarkup(value), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage2(value));
+			Globals.AssertThrows(() => parser.ParseMarkup(value, null), (TemplateErrorException ex) => ex.Message == ParserUtils.MakeTypedMarkupErrorMessage2(value));
 			mocks.VerifyAll();
 		}
 	}

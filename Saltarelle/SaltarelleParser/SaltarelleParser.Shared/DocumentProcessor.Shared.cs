@@ -64,11 +64,11 @@ namespace Saltarelle {
 		}
 		
 		public TypedMarkupData ParseTypedMarkup(string markup) {
-			return typedMarkupParser.ParseMarkup(markup);
+			return typedMarkupParser.ParseMarkup(markup, null);
 		}
 
 		public IFragment ParseUntypedMarkup(string markup) {
-			return untypedMarkupParser.ParseMarkup(markup);
+			return untypedMarkupParser.ParseMarkup(markup, null);
 		}
 	}
 }

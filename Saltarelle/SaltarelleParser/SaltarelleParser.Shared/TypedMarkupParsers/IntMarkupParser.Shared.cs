@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Saltarelle.TypedMarkupParsers {
 	internal class IntMarkupParser : ITypedMarkupParserImpl {
-		public TypedMarkupData Parse(string registeredPrefix, bool isArray, string value) {
+		public TypedMarkupData Parse(string registeredPrefix, bool isArray, string value, ITemplate template) {
 			if (isArray) {
 				StringBuilder sb = new StringBuilder();
 				sb.Append("new int[] {");
