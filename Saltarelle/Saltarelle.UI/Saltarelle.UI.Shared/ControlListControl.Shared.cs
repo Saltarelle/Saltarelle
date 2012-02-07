@@ -1,7 +1,7 @@
 using System;
 using Saltarelle;
-#if CLIENT
 using Saltarelle.Ioc;
+#if CLIENT
 using StringList = System.ArrayList;
 using ControlList = System.ArrayList;
 using ObjectList = System.ArrayList;

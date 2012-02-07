@@ -7,6 +7,9 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 
 namespace Saltarelle.CastleWindsor.ExtensionMethods {
+	/// <summary>
+	/// This class contains extension methods for CastleWinsor registration.
+	/// </summary>
 	public static class WindsorExtensions {
 		/// <summary>
 		/// Registers all plugins in an assembly.

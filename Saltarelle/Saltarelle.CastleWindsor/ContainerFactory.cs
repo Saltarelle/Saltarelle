@@ -8,10 +8,13 @@ using Castle.Windsor;
 using Saltarelle.Ioc;
 
 namespace Saltarelle.CastleWindsor {
+	/// <summary>
+	/// This class contains methods to create and <see cref="IContainer"/> powered by Castle Windsor.
+	/// </summary>
 	public class ContainerFactory {
 		private static readonly ConcurrentDictionary<string, Type> _typeCache = new ConcurrentDictionary<string, Type>();
 
-		public static Type TryFindType(string typeName) {
+		private static Type TryFindType(string typeName) {
 			Type result = null;
 			if (!_typeCache.TryGetValue(typeName, out result)) {
 				foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies()) {
@@ -25,25 +28,21 @@ namespace Saltarelle.CastleWindsor {
 			return result;
 		}
 
-		private static Type FindType(IWindsorContainer underlyingContainer, string typeName) {
+		private static Type FindType(string typeName) {
 			var result = TryFindType(typeName);
 			if (result == null)
 				throw new ArgumentException("Type " + typeName + " does not exist.");
 			return result;
 		}
 
-		private static object ResolveService(IWindsorContainer underlyingContainer, Type serviceType) {
-			return underlyingContainer.Resolve(serviceType);
-		}
-
-		private static object CreateObject(IWindsorContainer underlyingContainer, Type objectType) {
-			return underlyingContainer.Resolve(objectType);
-		}
-
+		/// <summary>
+		/// Create a container based on a Castle Windsor container.
+		/// </summary>
+		/// <param name="underlyingContainer">Underlying Winsor container to resolve components.</param>
 		public static IContainer CreateContainer(IWindsorContainer underlyingContainer) {
 			if (!(underlyingContainer.Kernel.ReleasePolicy is TrulyTransientReleasePolicy))
 				throw new ArgumentException("The underlying container seems not to have been prepared by PrepareWindsorContainer().", "underlyingContainer");
-			return new DefaultContainer(typeName => FindType(underlyingContainer, typeName), serviceType => ResolveService(underlyingContainer, serviceType), objectType => CreateObject(underlyingContainer, objectType));
+			return new DefaultContainer(typeName => FindType(typeName), serviceType => underlyingContainer.Resolve(serviceType), objectType => underlyingContainer.Resolve(objectType));
 		}
 
 		/// <summary>

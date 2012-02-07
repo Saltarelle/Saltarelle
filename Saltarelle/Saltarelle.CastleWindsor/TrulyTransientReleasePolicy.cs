@@ -15,12 +15,15 @@ namespace Saltarelle.CastleWindsor {
 	/// </summary>
 	[Serializable]
 	public class TrulyTransientReleasePolicy : LifecycledComponentsReleasePolicy {
+		/// <summary></summary>
 		public TrulyTransientReleasePolicy(IKernel kernel) : base(kernel) {
 		}
 
+		/// <summary></summary>
 		public TrulyTransientReleasePolicy(ITrackedComponentsDiagnostic trackedComponentsDiagnostic, ITrackedComponentsPerformanceCounter trackedComponentsPerformanceCounter) : base(trackedComponentsDiagnostic, trackedComponentsPerformanceCounter) {
 		}
 
+		/// <summary></summary>
 		public override void Track(object instance, Burden burden) {
 			ComponentModel model = burden.Model;
  

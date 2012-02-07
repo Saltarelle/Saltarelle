@@ -160,15 +160,15 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.dll" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.CastleWindsor\bin\Saltarelle.CastleWindsor.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.CastleWindsor\bin\Saltarelle.CastleWindsor.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.CastleWindsor\bin\Saltarelle.CastleWindsor.pdb" target="lib"/>
 	</files>
 </package>
-"@ >"$out_dir\SaltarelleMvc.nuspec"
+"@ >"$out_dir\SaltarelleCastleWindsor.nuspec"
 
-	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleMvc.nuspec" -OutputDirectory "$out_dir\Publish" }
-	rm "$out_dir\SaltarelleMvc.nuspec" > $null
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleCastleWindsor.nuspec" -OutputDirectory "$out_dir\Publish" }
+	rm "$out_dir\SaltarelleCastleWindsor.nuspec" > $null
 }
 
 Task Run-Tests {

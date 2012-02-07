@@ -1,11 +1,10 @@
 using System;
+using Saltarelle.Ioc;
 #if SERVER
 using System.Collections.Generic;
 #endif
 #if CLIENT
 using System.DHTML;
-using Saltarelle.Ioc;
-
 #endif
 
 namespace Saltarelle.UI {
