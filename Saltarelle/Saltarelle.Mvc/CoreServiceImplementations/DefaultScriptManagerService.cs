@@ -31,6 +31,9 @@ namespace Saltarelle {
 				if (cfg.Scripts == null) {
 					// Default
 					DebugScripts = true;
+					AddScriptsBeforeCoreScripts     = new List<string>().AsReadOnly();
+					AddScriptsBeforeAssemblyScripts = new List<string>().AsReadOnly();
+					AddScriptsAfterAssemblyScripts  = new List<string>().AsReadOnly();
 					return;
 				}
 
