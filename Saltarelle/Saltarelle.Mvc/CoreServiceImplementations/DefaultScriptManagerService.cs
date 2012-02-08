@@ -21,64 +21,67 @@ namespace Saltarelle {
 	public class DefaultScriptManagerService : IScriptManagerService {
 		private int nextUniqueId = 1;
 
-		private static bool debugScripts;
-		private static ReadOnlyCollection<string> addScriptsBeforeCoreScripts;
-		private static ReadOnlyCollection<string> addScriptsBeforeAssemblyScripts;
-		private static ReadOnlyCollection<string> addScriptsAfterAssemblyScripts;
+		private class ProcessedConfig {
+			public bool DebugScripts { get; set; }
+			public ReadOnlyCollection<string> AddScriptsBeforeCoreScripts { get; set; }
+			public ReadOnlyCollection<string> AddScriptsBeforeAssemblyScripts { get; set; }
+			public ReadOnlyCollection<string> AddScriptsAfterAssemblyScripts { get; set; }
 
-        private static bool initialized;
-        private static object initLock = new object();
-
-		private static void Initialize(IRouteService routes) {
-			var cfg = SaltarelleConfig.GetFromWebConfig();
-			debugScripts = cfg.Scripts.Debug;
-
-			var allScripts = cfg.Scripts.Select(elem => {
-				string url;
-
-				if (!string.IsNullOrEmpty(elem.Assembly)) {
-					if (string.IsNullOrEmpty(elem.Resource))
-						throw new ConfigurationErrorsException("Saltarelle configuration: if an assembly is specified for a script, the resource name must also be specified.");
-					if (!string.IsNullOrEmpty(elem.Url))
-						throw new ConfigurationErrorsException("Saltarelle configuration: if an assembly is specified for a script, the URL may not also be specified.");
-					Assembly asm;
-					try {
-						asm = Assembly.Load(elem.Assembly);
-					}
-					catch (Exception ex) {
-						throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' could not be loaded.", ex);
-					}
-					var res = asm.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == elem.Resource);
-					if (Utils.IsNull(res))
-						throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' does not contain a resource named '" + elem.Resource + "'.");
-					url = routes.GetAssemblyResourceUrl(asm, res.PublicResourceName);
+			public ProcessedConfig(SaltarelleConfig cfg, IRouteService routes) {
+				if (cfg.Scripts == null) {
+					// Default
+					DebugScripts = true;
+					return;
 				}
-				else if (!string.IsNullOrEmpty(elem.Url)) {
-					if (VirtualPathUtility.IsAppRelative(elem.Url))
-						url = VirtualPathUtility.ToAbsolute(elem.Url);
+
+				DebugScripts = cfg.Scripts.Debug;
+
+				var allScripts = cfg.Scripts.Select(elem => {
+					string url;
+
+					if (!string.IsNullOrEmpty(elem.Assembly)) {
+						if (string.IsNullOrEmpty(elem.Resource))
+							throw new ConfigurationErrorsException("Saltarelle configuration: if an assembly is specified for a script, the resource name must also be specified.");
+						if (!string.IsNullOrEmpty(elem.Url))
+							throw new ConfigurationErrorsException("Saltarelle configuration: if an assembly is specified for a script, the URL may not also be specified.");
+						Assembly asm;
+						try {
+							asm = Assembly.Load(elem.Assembly);
+						}
+						catch (Exception ex) {
+							throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' could not be loaded.", ex);
+						}
+						var res = asm.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == elem.Resource);
+						if (Utils.IsNull(res))
+							throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' does not contain a resource named '" + elem.Resource + "'.");
+						url = routes.GetAssemblyResourceUrl(asm, res.PublicResourceName);
+					}
+					else if (!string.IsNullOrEmpty(elem.Url)) {
+						if (VirtualPathUtility.IsAppRelative(elem.Url))
+							url = VirtualPathUtility.ToAbsolute(elem.Url);
+						else
+							url = elem.Url;
+					}
 					else
-						url = elem.Url;
-				}
-				else
-					throw new ConfigurationErrorsException("Saltarelle configuration: script elements must have assembly/resource or url specified.");
-				return new { elem.Position, Url = url };
-			}).ToList();
+						throw new ConfigurationErrorsException("Saltarelle configuration: script elements must have assembly/resource or url specified.");
+					return new { elem.Position, Url = url };
+				}).ToList();
 
-			addScriptsBeforeCoreScripts     = (from x in allScripts where x.Position == ScriptPosition.BeforeCoreScripts select x.Url).ToList().AsReadOnly();
-			addScriptsBeforeAssemblyScripts = (from x in allScripts where x.Position == ScriptPosition.BeforeAssemblyScripts select x.Url).ToList().AsReadOnly();
-			addScriptsAfterAssemblyScripts  = (from x in allScripts where x.Position == ScriptPosition.AfterAssemblyScripts select x.Url).ToList().AsReadOnly();
+				AddScriptsBeforeCoreScripts     = (from x in allScripts where x.Position == ScriptPosition.BeforeCoreScripts select x.Url).ToList().AsReadOnly();
+				AddScriptsBeforeAssemblyScripts = (from x in allScripts where x.Position == ScriptPosition.BeforeAssemblyScripts select x.Url).ToList().AsReadOnly();
+				AddScriptsAfterAssemblyScripts  = (from x in allScripts where x.Position == ScriptPosition.AfterAssemblyScripts select x.Url).ToList().AsReadOnly();
+			}
 		}
+		private static ConcurrentDictionary<SaltarelleConfig, ProcessedConfig> _configsCache = new ConcurrentDictionary<SaltarelleConfig, ProcessedConfig>();
 
-        private static void EnsureInitialized(IRouteService routes) {
-            if (!initialized) {
-                lock (initLock) {
-                    if (!initialized) {
-                        Initialize(routes);
-                        initialized = true;
-                    }
-                }
-            }
-        }
+		private static ProcessedConfig ProcessConfig(SaltarelleConfig config, IRouteService routes) {
+			ProcessedConfig result;
+			if (_configsCache.TryGetValue(config, out result))
+				return result;
+			result = new ProcessedConfig(config, routes);
+			_configsCache[config] = result;
+			return result;
+		}
 
         private IRouteService routes;
         private IModuleUtils moduleUtils;
@@ -178,15 +181,16 @@ namespace Saltarelle {
             }
 		}
 
-	    public DefaultScriptManagerService(IRouteService routes, IModuleUtils moduleUtils) {
-            EnsureInitialized(routes);
-            this.routes = routes;
+	    public DefaultScriptManagerService(IRouteService routes, IModuleUtils moduleUtils, SaltarelleConfig config) {
+            this.routes      = routes;
             this.moduleUtils = moduleUtils;
 
-			earlyAdditionalIncludes.AddRange(addScriptsBeforeCoreScripts);
-			earlyAdditionalIncludes.AddRange((debugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
-			earlyAdditionalIncludes.AddRange(addScriptsBeforeAssemblyScripts);
-			lateAdditionalIncludes.AddRange(addScriptsAfterAssemblyScripts);
+			var pc = ProcessConfig(config, routes);
+
+			earlyAdditionalIncludes.AddRange(pc.AddScriptsBeforeCoreScripts);
+			earlyAdditionalIncludes.AddRange((pc.DebugScripts ? Resources.CoreScriptsDebug : Resources.CoreScriptsRelease).Select(s => routes.GetAssemblyResourceUrl(typeof(Resources).Assembly, s)));
+			earlyAdditionalIncludes.AddRange(pc.AddScriptsBeforeAssemblyScripts);
+			lateAdditionalIncludes.AddRange(pc.AddScriptsAfterAssemblyScripts);
 	    }
 	}
 }
