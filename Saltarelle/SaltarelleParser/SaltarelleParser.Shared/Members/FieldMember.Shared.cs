@@ -24,7 +24,6 @@ namespace Saltarelle.Members {
 		}
 
 		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
-			throw ParserUtils.TemplateErrorException("Dynamically instantiated templates cannot have fields.");
 		}
 
 #if SERVER
