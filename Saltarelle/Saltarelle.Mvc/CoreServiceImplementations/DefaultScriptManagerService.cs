@@ -91,11 +91,11 @@ namespace Saltarelle {
 
         private static readonly ConcurrentDictionary<Type, List<Tuple<string, Type>>> _propertiesToInjectCache = new ConcurrentDictionary<Type, List<Tuple<string, Type>>>();
 
-		private HashSet<Assembly>          registeredAssemblies    = new HashSet<Assembly>();
-		private Dictionary<Type, IService> registeredServices      = new Dictionary<Type, IService>();
-		private List<string>               earlyAdditionalIncludes = new List<string>();
-		private List<string>               lateAdditionalIncludes  = new List<string>();
-		private List<IControl>             topLevelControls        = new List<IControl>();
+		private HashSet<Assembly>        registeredAssemblies    = new HashSet<Assembly>();
+		private Dictionary<Type, object> registeredServices      = new Dictionary<Type, object>();
+		private List<string>             earlyAdditionalIncludes = new List<string>();
+		private List<string>             lateAdditionalIncludes  = new List<string>();
+		private List<IControl>           topLevelControls        = new List<IControl>();
 
 		public string GetUniqueId() {
 			return "id" + Utils.ToStringInvariantInt(nextUniqueId++);
@@ -111,13 +111,13 @@ namespace Saltarelle {
             topLevelControls.Add(control);
 		}
 
-		public IService GetClientServiceImplementer(Type serviceType) {
-			IService result;
+		public object GetClientServiceImplementer(Type serviceType) {
+			object result;
 			registeredServices.TryGetValue(serviceType, out result);
 			return result;
 		}
 
-        public void RegisterClientService(Type serviceType, IService implementer) {
+        public void RegisterClientService(Type serviceType, object implementer) {
             if (!serviceType.IsInterface || serviceType == typeof(IService))
                 throw new InvalidOperationException("Transferred services must be interfaces, and must not be the IService interface (tried to register type " + serviceType.FullName + ").");
             if (registeredServices.ContainsKey(serviceType))
@@ -178,7 +178,7 @@ namespace Saltarelle {
                                    where l.Count > 0
                                   select new { t.FullName, rows = (IList<ScriptManagerConfigInjectedPropertyRow>)l.Select(x => new ScriptManagerConfigInjectedPropertyRow { propertyName = x.Item1, typeName = x.Item2.FullName }).ToList() }
                                  ).ToDictionary(x => x.FullName, x => x.rows),
-                    services = registeredServices.ToDictionary(s => s.Key.FullName, s => new ScriptManagerConfigServiceEntry { type = s.Value.GetType().FullName, config = s.Value.ConfigObject }),
+                    services = registeredServices.ToDictionary(s => s.Key.FullName, s => new ScriptManagerConfigServiceEntry { type = s.Value.GetType().FullName, config = (s.Value is IService ? ((IService)s.Value).ConfigObject : null) }),
                     controls = topLevelControls.Select(c => new ScriptManagerConfigControlRow { type = c.GetType().FullName, config = c.ConfigObject }).ToArray()
                 };
             }

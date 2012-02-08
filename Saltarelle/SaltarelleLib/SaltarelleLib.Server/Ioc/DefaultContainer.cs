@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace Saltarelle.Ioc {
 	public class DefaultContainer : IContainer {
-
 	    private readonly Func<string, Type> _findType;
 	    private readonly Func<Type, object> _resolveService;
         private readonly Func<Type, object> _createObject;
@@ -53,16 +52,14 @@ namespace Saltarelle.Ioc {
             return (T)CreateObject(typeof(T));
 	    }
 
-        private List<IService> GatherServices(IEnumerable<object> objects, Dictionary<Type, IService> services) {
+        private List<object> GatherServices(IEnumerable<object> objects, Dictionary<Type, object> services) {
             var serviceTypes = objects.Select(o => o.GetType()).Distinct().SelectMany(Helpers.FindPropertiesToInject).Select(p => p.Item2).Distinct();
-            var createdServices = new List<IService>();
+            var createdServices = new List<object>();
             foreach (var st in serviceTypes) {
                 if (!services.ContainsKey(st)) {
                     var svc = ResolveService(st);
-                    if (!(svc is IService))
-                        throw new InvalidOperationException("The service type " + svc.GetType().FullName + ", implementing the service " + st.FullName + ", does not implement IService.");
-                    services[st] = (IService)svc;
-                    createdServices.Add((IService)svc);
+                    services[st] = svc;
+                    createdServices.Add(svc);
                 }
             }
             if (createdServices.Count > 0)
@@ -70,7 +67,7 @@ namespace Saltarelle.Ioc {
 			return createdServices;
         }
 
-		private void GatherServicesAndInvokeBeforeWriteScriptsCallbacks(IScriptManagerService scriptManager, Dictionary<Type, IService> services) {
+		private void GatherServicesAndInvokeBeforeWriteScriptsCallbacks(IScriptManagerService scriptManager, Dictionary<Type, object> services) {
 			var allCreatedObjects = _createdObjects;
 			while (_createdObjects.Count > 0) {
 				var current = _createdObjects;
@@ -87,7 +84,7 @@ namespace Saltarelle.Ioc {
 		}
 
 	    public void ApplyToScriptManager(IScriptManagerService scriptManager) {
-            var services = new Dictionary<Type, IService>();
+            var services = new Dictionary<Type, object>();
             GatherServicesAndInvokeBeforeWriteScriptsCallbacks(scriptManager, services);
             foreach (var asm in _createdObjects.Union(services.Values).Select(o => o.GetType().Assembly).Distinct())
                 scriptManager.RegisterClientAssembly(asm);

@@ -36,15 +36,15 @@ namespace Saltarelle {
         /// <summary>
         /// Returns the class that implements a specific service type (if one is registered). Returns null if no implementer for this service has been registered (through the <see cref="RegisterClientService"/> method).
         /// </summary>
-        IService GetClientServiceImplementer(Type serviceType);
+        object GetClientServiceImplementer(Type serviceType);
 
         /// <summary>
         /// Registers a service to be transferred to the client. Note: This does NOT register the assembly containing the type. User code should normally not need to call this.
         /// </summary>
-        void RegisterClientService(Type serviceType, IService implementer);
+        void RegisterClientService(Type serviceType, object implementer);
 
         /// <summary>
-        /// Generic version of <see cref="RegisterClientService(Type, IService)"/>
+        /// Generic version of <see cref="RegisterClientService(Type, object)"/>
         /// </summary>
         void RegisterClientService<TService>(TService implementer);
 
