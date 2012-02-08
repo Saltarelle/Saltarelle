@@ -32,6 +32,12 @@ namespace Saltarelle.Configuration {
             }
         }
 
+		public SaltarelleConfig() {
+			Plugins = new List<PluginElement>();
+			Routes  = new RoutesElement();
+			Scripts = new ScriptElementCollection() { Debug = true };
+		}
+
         public IEnumerable<Assembly> LoadPluginsInLoadFromContext(string rootPath) {
             var result = new List<Assembly>();
             if (!Utils.IsNull(Plugins)) {
@@ -68,13 +74,20 @@ namespace Saltarelle.Configuration {
             }
             
             var result = new SaltarelleConfig();
-            result.Plugins = (obj.plugins != null ? obj.plugins.Select(MapPlugin).ToList() : new List<PluginElement>());
+			if (obj.plugins != null)
+				result.Plugins.AddRange(obj.plugins.Select(MapPlugin));
             if (obj.routes != null) {
-                result.Routes = new RoutesElement(obj.routes.assemblyScripts, obj.routes.assemblyCss, obj.routes.assemblyResources, obj.routes.@delegate);
+                result.Routes.AssemblyScripts   = obj.routes.assemblyScripts;
+				result.Routes.AssemblyCss       = obj.routes.assemblyCss;
+				result.Routes.AssemblyResources = obj.routes.assemblyResources;
+				result.Routes.Delegate          = obj.routes.@delegate;
             }
-            result.Scripts = new ScriptElementCollection { Debug = obj.scripts != null && obj.scripts.debugSpecified && obj.scripts.debug };
-            if (obj.scripts != null && obj.scripts.add != null)
-                result.Scripts.AddRange(obj.scripts.add.Select(MapScript));
+			if (obj.scripts != null) {
+				if (obj.scripts.debugSpecified)
+					result.Scripts.Debug = obj.scripts.debug;
+				if (obj.scripts.add != null)
+					result.Scripts.AddRange(obj.scripts.add.Select(MapScript));
+			}
 
             return result;
         }
@@ -89,6 +102,9 @@ namespace Saltarelle.Configuration {
 		
 		public static SaltarelleConfig GetFromWebConfig() {
             var sect = (SaltarelleConfigSection)WebConfigurationManager.GetSection("saltarelle");
+			if (sect == null)
+				return new SaltarelleConfig();
+
             var doc = new XmlDocument();
             doc.LoadXml(sect.RawXml);
             return LoadXml(doc.DocumentElement);
