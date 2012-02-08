@@ -188,15 +188,5 @@ namespace SaltarelleParser.Tests {
 			}
 			mocks.VerifyAll();
 		}
-
-		[Test]
-		public void TestInstantiate_Throws() {
-			var tpl = mocks.StrictMock<ITemplate>();
-			var ctl = mocks.StrictMock<IInstantiatedTemplateControl>();
-			var container = mocks.StrictMock<IContainer>();
-			mocks.ReplayAll();
-			Globals.AssertThrows(() => new PropertyMember("TestId", "Namespace.ServerType", "Namespace.ClientType", AccessModifier._Public, "field", "Namespace.ServerType", "Namespace.ClientType", true, true, null, false).Instantiate(tpl, ctl, container), (TemplateErrorException ex) => true);
-			mocks.VerifyAll();
-		}
 	}
 }
