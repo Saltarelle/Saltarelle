@@ -87,7 +87,7 @@ namespace Saltarelle.Ioc {
 				_createdObjects = new HashSet<Tuple<object, Type>>();
 				foreach (var o in current.Select(x => x.Item1).OfType<IBeforeWriteScriptsCallback>())
 					o.BeforeWriteScripts(scriptManager);
-				var newServices = GatherServices(current, services);
+				var newServices = GatherServices(current.Select(o => o.Item1), services);
 				foreach (var o in newServices.OfType<IBeforeWriteScriptsCallback>())
 					o.BeforeWriteScripts(scriptManager);
 
