@@ -100,7 +100,7 @@ namespace Saltarelle.Ioc {
 	    public void ApplyToScriptManager(IScriptManagerService scriptManager) {
             var services = new Dictionary<Type, object>();
             GatherServicesAndInvokeBeforeWriteScriptsCallbacks(scriptManager, services);
-            foreach (var asm in _createdObjects.Union(services.Values).Select(o => o.GetType().Assembly).Distinct())
+            foreach (var asm in _createdObjects.Select(o => o.Item1).Union(services.Values).Select(o => o.GetType().Assembly).Distinct())
                 scriptManager.RegisterClientAssembly(asm);
             foreach (var svc in services.Concat(_createdObjects.Where(t => t.Item2 != null).Select(t => new KeyValuePair<Type, object>(t.Item2, t.Item1))).Distinct())
                 scriptManager.RegisterClientService(svc.Key, svc.Value);
