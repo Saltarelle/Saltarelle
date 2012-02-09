@@ -8,7 +8,10 @@ namespace Saltarelle.Ioc {
 	    private readonly Func<Type, object> _resolveService;
         private readonly Func<Type, object> _createObject;
 
-        private List<object> _createdObjects = new List<object>();
+		/// <summary>
+		/// The first item in the tuple is the object, the second is the service type implemented by this object, or null if the object does not implement any service (which most objects don't).
+		/// </summary>
+        private HashSet<Tuple<object, Type>> _createdObjects = new HashSet<Tuple<object, Type>>();
 
 	    /// <summary>
 	    /// Constructs an instance.
@@ -36,7 +39,7 @@ namespace Saltarelle.Ioc {
 
 	    public object CreateObject(Type objectType) {
             var result = _createObject(objectType);
-            _createdObjects.Add(result);
+            _createdObjects.Add(Tuple.Create(result, (Type)null));
             return result;
 	    }
 
@@ -51,6 +54,16 @@ namespace Saltarelle.Ioc {
 	    public T CreateObject<T>() {
             return (T)CreateObject(typeof(T));
 	    }
+
+        public void RegisterClientService(Type serviceType) {
+            if (!serviceType.IsInterface || serviceType == typeof(IService))
+                throw new InvalidOperationException("Transferred services must be interfaces, and must not be the IService interface (tried to register type " + serviceType.FullName + ").");
+            _createdObjects.Add(Tuple.Create(ResolveService(serviceType), serviceType));
+        }
+
+        public void RegisterClientService<TService>(TService implementer) {
+			RegisterClientService(typeof(TService));
+        }
 
         private List<object> GatherServices(IEnumerable<object> objects, Dictionary<Type, object> services) {
             var serviceTypes = objects.Select(o => o.GetType()).Distinct().SelectMany(Helpers.FindPropertiesToInject).Select(p => p.Item2).Distinct();
@@ -71,14 +84,15 @@ namespace Saltarelle.Ioc {
 			var allCreatedObjects = _createdObjects;
 			while (_createdObjects.Count > 0) {
 				var current = _createdObjects;
-				_createdObjects = new List<object>();
+				_createdObjects = new HashSet<Tuple<object, Type>>();
 				foreach (var o in current.OfType<IBeforeWriteScriptsCallback>())
 					o.BeforeWriteScripts(scriptManager);
 				var newServices = GatherServices(current, services);
 				foreach (var o in newServices.OfType<IBeforeWriteScriptsCallback>())
 					o.BeforeWriteScripts(scriptManager);
 
-				allCreatedObjects.AddRange(_createdObjects);	// This iteration might have caused new types to be created. In that case, add them to the set and continue the loop.
+				foreach (var o in _createdObjects)	// This iteration might have caused new types to be created. In that case, add them to the set and continue the loop.
+					allCreatedObjects.Add(o);
 			}
 			_createdObjects = allCreatedObjects;
 		}
@@ -88,7 +102,7 @@ namespace Saltarelle.Ioc {
             GatherServicesAndInvokeBeforeWriteScriptsCallbacks(scriptManager, services);
             foreach (var asm in _createdObjects.Union(services.Values).Select(o => o.GetType().Assembly).Distinct())
                 scriptManager.RegisterClientAssembly(asm);
-            foreach (var svc in services)
+            foreach (var svc in services.Concat(_createdObjects.Where(t => t.Item2 != null).Select(t => new KeyValuePair<Type, object>(t.Item2, t.Item1))).Distinct())
                 scriptManager.RegisterClientService(svc.Key, svc.Value);
 	    }
 	}
