@@ -10,6 +10,7 @@ namespace Saltarelle.Ioc {
             serviceConfig   = new Dictionary();
             injections      = new Dictionary();
             runningServices = new Dictionary();
+            runningServices[typeof(IContainer).FullName] = this;
         }
 
         public void RegisterServiceConfig(Dictionary/*<string, ScriptManagerConfigServiceEntry>*/ config) {
