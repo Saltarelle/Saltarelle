@@ -30,7 +30,9 @@ namespace Saltarelle {
 		}
 
 		public static string HtmlEncode(string s) {
-			return s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\xa0", "&nbsp;").Replace("\"", "&quot;");
+			return !Utils.IsNull(s)
+			     ? s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\xa0", "&nbsp;").Replace("\"", "&quot;")
+				 : null;
 		}
 
 		public static string NullIfEmpty(string s) {
