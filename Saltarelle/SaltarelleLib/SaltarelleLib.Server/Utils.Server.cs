@@ -242,7 +242,8 @@ namespace Saltarelle {
 		}
 
 		public static void SetPropertyValue(object o, string property, object value) {
-			o.GetType().GetProperty(property).SetValue(o, value, null);
+			var p = o.GetType().GetProperty(property);
+			p.SetValue(o, Convert.ChangeType(value, p.PropertyType, CultureInfo.InvariantCulture), null);
 		}
 
 		public static string IdAndStyle(string id, Position p, int width, int height) {
