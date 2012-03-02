@@ -160,7 +160,7 @@ namespace Saltarelle {
 			get {
                 return new ScriptManagerConfig {
                     nextUniqueId = nextUniqueId,
-                    injections = (  from a in registeredAssemblies
+                    injections = (  from a in moduleUtils.TopologicalSortAssembliesWithDependencies(registeredAssemblies)
                                     from t in a.GetTypes()
                                      let l = Helpers.FindPropertiesToInject(t)
                                    where l.Count > 0
