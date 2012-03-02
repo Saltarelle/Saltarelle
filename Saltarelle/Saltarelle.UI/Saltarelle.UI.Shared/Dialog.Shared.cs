@@ -14,7 +14,11 @@ namespace Saltarelle.UI {
 		HideOnFocusOut = 2
 	}
 	
-	public abstract class DialogBase : IControl, IClientCreateControl {
+	public abstract class DialogBase : IControl, IClientCreateControl
+	#if CLIENT
+		, INotifyCreated
+	#endif
+	{
 		private const string NoPaddingClassName = "NoPaddingDialog";
 		private const short  FirstDialogZIndex  = 10000;
 		private const string ModalCoverId       = "DialogModalCoverDiv";
@@ -224,11 +228,17 @@ namespace Saltarelle.UI {
 			return jq.get(0);
 		}
 
+		private Dictionary config;
+
 		[AlternateSignature]
 		protected extern DialogBase();
 
 		protected DialogBase(object config) {
-			if (!Script.IsUndefined(config)) {
+			this.config = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);
+		}
+
+		public virtual void DependenciesAvailable() {
+			if (!Utils.IsNull(config)) {
 				InitConfig(Dictionary.GetDictionary(config));
 			}
 			else
