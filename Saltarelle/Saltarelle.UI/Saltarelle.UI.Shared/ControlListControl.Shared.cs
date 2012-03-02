@@ -19,7 +19,11 @@ using ControlDictionary = System.Collections.Generic.Dictionary<string, Saltarel
 #endif
 
 namespace Saltarelle.UI {
-	public class ControlListControl : IControl, IClientCreateControl {
+	public class ControlListControl : IControl, IClientCreateControl
+	#if CLIENT
+		, INotifyCreated
+	#endif
+	{
 		private string id;
 		private string className;
 		private Position position;
@@ -173,14 +177,12 @@ namespace Saltarelle.UI {
 		}
 #endif
 #if CLIENT
+		private Dictionary config;
+
 		[AlternateSignature]
 		public extern ControlListControl();
 		public ControlListControl(object config) {
-			if (!Script.IsUndefined(config)) {
-				InitConfig(Dictionary.GetDictionary(config));
-			}
-			else
-				InitDefault();
+			this.config = !Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null;
 		}
 
 		protected virtual void InitConfig(Dictionary config) {
@@ -218,6 +220,13 @@ namespace Saltarelle.UI {
 			controlIds.Add(controlId);
 			controls.Add(control);
 			controlData.Add(data);
+		}
+
+		public void DependenciesAvailable() {
+			if (!Utils.IsNull(config))
+				InitConfig(config);
+			else
+				InitDefault();
 		}
 #endif
 	}
