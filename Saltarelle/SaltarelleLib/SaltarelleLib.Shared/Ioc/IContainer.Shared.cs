@@ -6,6 +6,7 @@ namespace Saltarelle.Ioc {
 		/// Resolves a service. Throws if the service does not exist.
 		/// </summary>
         object ResolveService(Type objectType);
+
 		/// <summary>
 		/// Resolves a service by its type name. Throws if the service does not exist.
 		/// </summary>
@@ -52,6 +53,16 @@ namespace Saltarelle.Ioc {
 			/// Performs the necessary steps to write this object to a script manager.
 			/// </summary>
             void ApplyToScriptManager(IScriptManagerService scriptManager);
+
+			/// <summary>
+			/// Ensures that a type can be used on the client. This ensures that the code for the type is loaded, as well as all services on which the type depends.
+			/// </summary>
+			void EnsureTypeClientUsable(Type type);
+
+			/// <summary>
+			/// Generic version of <see cref="EnsureTypeClientUsable(Type)"/>.
+			/// </summary>
+			void EnsureTypeClientUsable<T>();
         #endif
         #if CLIENT
 			/// <summary>

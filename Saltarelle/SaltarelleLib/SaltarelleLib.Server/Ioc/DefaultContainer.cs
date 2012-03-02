@@ -13,6 +13,8 @@ namespace Saltarelle.Ioc {
 		/// </summary>
         private HashSet<Tuple<object, Type>> _createdObjects = new HashSet<Tuple<object, Type>>();
 
+		private HashSet<Type> _registeredClientUsableTypes = new HashSet<Type>();
+
 	    /// <summary>
 	    /// Constructs an instance.
 	    /// </summary>
@@ -65,8 +67,16 @@ namespace Saltarelle.Ioc {
 			RegisterClientService(typeof(TService));
         }
 
-        private List<object> GatherServices(IEnumerable<object> objects, Dictionary<Type, object> services) {
-            var serviceTypes = objects.Select(o => o.GetType()).Distinct().SelectMany(Helpers.FindPropertiesToInject).Select(p => p.Item2).Distinct();
+		public void EnsureTypeClientUsable(Type type) {
+			_registeredClientUsableTypes.Add(type);
+		}
+
+		public void EnsureTypeClientUsable<T>() {
+			EnsureTypeClientUsable(typeof(T));
+		}
+
+		private List<object> GatherServices(IEnumerable<Type> objectTypes, Dictionary<Type, object> services) {
+            var serviceTypes = objectTypes.SelectMany(Helpers.FindPropertiesToInject).Select(p => p.Item2).Distinct();
             var createdServices = new List<object>();
             foreach (var st in serviceTypes) {
                 if (!services.ContainsKey(st)) {
@@ -76,9 +86,9 @@ namespace Saltarelle.Ioc {
                 }
             }
             if (createdServices.Count > 0)
-                createdServices.AddRange(GatherServices(createdServices, services));
+                createdServices.AddRange(GatherServices(createdServices.Select(o => o.GetType()).Distinct(), services));
 			return createdServices;
-        }
+		}
 
 		private void GatherServicesAndInvokeBeforeWriteScriptsCallbacks(IScriptManagerService scriptManager, Dictionary<Type, object> services) {
 			var allCreatedObjects = _createdObjects;
@@ -87,7 +97,7 @@ namespace Saltarelle.Ioc {
 				_createdObjects = new HashSet<Tuple<object, Type>>();
 				foreach (var o in current.Select(x => x.Item1).OfType<IBeforeWriteScriptsCallback>())
 					o.BeforeWriteScripts(scriptManager);
-				var newServices = GatherServices(current.Select(o => o.Item1), services);
+				var newServices = GatherServices(current.Select(o => o.Item1.GetType()).Distinct(), services);
 				foreach (var o in newServices.OfType<IBeforeWriteScriptsCallback>())
 					o.BeforeWriteScripts(scriptManager);
 
@@ -99,9 +109,16 @@ namespace Saltarelle.Ioc {
 
 	    public void ApplyToScriptManager(IScriptManagerService scriptManager) {
             var services = new Dictionary<Type, object>();
+			GatherServices(_registeredClientUsableTypes, services);
             GatherServicesAndInvokeBeforeWriteScriptsCallbacks(scriptManager, services);
-            foreach (var asm in _createdObjects.Select(o => o.Item1).Union(services.Values).Select(o => o.GetType().Assembly).Distinct())
+            foreach (var asm in         _createdObjects.Select(o => o.Item1.GetType().Assembly)
+			                    .Concat(services.Values.Select(o => o.GetType().Assembly))
+			                    .Concat(_registeredClientUsableTypes.Select(t => t.Assembly))
+			                    .Distinct())
+			{
                 scriptManager.RegisterClientAssembly(asm);
+			}
+
             foreach (var svc in services.Concat(_createdObjects.Where(t => t.Item2 != null).Select(t => new KeyValuePair<Type, object>(t.Item2, t.Item1))).Distinct())
                 scriptManager.RegisterClientService(svc.Key, svc.Value);
 	    }
