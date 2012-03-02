@@ -51,5 +51,23 @@ namespace Saltarelle.UI {
 				});
 			}
 		}
+
+		/// <summary>
+		/// This method will hide then immediately restore all SELECT elements that are children of a specific element, if the browser is IE7. The reason is to fix a strange IE7 bug which causes SELECTs to sometimes be non-interactable.
+		/// </summary>
+		/// <param name="parent"></param>
+		public static void FixStrangeIE7SelectIssue(DOMElement parent) {
+			if (jQuery.browser.msie && Utils.ParseInt(jQuery.browser.version) == 7) {
+				// Fix for the strange IE7 bug that causes SELECTs to sometimes be non-interactable
+				Window.SetTimeout(delegate {
+					JQueryProxy.jQuery(parent).find("select").each(delegate(int _, DOMElement el) {
+						string oldDisplay = el.Style.Display;
+						el.Style.Display = (el.Style.Display != "none" ? "none" : "");
+						el.Style.Display = oldDisplay;
+						return true;
+					});
+				}, 0);
+			}
+		}
 	}
 }

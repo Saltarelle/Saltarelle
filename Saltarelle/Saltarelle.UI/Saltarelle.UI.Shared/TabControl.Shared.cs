@@ -339,6 +339,8 @@ namespace Saltarelle.UI {
 			if (Utils.IsNull(id) || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
+
+			UIUtils.FixStrangeIE7SelectIssue(GetElement().Children[SelectedTab + 1]);
 			
 			clickHandler = (JQueryEventHandlerDelegate)Utils.Wrap(new UnwrappedJQueryEventHandlerDelegate(Link_Click));
 			
@@ -377,6 +379,7 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void OnSelectedTabChanged(EventArgs e) {
+			UIUtils.FixStrangeIE7SelectIssue(GetElement().Children[SelectedTab + 1]);
 			if (!Utils.IsNull(SelectedTabChanged))
 				SelectedTabChanged(this, e);
 		}
