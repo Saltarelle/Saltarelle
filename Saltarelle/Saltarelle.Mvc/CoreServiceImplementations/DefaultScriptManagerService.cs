@@ -91,7 +91,7 @@ namespace Saltarelle {
 
         private static readonly ConcurrentDictionary<Type, List<Tuple<string, Type>>> _propertiesToInjectCache = new ConcurrentDictionary<Type, List<Tuple<string, Type>>>();
 
-		private HashSet<Assembly>        registeredAssemblies    = new HashSet<Assembly>();
+		private HashSet<Assembly>        registeredAssemblies    = new HashSet<Assembly> { typeof(Saltarelle.Utils).Assembly };
 		private Dictionary<Type, object> registeredServices      = new Dictionary<Type, object>();
 		private List<string>             earlyAdditionalIncludes = new List<string>();
 		private List<string>             lateAdditionalIncludes  = new List<string>();
@@ -143,7 +143,6 @@ namespace Saltarelle {
 			sb.AppendLine("<script language=\"javascript\" type=\"text/javascript\">");
 			sb.AppendLine("$(function() {");
 				sb.AppendLine("\tSaltarelle.GlobalServices.initialize(" + Utils.InitScript(ConfigObject) + ");");
-
 			sb.AppendLine("});");
 			sb.AppendLine("</script>");
 
