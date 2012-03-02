@@ -18,7 +18,7 @@ Task Clean {
 }
 
 Task Build -Depends Clean, Generate-VersionInfo {
-	Exec { msbuild "$base_dir\Saltarelle\Saltarelle.sln" /p:"Configuration=$configuration" }
+	Exec { msbuild "$base_dir\Saltarelle\Saltarelle.sln" /verbosity:minimal /p:"Configuration=$configuration" }
 }
 
 Task Publish -Depends Determine-Version, Build, Run-Tests {
