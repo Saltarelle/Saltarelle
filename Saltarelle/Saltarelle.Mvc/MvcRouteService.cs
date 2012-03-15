@@ -113,5 +113,7 @@ namespace Saltarelle.Mvc {
 		public string GetDelegateUrl<T>(Expression<Func<T>> method) {
 			return GetDelegateUrl(((MethodCallExpression)method.Body).Method);
 		}
+
+		public RouteData CurrentRoute { get; set; }
 	}
 }

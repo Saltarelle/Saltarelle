@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Web.Routing;
 
 namespace Saltarelle {
     public interface IRouteService {
@@ -16,5 +17,7 @@ namespace Saltarelle {
 
 		string GetVirtualPath(string routeName, IDictionary<string, object> routeValues);
 		string GetVirtualPath(string routeName);
+
+		RouteData CurrentRoute { get; }
     }
 }
