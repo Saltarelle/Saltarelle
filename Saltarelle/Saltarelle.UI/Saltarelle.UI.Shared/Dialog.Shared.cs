@@ -14,10 +14,7 @@ namespace Saltarelle.UI {
 		HideOnFocusOut = 2
 	}
 	
-	public abstract class DialogBase : IControl, IClientCreateControl
-	#if CLIENT
-		, INotifyCreated
-	#endif
+	public abstract class DialogBase : IControl, IClientCreateControl, INotifyCreated
 	{
 		private const string NoPaddingClassName = "NoPaddingDialog";
 		private const short  FirstDialogZIndex  = 10000;
@@ -176,7 +173,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		protected DialogBase() {
-			InitDefault();
 		}
 		
 		protected virtual void AddItemsToConfigObject(Dictionary<string, object> config) {
@@ -187,6 +183,10 @@ namespace Saltarelle.UI {
 			config["hasPadding"]    = hasPadding;
 			config["className"]     = className;
 			config["removeOnClose"] = removeOnClose;
+		}
+
+		public virtual void DependenciesAvailable() {
+			InitDefault();
 		}
 
 		public object ConfigObject {
