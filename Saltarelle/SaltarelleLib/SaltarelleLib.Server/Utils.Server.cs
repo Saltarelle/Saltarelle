@@ -230,7 +230,31 @@ namespace Saltarelle {
 		}
 
 		public static string MakeCamelCase(string s) {
-			return s.Substring(0, 1).ToLowerInvariant() + s.Substring(1);
+			if (string.IsNullOrEmpty(s))
+				return s;
+			if (s.Equals("ID", StringComparison.Ordinal))
+				return "id";
+
+			bool hasNonUppercase = false;
+			int numUppercaseChars = 0;
+			for (int index = 0; index < s.Length; index++) {
+				if (char.IsUpper(s, index)) {
+					numUppercaseChars++;
+				}
+				else {
+					hasNonUppercase = true;
+					break;
+				}
+			}
+
+			if ((!hasNonUppercase && s.Length != 1) || numUppercaseChars == 0)
+				return s;
+			else if (numUppercaseChars > 1)
+				return s.Substring(0, numUppercaseChars - 1).ToLower(CultureInfo.InvariantCulture) + s.Substring(numUppercaseChars - 1);
+			else if (s.Length == 1)
+				return s.ToLower(CultureInfo.InvariantCulture);
+			else
+				return char.ToLower(s[0], CultureInfo.InvariantCulture) + s.Substring(1);
 		}
 		
 		public static string ToLowerCase(this string s) {

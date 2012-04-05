@@ -184,7 +184,31 @@ namespace Saltarelle {
 		}
 
 		public static string MakeCamelCase(string s) {
-			return s.Substring(0, 1).ToLowerCase() + s.Substr(1);
+			if (string.IsNullOrEmpty(s))
+				return s;
+			if (s == "ID")
+				return "id";
+
+			bool hasNonUppercase = false;
+			int numUppercaseChars = 0;
+			for (int index = 0; index < s.Length; index++) {
+				if (s.CharCodeAt(index) >= Utils.CharCode('A') && s.CharCodeAt(index) <= Utils.CharCode('Z')) {
+					numUppercaseChars++;
+				}
+				else {
+					hasNonUppercase = true;
+					break;
+				}
+			}
+
+			if ((!hasNonUppercase && s.Length != 1) || numUppercaseChars == 0)
+				return s;
+			else if (numUppercaseChars > 1)
+				return s.Substring(0, numUppercaseChars - 1).ToLowerCase() + s.Substr(numUppercaseChars - 1);
+			else if (s.Length == 1)
+				return s.ToLowerCase();
+			else
+				return s.Substr(0, 1).ToLowerCase() + s.Substr(1);
 		}
 
 		public static object GetPropertyValue(object o, string property) {
