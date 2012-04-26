@@ -40,7 +40,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<description>Saltarelle Core Library</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="Newtonsoft.Json" version="4.0.7" />
+			<dependency id="Newtonsoft.Json" version="4.5.4" />
 		</dependencies>
 	</metadata>
 	<files>
