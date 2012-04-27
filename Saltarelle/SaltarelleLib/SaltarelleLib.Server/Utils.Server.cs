@@ -22,6 +22,8 @@ namespace Saltarelle {
 	public delegate void XmlNodeAction(XmlNode n);
 
 	public static partial class Utils {
+		private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.MicrosoftDateFormat };
+
 		private static readonly Dictionary<string, Assembly> asmCache  = new Dictionary<string, Assembly>();
 
 		public static int ParseInt(string s) {
@@ -91,15 +93,15 @@ namespace Saltarelle {
 		}
 
 		public static string Json(object o) {
-			return JsonConvert.SerializeObject(o);
+			return JsonConvert.SerializeObject(o, jsonSerializerSettings);
 		}
 
 		public static object EvalJson(string s, Type objectType) {
-			return JsonConvert.DeserializeObject(s, objectType);
+			return JsonConvert.DeserializeObject(s, objectType, jsonSerializerSettings);
 		}
 		
 		public static T EvalJson<T>(string s) {
-			return JsonConvert.DeserializeObject<T>(s);
+			return JsonConvert.DeserializeObject<T>(s, jsonSerializerSettings);
 		}
 
 		public static double NaN {
