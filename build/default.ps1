@@ -8,6 +8,8 @@ properties {
 	$release_tag_pattern = "release-(.*)"
 }
 
+$jsonNetVersion = "4.5.5"
+
 Task default -Depends Build
 
 Task Clean {
@@ -40,7 +42,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<description>Saltarelle Core Library</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="Newtonsoft.Json" version="4.5.4" />
+			<dependency id="Newtonsoft.Json" version="$jsonNetVersion" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -104,6 +106,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<authors>$authors</authors>
 		<dependencies>
 			<dependency id="SaltarelleCore" version="$dependencyVersion" />
+			<dependency id="Newtonsoft.Json" version="$jsonNetVersion" />
 		</dependencies>
 	</metadata>
 	<files>
