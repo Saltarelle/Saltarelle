@@ -132,8 +132,8 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<description>Saltarelle Mvc Libraries</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="dotless" version="1.2.2.0" />
-			<dependency id="Mono.Cecil" version="0.9.5.2" />
+			<dependency id="dotless" version="1.3.0.3" />
+			<dependency id="Mono.Cecil" version="0.9.5.3" />
 			<dependency id="SaltarelleCore" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
