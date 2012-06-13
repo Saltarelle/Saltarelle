@@ -100,6 +100,9 @@ namespace Saltarelle {
 		}
 		
 		public TypedMarkupData ParseTypedMarkup(string markup) {
+            #if CLIENT
+                EnsureInitialized();
+            #endif
 			return docProcessor.ParseTypedMarkup(markup);
 		}
 

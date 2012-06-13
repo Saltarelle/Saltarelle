@@ -8,7 +8,7 @@ properties {
 	$release_tag_pattern = "release-(.*)"
 }
 
-$jsonNetVersion = "4.5.5"
+$jsonNetVersion = "4.5.7"
 
 Task default -Depends Build
 
