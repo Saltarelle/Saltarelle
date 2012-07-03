@@ -4,7 +4,7 @@ using Saltarelle.Ioc;
 using System.Linq;
 #endif
 #if CLIENT
-using System.DHTML;
+using System.Html;
 #endif
 
 namespace Saltarelle {

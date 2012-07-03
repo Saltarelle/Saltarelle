@@ -1,9 +1,10 @@
 using System;
+using System.Runtime.CompilerServices;
 #if SERVER
 using System.Text;
 #endif
 #if CLIENT
-using System.DHTML;
+using System.Html;
 #endif
 
 namespace Saltarelle

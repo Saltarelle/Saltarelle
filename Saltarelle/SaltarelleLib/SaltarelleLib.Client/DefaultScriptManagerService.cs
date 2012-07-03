@@ -1,5 +1,5 @@
 ﻿using System;
-using System.DHTML;
+using System.Html;
 using Saltarelle.Ioc;
 
 namespace Saltarelle {
