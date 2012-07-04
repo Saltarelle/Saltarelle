@@ -4,7 +4,7 @@ using Saltarelle.Ioc;
 using System.Collections.Generic;
 #endif
 #if CLIENT
-using System.DHTML;
+using System.Html;
 #endif
 
 namespace Saltarelle.UI {
@@ -80,7 +80,7 @@ namespace Saltarelle.UI {
 					title = (value ?? "").Trim();
 
 					if (isAttached) {
-						DOMElement elem = GetElement();
+						Element elem = GetElement();
 						if (string.IsNullOrEmpty(oldTitle) && !string.IsNullOrEmpty(title)) {
 							// Add the titlebar.
 							jQuery tb = JQueryProxy.jQuery(TitlebarHtml);
@@ -198,15 +198,15 @@ namespace Saltarelle.UI {
 		}
 #endif
 #if CLIENT
-		private static void RepositionCover(DOMElement cover) {
+		private static void RepositionCover(Element cover) {
 			cover.Style.Top    = Math.Max(Document.Body.ScrollTop,  Document.DocumentElement.ScrollTop).ToString() + "px";
 			cover.Style.Left   = Math.Max(Document.Body.ScrollLeft, Document.DocumentElement.ScrollLeft).ToString() + "px";
    			cover.Style.Width  = Document.DocumentElement.ClientWidth.ToString()  + "px";
 			cover.Style.Height = Document.DocumentElement.ClientHeight.ToString() + "px";
 		}
 
-		private static DOMElement GetModalCover(bool createIfMissing) {
-			DOMElement elem = Document.GetElementById(ModalCoverId);
+		private static Element GetModalCover(bool createIfMissing) {
+			Element elem = Document.GetElementById(ModalCoverId);
 			if (elem != null || !createIfMissing)
 				return elem;
 			
@@ -214,7 +214,7 @@ namespace Saltarelle.UI {
 			if (jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 7.0) {
 				jq.bgiframe();
 				// Need to position the cover in JavaScript. In all other browsers, this is done in CSS.
-				jQuery wnd = JQueryProxy.jQuery((DOMElement)Script.Literal("window"));
+				jQuery wnd = JQueryProxy.jQuery((Element)Script.Literal("window"));
 				wnd.scroll(delegate(JQueryEvent evt) {
 					RepositionCover(GetModalCover(false));
 				});
@@ -231,7 +231,7 @@ namespace Saltarelle.UI {
 		private Dictionary config;
 
 		[AlternateSignature]
-		protected extern DialogBase();
+		protected DialogBase() {}
 
 		protected DialogBase(object config) {
 			this.config = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);
@@ -256,9 +256,9 @@ namespace Saltarelle.UI {
 			AttachSelf();
 		}
 
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 		
-		private void MoveElementToEnd(DOMElement elem) {
+		private void MoveElementToEnd(Element elem) {
 			elem.ParentNode.RemoveChild(elem);
 			Document.Body.AppendChild(elem);
 		}
@@ -269,7 +269,7 @@ namespace Saltarelle.UI {
 			isAttached = true;
 
 			// Move the dialog to the end of the body.
-			DOMElement element = GetElement();
+			Element element = GetElement();
 			MoveElementToEnd(element);
 			element.Style.Display = "none";
 		}
@@ -292,7 +292,7 @@ namespace Saltarelle.UI {
 			if (e.Cancel)
 				return;
 
-			DOMElement elem = GetElement();
+			Element elem = GetElement();
 			
 			if (!areEventsBound) {
 				JQueryProxy.jQuery(elem).lostfocus(Element_LostFocus);
@@ -323,13 +323,13 @@ namespace Saltarelle.UI {
 
 			if (position.anchor != AnchoringEnum.TopLeft) {
 				// Center the dialog
-				jQuery wnd = JQueryProxy.jQuery((DOMElement)(object)Window.Self), el = JQueryProxy.jQuery(elem);
+				jQuery wnd = JQueryProxy.jQuery((Element)(object)Window.Self), el = JQueryProxy.jQuery(elem);
 				elem.Style.Left = Math.Round(Document.Body.ScrollLeft + (wnd.width()  - el.width() ) / 2).ToString() + "px";
 				elem.Style.Top  = Math.Round(Document.Body.ScrollTop  + (wnd.height() - el.height()) / 2).ToString() + "px";
 			}
 			
 			if (modality == DialogModalityEnum.Modal) {
-				DOMElement cover = GetModalCover(true);
+				Element cover = GetModalCover(true);
 				cover.Style.ZIndex  = (short)(zIndex - 1);
 				cover.Style.Display = "";
 			}
@@ -371,7 +371,7 @@ namespace Saltarelle.UI {
 			}
 
 			// handle the modal cover
-			DOMElement cover = GetModalCover(false);
+			Element cover = GetModalCover(false);
 			if (modalIndex == -1) {
 				if (cover != null)
 					cover.Style.Display = "none";
@@ -413,7 +413,7 @@ namespace Saltarelle.UI {
 		}
 		
 		private void ModalFocusOut() {
-			DOMElement activeElem = Document.ActiveElement;
+			Element activeElem = Document.ActiveElement;
 
 			bool ok = false;
 			int i;
@@ -437,7 +437,7 @@ namespace Saltarelle.UI {
 		}
 		
 		private void VolatileFocusOut() {
-			DOMElement activeElem = Document.ActiveElement;
+			Element activeElem = Document.ActiveElement;
 
 			// find out whether it's a child of ours or of a dialog later in the dialog stack
 			int i = 0;
@@ -488,17 +488,17 @@ namespace Saltarelle.UI {
 
 #if CLIENT
 		[AlternateSignature]
-		public extern DialogFrame();
+		public DialogFrame() {}
 
 		public DialogFrame(object config) : base(config) {
 		}
 
-		public DOMElement[] GetInnerElements() {
+		public Element[] GetInnerElements() {
 			jQuery jq = JQueryProxy.jQuery(GetElement());
 			ArrayList result = new ArrayList();
 			for (int i = 0; i < jq.size(); i++)
 				result.Add(jq.get(i));
-			return (DOMElement[])result;
+			return (Element[])result;
 		}
 #endif
 	}
@@ -540,7 +540,7 @@ namespace Saltarelle.UI {
 #endif
 #if CLIENT
 		[AlternateSignature]
-		protected extern ControlDialogBase();
+		protected ControlDialogBase() {}
 		protected ControlDialogBase(object config) : base(config) {
 		}
 
@@ -578,7 +578,7 @@ namespace Saltarelle.UI {
 #endif
 #if CLIENT
 		[AlternateSignature]
-		public extern ControlDialog();
+		public ControlDialog() {}
 		
 		public ControlDialog(object config) : base(config) {
 		}

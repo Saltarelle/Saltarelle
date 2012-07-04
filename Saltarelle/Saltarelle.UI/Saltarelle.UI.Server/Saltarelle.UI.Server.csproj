@@ -137,9 +137,6 @@
     <EmbeddedResource Include="..\Script.js">
       <Link>Script.js</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Script.min.js">
-      <Link>Script.min.js</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\Client.dll">
       <Link>Client.dll</Link>
     </EmbeddedResource>
@@ -167,6 +164,11 @@
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
       <Project>{23878C4C-4B77-4F13-B821-BECCA3E0BA98}</Project>
       <Name>SaltarelleLib.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Saltarelle.UI.Client\Saltarelle.UI.Client.csproj">
+      <Project>{4D8F7229-B78F-4A2A-90EE-0BA05D7D3D64}</Project>
+      <Name>Saltarelle.UI.Client</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

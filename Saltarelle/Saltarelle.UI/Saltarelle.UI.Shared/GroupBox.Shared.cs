@@ -3,7 +3,10 @@ using System;
 using System.Collections.Generic;
 #endif
 #if CLIENT
-using System.DHTML;
+using System.Collections;
+using System.Html;
+using System.Runtime.CompilerServices;
+
 #endif
 
 namespace Saltarelle.UI {
@@ -109,7 +112,7 @@ namespace Saltarelle.UI {
 #endif
 #if CLIENT
 		[AlternateSignature]
-		public extern GroupBox();
+		public GroupBox() {}
 		public GroupBox(object config) {
 			if (!Script.IsUndefined(config)) {
 				InitConfig(Dictionary.GetDictionary(config));
@@ -118,13 +121,13 @@ namespace Saltarelle.UI {
 				InitDefault();
 		}
 
-		protected virtual void InitConfig(Dictionary config) {
+		protected virtual void InitConfig(JsDictionary config) {
 			id    = (string)config["id"];
 			title = (string)config["title"];
 			Attach();
 		}
 
-		public DOMElement GetElement() {
+		public Element GetElement() {
 			return isAttached ? Document.GetElementById(id) : null;
 		}
 
@@ -138,14 +141,14 @@ namespace Saltarelle.UI {
 				element.children(":not(legend)").addClass(NoLegendChildClassName);
 		}
 		
-		public DOMElement[] GetInnerElements() {
+		public Element[] GetInnerElements() {
 			ArrayList result = new ArrayList();
 			DOMElementCollection children = GetElement().ChildNodes;
 			for (int i = 0; i < children.Length; i++) {
 				if (children[i].NodeType == DOMElementType.Element && children[i].TagName != "LEGEND")
 					result.Add(children[i]);
 			}
-			return (DOMElement[])result;
+			return (Element[])result;
 		}
 #endif
 	}

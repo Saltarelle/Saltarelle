@@ -438,7 +438,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	}" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private bool isAttached = false;" + Environment.NewLine
-			                 + p + "	public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }" + Environment.NewLine
+			                 + p + "	public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private string id;" + Environment.NewLine
 			                 + p + "	public string Id {" + Environment.NewLine
@@ -481,7 +481,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
 			                 + p + "	[AlternateSignature]" + Environment.NewLine
-			                 + p + "	public extern TestClass();" + Environment.NewLine
+			                 + p + "	public TestClass() {}" + Environment.NewLine
 			                 : "")
 			                 + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass(object config) {" + Environment.NewLine

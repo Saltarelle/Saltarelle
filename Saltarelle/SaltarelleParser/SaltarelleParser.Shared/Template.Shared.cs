@@ -410,7 +410,7 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}")
 			  .Outdent().AppendLine("}").AppendLine()
 			  .AppendLine("private bool isAttached = false;")
-			  .AppendLine("public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }").AppendLine();
+			  .AppendLine("public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }").AppendLine();
 
 			WriteIdProperty(cb, false, this, orderedMembers);
 			cb.AppendLine();
@@ -433,7 +433,7 @@ namespace Saltarelle {
 				  .AppendLine("}").Outdent()
 				  .AppendLine("}").AppendLine()
 				  .AppendLine("[AlternateSignature]")
-				  .AppendLine("public extern " + className + "();");
+				  .AppendLine("public " + className + "() {}");
 			}
 			WriteClientConstructor(cb, this);
 			cb.AppendLine();

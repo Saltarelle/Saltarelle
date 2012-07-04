@@ -76,7 +76,7 @@ namespace Saltarelle.Members {
 					case "textarea":
 						return "TextAreaElement";
 					default:
-						return "DOMElement";
+						return "Element";
 				}
 			}
 		}
