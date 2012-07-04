@@ -1,26 +1,18 @@
 using System;
 using Saltarelle;
 using Saltarelle.Members;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-#else
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	class ViewDirectiveNodeProcessor : INodeProcessor {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (node.NodeType != XmlNodeType.ProcessingInstruction || Utils.NodeName(node) != "view")
+			if (node.NodeType != XmlNodeType.ProcessingInstruction || node.Name != "view")
 				return false;
 			if (!isRoot)
-				throw ParserUtils.TemplateErrorException(string.Format("The view directive can only appear outside of the template.", Utils.NodeName(node)));
+				throw ParserUtils.TemplateErrorException(string.Format("The view directive can only appear outside of the template.", node.Name));
 
-			string[] serverTypeArr = Utils.RegexExec(Utils.NodeValue(node), "modelType=\"([^\"]*)\"", "");
-			string[] clientTypeArr = Utils.RegexExec(Utils.NodeValue(node), "clientModelType=\"([^\"]*)\"", "");
+			string[] serverTypeArr = Utils.RegexExec(node.Value, "modelType=\"([^\"]*)\"", "");
+			string[] clientTypeArr = Utils.RegexExec(node.Value, "clientModelType=\"([^\"]*)\"", "");
 			if (Utils.IsNull(serverTypeArr) && !Utils.IsNull(clientTypeArr))
 				throw ParserUtils.TemplateErrorException("You cannot specify a client type for the model if you don't specify a server type");
 

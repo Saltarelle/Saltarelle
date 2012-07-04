@@ -44,6 +44,7 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>0028, 1591</NoWarn>
     <DocumentationFile>bin\SaltarelleLib.Client.xml</DocumentationFile>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -57,13 +58,13 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;CLIENT</DefineConstants>
     <DocumentationFile>bin\SaltarelleLib.Client.xml</DocumentationFile>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <NoWarn>0028, 1591</NoWarn>
     <NoStdLib>True</NoStdLib>
-    <DebugType>
-    </DebugType>
+    <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\Saltarelle.snk">
@@ -145,16 +146,16 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.71\tools\Assemblies\mscorlib.dll</HintPath>
+      <HintPath>..\..\packages\Saltarelle.Runtime.0.0.0.75\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="Script.jQuery">
-      <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.33\lib\Script.jQuery.dll</HintPath>
+      <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.35\lib\Script.jQuery.dll</HintPath>
     </Reference>
     <Reference Include="Script.Web">
-      <HintPath>..\..\packages\Saltarelle.Web.0.0.0.50\lib\Script.Web.dll</HintPath>
+      <HintPath>..\..\packages\Saltarelle.Web.0.0.0.51\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.34\tools\Saltarelle.Compiler.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.42\tools\Saltarelle.Compiler.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />

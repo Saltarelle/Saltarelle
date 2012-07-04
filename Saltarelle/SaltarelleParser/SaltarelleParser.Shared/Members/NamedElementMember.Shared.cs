@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Saltarelle.Ioc;
 
 namespace Saltarelle.Members {
@@ -17,7 +18,7 @@ namespace Saltarelle.Members {
 			this.name = name;
 		}
 
-		public string[] Dependencies {
+		public IList<string> Dependencies {
 			get { return new string[0]; }
 		}
 		

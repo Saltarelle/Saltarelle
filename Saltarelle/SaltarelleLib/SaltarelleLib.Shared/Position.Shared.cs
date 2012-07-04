@@ -1,8 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
-#if SERVER
 using System.Text;
-#endif
 #if CLIENT
 using System.Html;
 #endif
@@ -81,7 +79,7 @@ namespace Saltarelle
 		}
 
 #if CLIENT
-		public static void ApplyPosition(DOMElement el, Position pos) {
+		public static void ApplyPosition(Element el, Position pos) {
 			switch (pos.anchor) {
 				case AnchoringEnum.NotPositioned:
 					el.Style.Position = "";
@@ -101,7 +99,7 @@ namespace Saltarelle
 			}
 		}
 		
-		public static Position GetPosition(DOMElement el) {
+		public static Position GetPosition(Element el) {
 			switch (el.Style.Position) {
 				case "absolute":
 					return LeftTop(Utils.ParseInt(el.Style.Left.Replace("px", "")), Utils.ParseInt(el.Style.Top.Replace("px", "")));

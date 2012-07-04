@@ -11,16 +11,13 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace System {
+namespace System.Runtime.CompilerServices {
 	// to make it possible to use these Script# attibutes in shared files
 	public sealed class RecordAttribute : Attribute {}
 	public sealed class PreserveCaseAttribute : Attribute {}
 }
 
 namespace Saltarelle {
-	public delegate void XmlAttributeAction(XmlAttribute a);
-	public delegate void XmlNodeAction(XmlNode n);
-
 	public static partial class Utils {
 		private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.MicrosoftDateFormat };
 
@@ -48,14 +45,6 @@ namespace Saltarelle {
 			return Convert.ToString(d, System.Globalization.NumberFormatInfo.InvariantInfo);
 		}
 		
-		public static char CharCode(char ch) {
-			return ch;
-		}
-
-		public static string RepeatChar(char ch, int count) {
-			return new string(ch, count);
-		}
-
 		public static double Round(double value, int numDecimals) {
 			return Math.Round(value, numDecimals);
 		}
@@ -64,14 +53,6 @@ namespace Saltarelle {
 			return Math.Ceiling(value);
 		}
 		
-		public static int ArrayLength(ArrayList l) {
-			return l.Count;
-		}
-
-		public static int ArrayLength<T>(List<T> l) {
-			return l.Count;
-		}
-
 		public static string ScriptEncode(string s) {
 			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < s.Length; i++) {
@@ -104,18 +85,10 @@ namespace Saltarelle {
 			return JsonConvert.DeserializeObject<T>(s, jsonSerializerSettings);
 		}
 
-		public static double NaN {
-			get { return double.NaN; }
-		}
-
-		public static bool IsNaN(double v) {
-			return double.IsNaN(v);
-		}
-
 		public static bool IsNull(object o) {
 			return o == null;
 		}
-		
+
 		public static string JoinStrings(string separator, string[] value) {
 			return string.Join(separator, value);
 		}
@@ -136,41 +109,6 @@ namespace Saltarelle {
 			return decimals == 0 ? Utils.ToStringInvariantInt((int)number) : number.ToString("F" + decimals, NumberFormatInfo.InvariantInfo);
 		}
 
-		public static T[] ArrayResize<T>(T[] arr, int newSize, T newValue) {
-			int oldSize = arr.Length;
-			Array.Resize(ref arr, newSize);
-			for (int i = oldSize; i < newSize; i++)
-				arr[i] = newValue;
-			return arr;
-		}
-		
-		public static T[] ArrayAppend<T>(T[] arr, T item) {
-			Array.Resize(ref arr, arr.Length + 1);
-			arr[arr.Length - 1] = item;
-			return arr;
-		}
-		
-		public static T[] ArrayAppendRange<T>(T[] arr, T[] add) {
-			int oldLen = arr.Length;
-			Array.Resize(ref arr, arr.Length + add.Length);
-			for (int i = 0; i < add.Length; i++)
-				arr[i + oldLen] = add[i];
-			return arr;
-		}
-
-		public static T[] CloneArray<T>(T[] arr) {
-			return (T[])arr.Clone();
-		}
-		
-		public static T[] ArrayRemoveAt<T>(T[] arr, int index) {
-			T[] result = new T[arr.Length - 1];
-			for (int i = 0; i < index; i++)
-				result[i] = arr[i];
-			for (int i = index + 1; i < arr.Length; i++)
-				result[i - 1] = arr[i];
-			return result;
-		}
-
 		public static double MillisecondDifference(DateTime first, DateTime second) {
 			return (first - second).TotalMilliseconds;
 		}
@@ -183,34 +121,18 @@ namespace Saltarelle {
 			return HttpUtility.UrlDecode(s);
 		}
 		
-		public static void DoForEachAttribute(XmlNode node, XmlAttributeAction a) {
+		public static void DoForEachAttribute(XmlNode node, Action<XmlAttribute> a) {
 			foreach (XmlAttribute attr in node.Attributes)
 				a(attr);
 		}
 
-		public static void DoForEachChild(XmlNode node, XmlNodeAction a) {
+		public static void DoForEachChild(XmlNode node, Action<XmlNode> a) {
 			foreach (XmlNode c in node.ChildNodes)
 				a(c);
 		}
 
 		public static int GetNumChildNodes(XmlNode n) {
 			return n.HasChildNodes ? n.ChildNodes.Count : 0;
-		}
-
-		public static int GetNumAttributes(XmlNode n) {
-			return n.Attributes.Count;
-		}
-
-		public static string NodeName(XmlNode n) {
-			return n.Name;
-		}
-
-		public static string NodeValue(XmlNode n) {
-			return n.Value;
-		}
-
-		public static string NodeOuterXml(XmlNode n) {
-			return n.OuterXml;
 		}
 
 		public static XmlDocument ParseXml(string xml) {
@@ -295,7 +217,7 @@ namespace Saltarelle {
 					asmCache[assemblyName] = a = GetAllAssemblies().SingleOrDefault(x => x.GetName().Name == assemblyName);
 				}
 			}
-			return !IsNull(a);
+			return a != null;
 		}
 
 		public static Exception ArgumentException(string argument) {

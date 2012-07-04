@@ -1,26 +1,17 @@
 ﻿using System;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	internal class UsingDirectiveNodeProcessor : INodeProcessor {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (node.NodeType != XmlNodeType.ProcessingInstruction || Utils.NodeName(node) != "using")
+			if (node.NodeType != XmlNodeType.ProcessingInstruction || node.Name != "using")
 				return false;
 
 			if (!isRoot)
-				throw ParserUtils.TemplateErrorException(string.Format("The using directive can only appear outside of the template.", Utils.NodeName(node)));
+				throw ParserUtils.TemplateErrorException(string.Format("The using directive can only appear outside of the template.", node.Name));
 				
-			string[] sideArr      = Utils.RegexExec(Utils.NodeValue(node), "side=\"([^\"]*)\"", "");
-			string[] namespaceArr = Utils.RegexExec(Utils.NodeValue(node), "namespace=\"([^\"]*)\"", "");
+			string[] sideArr      = Utils.RegexExec(node.Value, "side=\"([^\"]*)\"", "");
+			string[] namespaceArr = Utils.RegexExec(node.Value, "namespace=\"([^\"]*)\"", "");
 	
 			if (Utils.IsNull(namespaceArr))
 				throw ParserUtils.TemplateErrorException("Using directive must have the namespace specified.");

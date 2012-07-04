@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Generic;
 using System.Html;
 using System.Runtime.CompilerServices;
 using System.Xml;
@@ -16,7 +19,7 @@ namespace Saltarelle {
 		}
 
 		public static string[] RegexExec(string toTest, string pattern, string options) {
-			var x = new RegularExpression(pattern, options);
+			var x = new Regex(pattern, options);
 			return x.Exec(toTest);
 		}
 		
@@ -36,21 +39,35 @@ namespace Saltarelle {
 			return Math.Ceil(value);
 		}
 
+		private static Regex escapeable = new Regex(@"[""\\\x00-\x1f\x7f-\x9f]", "g");
+		private static JsDictionary<string, string> substitutions;
+
 		public static string ScriptEncode(string s) {
-			return jQuery.quoteString(s);
+			if (escapeable.Test(s)) {
+				return "\"" + s.ReplaceRegex(escapeable, a => {
+					var c = substitutions[a];
+					if (Type.GetScriptType(c) == "string") {
+					    return c;
+					}
+					int code = a.CharCodeAt(0);
+					return "\\u00" + (code / 16).ToString(16) + (code % 16).ToString(16);
+				}) + "\"";
+			}
+			return "\"" + s + "\"";
 		}
 		
+#warning TODO: Date handling
 		public static string Json(object o) {
-			return jQuery.toJSON(o);
+			return System.Serialization.Json.Stringify(o);
 		}
 		
 		public static object EvalJson(string s) {
-			return jQuery.evalJSON(s);
+			return System.Serialization.Json.Parse(s);
 		}
 
 		[IgnoreGenericArguments]
 		public static T EvalJson<T>(string s) {
-			return (T)jQuery.evalJSON(s);
+			return System.Serialization.Json.ParseData<T>(s);
 		}
 
 		public static bool IsNull(object o) {
@@ -61,19 +78,19 @@ namespace Saltarelle {
 			return value.Join(separator);
 		}
 		
-		public static Date ParseDateExact(string value, string format) {
-			return (Date)Type.InvokeMethod(typeof(Date), "parseExact", value, format);
+		public static DateTime ParseDateExact(string value, string format) {
+			return (DateTime)Type.InvokeMethod(typeof(DateTime), "parseExact", value, format);
 		}
 
-		public static string FormatDate(Date value, string format) {
-			return new Date(value.GetUTCFullYear(), value.GetUTCMonth(), value.GetUTCDate(), value.GetUTCHours(), value.GetUTCMinutes(), value.GetUTCSeconds(), value.GetUTCMilliseconds()).Format(format);
+		public static string FormatDate(DateTime value, string format) {
+			return new DateTime(value.GetUTCFullYear(), value.GetUTCMonth(), value.GetUTCDate(), value.GetUTCHours(), value.GetUTCMinutes(), value.GetUTCSeconds(), value.GetUTCMilliseconds()).Format(format);
 		}
 		
 		public static string FormatNumber(double number, int decimals) {
 			return decimals == 0 ? ToStringInvariantInt((int)number) : number.Format("F" + decimals);
 		}
 
-		public static double MillisecondDifference(Date first, Date second) {
+		public static double MillisecondDifference(DateTime first, DateTime second) {
 			return first - second;
 		}
 
@@ -185,15 +202,19 @@ namespace Saltarelle {
 			c.Attach();
 		}
 
-		public static void Ajax(JsDictionary data, string url, bool post, Delegate success, Delegate error) {
-			jQuery.Ajax(new JsDictionary("data", data,
-			                             "dataFilter", new EvalJsonDelegate(jQuery.evalJSON),
-			                             "dataType", "json",
-			                             "cache", false,
-			                             "type", post ? "POST" : "GET",
-			                             "url", url,
-			                             "success", success,
-			                             "error", error));
+		public static jQueryXmlHttpRequest Ajax(JsDictionary data, string url, bool post, AjaxRequestCallback success, AjaxErrorCallback error) {
+			return jQuery.Ajax(new jQueryAjaxOptions { Data = data, DataFilter = (d, _) => EvalJson(d), DataType = "json", Cache = false, Type = post ? "POST" : "GET", Url = url, Success = success, Error = error });
+		}
+
+		static Utils() {
+			substitutions = new JsDictionary<string, string>();
+			substitutions["\b"] = "\\b";
+			substitutions["\t"] = "\\t";
+			substitutions["\n"] = "\\n";
+			substitutions["\f"] = "\\f";
+			substitutions["\r"] = "\\r";
+			substitutions["\""] = "\\\"";
+			substitutions["\\"] = "\\\\";
 		}
 	}
 }

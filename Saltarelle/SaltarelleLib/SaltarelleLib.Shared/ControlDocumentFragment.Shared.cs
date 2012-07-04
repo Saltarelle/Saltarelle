@@ -1,10 +1,13 @@
 using System;
 using Saltarelle.Ioc;
+using System.Runtime.CompilerServices;
 #if SERVER
 using System.Linq;
 #endif
 #if CLIENT
 using System.Html;
+using jQueryApi;
+
 #endif
 
 namespace Saltarelle {
@@ -41,9 +44,9 @@ namespace Saltarelle {
             GlobalServices.Initialize(f.scriptManagerConfig);
 		}
 	
-		public static IControl Inject(ControlDocumentFragment f, string newId, IContainer container, DOMElement parent) {
+		public static IControl Inject(ControlDocumentFragment f, string newId, IContainer container, Element parent) {
 			PrepareForInject(f);
-			JQueryProxy.jQuery(parent).html(f.html);
+			jQuery.FromElement(parent).Html(f.html);
 
 			IControl control = (IControl)container.CreateObjectByTypeNameWithConstructorArg(f.controlType, f.configObject);
 			control.Id = newId;

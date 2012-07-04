@@ -1,31 +1,22 @@
 ﻿using System;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	class ImplementsOrInheritsNodeProcessor : INodeProcessor {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (node.NodeType != XmlNodeType.ProcessingInstruction || (Utils.NodeName(node) != "inherits" && Utils.NodeName(node) != "implements"))
+			if (node.NodeType != XmlNodeType.ProcessingInstruction || (node.Name != "inherits" && node.Name != "implements"))
 				return false;
 
 			if (!isRoot)
-				throw ParserUtils.TemplateErrorException(string.Format("The {0} directive can only appear outside of the template.", Utils.NodeName(node)));
+				throw ParserUtils.TemplateErrorException(string.Format("The {0} directive can only appear outside of the template.", node.Name));
 				
-			string[] sideArr = Utils.RegexExec(Utils.NodeValue(node), "side=\"([^\"]*)\"", "");
-			string[] typeArr = Utils.RegexExec(Utils.NodeValue(node), "type=\"([^\"]*)\"", "");
+			string[] sideArr = Utils.RegexExec(node.Value, "side=\"([^\"]*)\"", "");
+			string[] typeArr = Utils.RegexExec(node.Value, "type=\"([^\"]*)\"", "");
 	
 			if (Utils.IsNull(typeArr))
-				throw ParserUtils.TemplateErrorException(Utils.NodeName(node) + " elements must have the type specified.");
+				throw ParserUtils.TemplateErrorException(node.Name + " elements must have the type specified.");
 			if (Utils.IsNull(sideArr))
-				throw ParserUtils.TemplateErrorException(Utils.NodeName(node) + " elements must have the side specified.");
+				throw ParserUtils.TemplateErrorException(node.Name + " elements must have the side specified.");
 
 			string side = sideArr[1].Trim(), type = typeArr[1].Trim();
 
@@ -44,10 +35,10 @@ namespace Saltarelle.NodeProcessors {
 					clientSide = true;
 					break;
 				default:
-					throw ParserUtils.TemplateErrorException("The side attribute of the " + Utils.NodeName(node) + " element must be 'client', 'server', or 'both'.");
+					throw ParserUtils.TemplateErrorException("The side attribute of the " + node.Name + " element must be 'client', 'server', or 'both'.");
 			}
 
-			if (Utils.NodeName(node) == "implements") {
+			if (node.Name == "implements") {
 				if (serverSide) {
 					if (template.ImplementsServerInterface(type))
 						throw ParserUtils.TemplateErrorException("The interface " + type + " is implemented more than once on the server side.");

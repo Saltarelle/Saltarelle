@@ -1,12 +1,6 @@
 ﻿using System;
-#if SERVER
-using FragmentList       = System.Collections.Generic.List<Saltarelle.IFragment>;
-using FragmentEnumerator = System.Collections.Generic.IEnumerator<Saltarelle.IFragment>;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-#else
-using FragmentList       = System.ArrayList;
-using FragmentEnumerator = System.Collections.IEnumerator;
-#endif
 
 namespace Saltarelle {
 	public class ParserUtils {
@@ -25,8 +19,8 @@ namespace Saltarelle {
 			return !Utils.IsNull(id) && QualifiedNameRegex.IsMatch(id);
 		}
 #else
-		private static readonly RegularExpression UnqualifiedNameRegex = new RegularExpression("^[a-z_][a-z_0-9]*$", "i");
-		private static readonly RegularExpression QualifiedNameRegex = new RegularExpression("^(?:[a-z_][a-z_0-9]*\\.)*[a-z_][a-z_0-9]*$", "i");
+		private static readonly Regex UnqualifiedNameRegex = new Regex("^[a-z_][a-z_0-9]*$", "i");
+		private static readonly Regex QualifiedNameRegex = new Regex("^(?:[a-z_][a-z_0-9]*\\.)*[a-z_][a-z_0-9]*$", "i");
 
 		public static bool IsValidUnqualifiedName(string id) {
 			return !Utils.IsNull(id) && UnqualifiedNameRegex.Exec(id) != null;
@@ -37,18 +31,18 @@ namespace Saltarelle {
 		}
 #endif
 
-		public static FragmentList MergeFragments(FragmentList fragments) {
-			FragmentList result = new FragmentList();
+		public static List<IFragment> MergeFragments(IEnumerable<IFragment> fragments) {
+			List<IFragment> result = new List<IFragment>();
 
 			IFragment current = null;
-			FragmentEnumerator enumerator = null;
+			IEnumerator<IFragment> enumerator = null;
 			try {
 				enumerator = fragments.GetEnumerator();
 				if (enumerator.MoveNext()) {
-					current = (IFragment)enumerator.Current;
+					current = enumerator.Current;
 					while (enumerator.MoveNext()) {
-						IFragment item = (IFragment)enumerator.Current;
-						IFragment merged = current.TryMergeWithNext(item);
+						var item = enumerator.Current;
+						var merged = current.TryMergeWithNext(item);
 						if (Utils.IsNull(merged)) {
 							result.Add(current);
 							current = item;
@@ -61,10 +55,8 @@ namespace Saltarelle {
 				}
 			}
 			finally {
-				#if SERVER
-					if (!Utils.IsNull(enumerator))
-						enumerator.Dispose();
-				#endif
+				if (enumerator is IDisposable)
+					((IDisposable)enumerator).Dispose();
 			}
 			return result;
 		}

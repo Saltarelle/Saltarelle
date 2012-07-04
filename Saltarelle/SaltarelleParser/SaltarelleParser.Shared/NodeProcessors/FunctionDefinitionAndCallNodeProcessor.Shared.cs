@@ -1,16 +1,7 @@
 using System;
 using Saltarelle.Members;
 using Saltarelle.Fragments;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	internal class FunctionDefinitionAndCallNodeProcessor : INodeProcessor {
@@ -20,13 +11,13 @@ namespace Saltarelle.NodeProcessors {
 			
 			if (Utils.IsNull(nameAttr))
 				throw ParserUtils.TemplateErrorException("The <def-fragment> element must have the name attribute specified.");
-			string name = Utils.NodeValue(nameAttr);
+			string name = nameAttr.Value;
 			if (!ParserUtils.IsValidUnqualifiedName(name))
 				throw ParserUtils.TemplateErrorException("The name " + name + " is not a valid unqualified identifier.");
 			if (template.HasMember(name))
 				throw ParserUtils.TemplateErrorException("Duplicate definition of member " + name + ".");
 
-			RenderFunctionMember m = new RenderFunctionMember(Utils.NodeValue(nameAttr), !Utils.IsNull(paramsAttr) ? Utils.NodeValue(paramsAttr) : "");
+			RenderFunctionMember m = new RenderFunctionMember(nameAttr.Value, !Utils.IsNull(paramsAttr) ? paramsAttr.Value : "");
 
 			Utils.DoForEachChild(node, delegate(XmlNode n) {
 				docProcessor.ProcessRecursive(n, template, m);
@@ -43,17 +34,17 @@ namespace Saltarelle.NodeProcessors {
 			
 			if (Utils.IsNull(nameAttr))
 				throw ParserUtils.TemplateErrorException("The <call-fragment> element must have the name attribute specified.");
-			string name = Utils.NodeValue(nameAttr);
+			string name = nameAttr.Value;
 			if (!ParserUtils.IsValidUnqualifiedName(name))
 				throw ParserUtils.TemplateErrorException("The name " + name + " is not a valid unqualified identifier.");
 			if (Utils.GetNumChildNodes(node) != 0)
 				throw ParserUtils.TemplateErrorException("The <call-fragment> element cannot have children.");
 
-			return new CodeExpressionFragment(name + "(" + (!Utils.IsNull(paramsAttr) ? Utils.NodeValue(paramsAttr) : "") + ")");
+			return new CodeExpressionFragment(name + "(" + (!Utils.IsNull(paramsAttr) ? paramsAttr.Value : "") + ")");
 		}
 
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			string name = Utils.NodeName(node);
+			string name = node.Name;
 			if (node.NodeType == XmlNodeType.Element && name == "def-fragment") {
 				if (isRoot)
 					throw ParserUtils.TemplateErrorException("Fragment definitions must be inside the template.");

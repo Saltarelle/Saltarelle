@@ -1,15 +1,6 @@
 ﻿using System;
 using Saltarelle.Fragments;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	class EmbeddedCodeNodeProcessor : INodeProcessor {
@@ -17,8 +8,8 @@ namespace Saltarelle.NodeProcessors {
 			if (node.NodeType != XmlNodeType.ProcessingInstruction)
 				return false;
 
-			string v = Utils.NodeValue(node).Trim();
-			switch (Utils.NodeName(node)) {
+			string v = node.Value.Trim();
+			switch (node.Name) {
 				case "x":
 					if (v == "")
 						throw ParserUtils.TemplateErrorException("Empty embedded expression");

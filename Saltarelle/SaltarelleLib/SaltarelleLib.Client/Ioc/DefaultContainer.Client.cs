@@ -1,36 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Saltarelle.Ioc {
     public class DefaultContainer : IContainer {
-        private Dictionary serviceConfig;
-        private Dictionary injections;
-        private Dictionary runningServices;
+        private Dictionary<string, ScriptManagerConfigServiceEntry> serviceConfig;
+        private Dictionary<string, IList<ScriptManagerConfigInjectedPropertyRow>> injections;
+        private Dictionary<string, object> runningServices;
 
         public DefaultContainer() {
-            serviceConfig   = new Dictionary();
-            injections      = new Dictionary();
-            runningServices = new Dictionary();
+            serviceConfig   = new Dictionary<string, ScriptManagerConfigServiceEntry>();
+            injections      = new Dictionary<string, IList<ScriptManagerConfigInjectedPropertyRow>>();
+            runningServices = new Dictionary<string, object>();
             runningServices[typeof(IContainer).FullName] = this;
         }
 
-        public void RegisterServiceConfig(Dictionary/*<string, ScriptManagerConfigServiceEntry>*/ config) {
-            foreach (DictionaryEntry e in config) {
-                if (!this.serviceConfig.ContainsKey(e.Key))
-                    this.serviceConfig[e.Key] = e.Value;
-            }
+        public void RegisterServiceConfig(string typeName, ScriptManagerConfigServiceEntry config) {
+            if (!this.serviceConfig.ContainsKey(typeName))
+                this.serviceConfig[typeName] = config;
         }
 
-        public void RegisterInjections(Dictionary/*<string, IList<ScriptManagerConfigInjectedPropertyRow>*/ injections) {
-            foreach (DictionaryEntry e in injections) {
-                if (!this.injections.ContainsKey(e.Key))
-                    this.injections[e.Key] = e.Value;
-            }
+        public void RegisterInjection(string typeName, IList<ScriptManagerConfigInjectedPropertyRow> injections) {
+            if (!this.injections.ContainsKey(typeName))
+                this.injections[typeName] = injections;
         }
 
         private void Inject(object o) {
             string typeName = o.GetType().FullName;
             if (injections.ContainsKey(typeName)) {
-                foreach (ScriptManagerConfigInjectedPropertyRow r in (ArrayList)injections[typeName]) {
+                foreach (ScriptManagerConfigInjectedPropertyRow r in injections[typeName]) {
                     Utils.SetPropertyValue(o, r.propertyName, ResolveServiceByTypeName(r.typeName));
                 }
             }

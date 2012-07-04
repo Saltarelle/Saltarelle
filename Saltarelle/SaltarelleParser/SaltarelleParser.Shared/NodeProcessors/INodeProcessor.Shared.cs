@@ -1,9 +1,5 @@
 ﻿using System;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-#else
 using System.Xml;
-#endif
 
 namespace Saltarelle {
 	public interface INodeProcessor {

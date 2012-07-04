@@ -1,7 +1,6 @@
 ﻿using System;
-#if SERVER
+using System.Runtime.CompilerServices;
 using System.Text;
-#endif
 
 namespace Saltarelle.TypedMarkupParsers {
 	[Record]

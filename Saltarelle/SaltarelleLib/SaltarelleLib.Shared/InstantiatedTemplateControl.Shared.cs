@@ -106,7 +106,7 @@ namespace Saltarelle {
 #if SERVER
 		public InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml) {
 			this.getHtml       = getHtml;
-			this.namedElements = new StringList();
+			this.namedElements = new List<string>();
 		}
 		
 		public object ConfigObject {
@@ -128,7 +128,7 @@ namespace Saltarelle {
 		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		[AlternateSignature]
-		public extern InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml);
+		public InstantiatedTemplateControl(InstantiatedTemplateControlGetHtmlDelegate getHtml) {}
 
 		private JsDictionary config;
 		

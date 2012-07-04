@@ -59,7 +59,7 @@
     <DocumentationFile>bin\SaltarelleParser.Client.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <NoWarn>0028, 1591</NoWarn>
-    <NoStdLib>true</NoStdLib>
+    <NoStdLib>True</NoStdLib>
     <DebugType>
     </DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -206,6 +206,7 @@
       <Link>Properties\SaltarelleParserVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Client\SaltarelleLib.Client.csproj">
@@ -231,14 +232,19 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="sscorlib">
-      <HintPath>..\..\packages-manual\ScriptSharp\sscorlib.dll</HintPath>
+    <Reference Include="mscorlib">
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.75\tools\Assemblies\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.jQuery, Version=0.0.0.35, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.35\lib\Script.jQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.Web, Version=0.0.0.51, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Saltarelle.Web.0.0.0.51\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages-manual\ScriptSharp\nStuff.ScriptSharp.targets" />
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(TargetDir)$(ProjectName).debug.js" DestinationFiles="$(ProjectDir)..\Script.js" />
-    <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.min.js" />
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
   </Target>
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.42\tools\Saltarelle.Compiler.targets" />
 </Project>

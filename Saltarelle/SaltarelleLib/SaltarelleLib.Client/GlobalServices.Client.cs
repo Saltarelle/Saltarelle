@@ -11,8 +11,10 @@ namespace Saltarelle {
             }
             if (scriptManager == null)
                 scriptManager = new DefaultScriptManagerService(config.nextUniqueId);
-            container.RegisterServiceConfig(config.services);
-            container.RegisterInjections(config.injections);
+			foreach (var svc in config.services)
+				container.RegisterServiceConfig(svc.Key, svc.Value);
+			foreach (var inj in config.injections)
+				container.RegisterInjection(inj.Key, inj.Value);
 
             foreach (ScriptManagerConfigControlRow c in config.controls) {
                 scriptManager.RegisterTopLevelControl((IControl)container.CreateObjectByTypeNameWithConstructorArg(c.type, c.config));

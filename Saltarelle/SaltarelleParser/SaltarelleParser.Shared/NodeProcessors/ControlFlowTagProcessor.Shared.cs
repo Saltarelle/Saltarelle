@@ -1,44 +1,34 @@
 ﻿using System;
-using Saltarelle.Fragments;
-#if CLIENT
-using XmlNode      = System.XML.XMLNode;
-using XmlNodeType  = System.XML.XMLNodeType;
-using XmlAttribute = System.XML.XMLAttribute;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
-
+using Saltarelle.Fragments;
 
 namespace Saltarelle.NodeProcessors {
 	class ControlFlowTagProcessor : INodeProcessor {
 		internal static string GetStatement(XmlNode node) {
-			switch (Utils.NodeName(node)) {
+			switch (node.Name) {
 				case "for": {
 					XmlAttribute eachAttr = (XmlAttribute)node.Attributes.GetNamedItem("each"), stmtAttr = (XmlAttribute)node.Attributes.GetNamedItem("stmt");
 					if ((!Utils.IsNull(eachAttr)) == (!Utils.IsNull(stmtAttr)))
 						throw ParserUtils.TemplateErrorException("In the <for> element, exactly one of the each and stmt attributes must be defined.");
-					return !Utils.IsNull(eachAttr) ? ("foreach (" + Utils.NodeValue(eachAttr) + ")") : ("for (" + Utils.NodeValue(stmtAttr) + ")");
+					return !Utils.IsNull(eachAttr) ? ("foreach (" + eachAttr.Value + ")") : ("for (" + stmtAttr.Value + ")");
 				}
 				case "if": {
 					XmlAttribute testAttr = (XmlAttribute)node.Attributes.GetNamedItem("test");
 					if (Utils.IsNull(testAttr))
 						throw ParserUtils.TemplateErrorException("The <if> element must have the test attribute specified.");
-					return "if (" + Utils.NodeValue(testAttr) + ")";
+					return "if (" + testAttr.Value + ")";
 				}
 				case "while": {
 					XmlAttribute testAttr = (XmlAttribute)node.Attributes.GetNamedItem("test");
 					if (Utils.IsNull(testAttr))
 						throw ParserUtils.TemplateErrorException("The <while> element must have the test attribute specified.");
-					return "while (" + Utils.NodeValue(testAttr) + ")";
+					return "while (" + testAttr.Value + ")";
 				}
 				case "switch": {
 					XmlAttribute exprAttr = (XmlAttribute)node.Attributes.GetNamedItem("expr");
 					if (Utils.IsNull(exprAttr))
 						throw ParserUtils.TemplateErrorException("The <switch> element must have the expr attribute specified.");
-					return "switch (" + Utils.NodeValue(exprAttr) + ")";
+					return "switch (" + exprAttr.Value + ")";
 				}
 				default:
 					return null;
@@ -50,20 +40,20 @@ namespace Saltarelle.NodeProcessors {
 			bool hasAny = false;
 			Utils.DoForEachChild(switchNode, delegate(XmlNode child) {
 				#if CLIENT
-					if (((child.NodeType == XmlNodeType.Text || child.NodeType == XmlNodeType.CharacterData) && child.NodeValue.Trim() == "") || child.NodeType == XmlNodeType.Comment)
+					if (((child.NodeType == XmlNodeType.Text || child.NodeType == XmlNodeType.CDATA) && child.Value.Trim() == "") || child.NodeType == XmlNodeType.Comment)
 						return;
 				#else
 					if (child.NodeType == XmlNodeType.Whitespace || child.NodeType == XmlNodeType.SignificantWhitespace || child.NodeType == XmlNodeType.Comment)
 						return;
 				#endif
 
-				if (child.NodeType == XmlNodeType.Element && Utils.NodeName(child) == "case") {
+				if (child.NodeType == XmlNodeType.Element && child.Name == "case") {
 					XmlAttribute valueAttr = (XmlAttribute)child.Attributes.GetNamedItem("value");
 					if (Utils.IsNull(valueAttr))
 						throw ParserUtils.TemplateErrorException("The <case> element must have the value attribute specified.");
-					currentRenderFunction.AddFragment(new CodeFragment("case " + Utils.NodeValue(valueAttr) + ": {", 1));
+					currentRenderFunction.AddFragment(new CodeFragment("case " + valueAttr.Value + ": {", 1));
 				}
-				else if (child.NodeType == XmlNodeType.Element && Utils.NodeName(child) == "default") {
+				else if (child.NodeType == XmlNodeType.Element && child.Name == "default") {
 					if (hasDefault)
 						throw ParserUtils.TemplateErrorException("There can only be one <default> element inside <switch>");
 					hasDefault = true;
@@ -88,9 +78,9 @@ namespace Saltarelle.NodeProcessors {
 			if (node.NodeType != XmlNodeType.Element)
 				return false;
 
-			if (Utils.NodeName(node) == "case" || Utils.NodeName(node) == "default")
+			if (node.Name == "case" || node.Name == "default")
 				throw ParserUtils.TemplateErrorException("<case> and <default> can only occur inside <switch>");
-			if (Utils.NodeName(node) == "else-if" || Utils.NodeName(node) == "else")
+			if (node.Name == "else-if" || node.Name == "else")
 				throw ParserUtils.TemplateErrorException("<else-if> and <else> can only occur inside <if>");
 
 			string statement = GetStatement(node);
@@ -102,23 +92,23 @@ namespace Saltarelle.NodeProcessors {
 
 			currentRenderFunction.AddFragment(new CodeFragment(statement + " {", 1));
 
-			if (Utils.NodeName(node) == "switch") {
+			if (node.Name == "switch") {
 				ProcessSwitchContent(docProcessor, node, template, currentRenderFunction);
 			}
 			else {
 				bool hasElse = false;
 				Utils.DoForEachChild(node, delegate(XmlNode child) {
-					if (Utils.NodeName(node) == "if" && (child.NodeType == XmlNodeType.Element && (Utils.NodeName(child) == "else-if" || Utils.NodeName(child) == "else"))) {
+					if (node.Name == "if" && (child.NodeType == XmlNodeType.Element && (child.Name == "else-if" || child.Name == "else"))) {
 						if (hasElse)
 							throw ParserUtils.TemplateErrorException("There cannot be other <else-if> or <else> elements after <else>.");
 						if (Utils.GetNumChildNodes(child) > 0)
-							throw ParserUtils.TemplateErrorException("<" + Utils.NodeName(child) + "> elements should not have children.");
+							throw ParserUtils.TemplateErrorException("<" + child.Name + "> elements should not have children.");
 						string possibleTest;
-						if (Utils.NodeName(child) == "else-if") {
+						if (child.Name == "else-if") {
 							XmlAttribute testAttr = (XmlAttribute)child.Attributes.GetNamedItem("test");
 							if (Utils.IsNull(testAttr))
 								throw ParserUtils.TemplateErrorException("The <else-if> elements must have the test attribute specified.");
-							possibleTest = "if (" + Utils.NodeValue(testAttr) + ") ";
+							possibleTest = "if (" + testAttr.Value + ") ";
 						}
 						else {
 							hasElse = true;
