@@ -21,7 +21,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -36,6 +36,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -44,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>0028, 1591</NoWarn>
     <DocumentationFile>bin\SaltarelleParser.Client.xml</DocumentationFile>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\</OutputPath>
@@ -60,10 +62,10 @@
     <Optimize>true</Optimize>
     <NoWarn>0028, 1591</NoWarn>
     <NoStdLib>True</NoStdLib>
-    <DebugType>
-    </DebugType>
+    <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\Saltarelle.snk">
@@ -242,9 +244,9 @@
       <HintPath>..\..\packages\Saltarelle.Web.0.0.0.51\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.42\tools\Saltarelle.Compiler.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
   </Target>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.42\tools\Saltarelle.Compiler.targets" />
 </Project>
