@@ -1,5 +1,6 @@
 using System;
 #if CLIENT
+using System.Collections.Generic;
 using System.Html;
 #endif
 
@@ -31,7 +32,7 @@ namespace Saltarelle
 	{
 		void SetInnerFragments(string[] innerFragments);
 		#if CLIENT
-			Element[] GetInnerElements();
+			IList<Element> GetInnerElements();
 		#endif
 	}
 }

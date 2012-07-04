@@ -1,10 +1,15 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Saltarelle.Ioc;
 #if SERVER
 using System.Collections.Generic;
 #endif
 #if CLIENT
 using System.Html;
+using jQueryApi;
+
 #endif
 
 namespace Saltarelle.UI {
@@ -38,7 +43,7 @@ namespace Saltarelle.UI {
 			public event EventHandler Closed;
 			public event CancelEventHandler Opening;
 			
-			private static ArrayList currentShownDialogs = new ArrayList();
+			private static List<DialogBase> currentShownDialogs = new List<DialogBase>();
 		#endif
 
 		public virtual string Id {
@@ -83,14 +88,14 @@ namespace Saltarelle.UI {
 						Element elem = GetElement();
 						if (string.IsNullOrEmpty(oldTitle) && !string.IsNullOrEmpty(title)) {
 							// Add the titlebar.
-							jQuery tb = JQueryProxy.jQuery(TitlebarHtml);
-							tb.insertBefore(JQueryProxy.jQuery(elem.Children[hasBgiframe ? 1 : 0]));
+							var tb = jQuery.FromHtml(TitlebarHtml);
+							tb.InsertBefore(jQuery.FromElement(elem.Children[hasBgiframe ? 1 : 0]));
 							if (areEventsBound)
-								tb.find("a").click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
+								tb.Find("a").Click(evt => { Close(); evt.PreventDefault(); });
 						}
 						else if (!string.IsNullOrEmpty(oldTitle) && string.IsNullOrEmpty(title)) {
 							// Remove the titlebar.
-							JQueryProxy.jQuery(elem.Children[hasBgiframe ? 1 : 0]).remove();
+							jQuery.FromElement(elem.Children[hasBgiframe ? 1 : 0]).Remove();
 						}
 						else if (!string.IsNullOrEmpty(title)) {
 							elem.Children[hasBgiframe ? 1 : 0].Children[0].InnerText = title;
@@ -210,42 +215,41 @@ namespace Saltarelle.UI {
 			if (elem != null || !createIfMissing)
 				return elem;
 			
-			jQuery jq = JQueryProxy.jQuery("<div id=\"" + ModalCoverId + "\" class=\"ui-widget-overlay\" style=\"display: none\">&nbsp;</div>");
-			if (jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 7.0) {
+			var jq = jQuery.FromHtml("<div id=\"" + ModalCoverId + "\" class=\"ui-widget-overlay\" style=\"display: none\">&nbsp;</div>");
+			if (jQuery.Browser.MSIE && Utils.ParseDouble(jQuery.Browser.Version) < 7.0) {
 				jq.bgiframe();
 				// Need to position the cover in JavaScript. In all other browsers, this is done in CSS.
-				jQuery wnd = JQueryProxy.jQuery((Element)Script.Literal("window"));
-				wnd.scroll(delegate(JQueryEvent evt) {
+				jQuery.Window.Scroll(evt => {
 					RepositionCover(GetModalCover(false));
 				});
-				wnd.resize(delegate(JQueryEvent evt) {
+				jQuery.Window.Resize(evt =>  {
 					RepositionCover(GetModalCover(false));
 				});
-				RepositionCover(jq.get(0));
+				RepositionCover(jq.GetElement(0));
 			}
 
-			jq.appendTo(Document.Body);
-			return jq.get(0);
+			jq.AppendTo(Document.Body);
+			return jq.GetElement(0);
 		}
 
-		private Dictionary config;
+		private JsDictionary config;
 
 		[AlternateSignature]
 		protected DialogBase() {}
 
 		protected DialogBase(object config) {
-			this.config = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);
+			this.config = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);
 		}
 
 		public virtual void DependenciesAvailable() {
 			if (!Utils.IsNull(config)) {
-				InitConfig(Dictionary.GetDictionary(config));
+				InitConfig(JsDictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 		
-		protected virtual void InitConfig(Dictionary config) {
+		protected virtual void InitConfig(JsDictionary config) {
 			id            = (string)config["id"];
 			title         = (string)config["title"];
 			modality      = (DialogModalityEnum)config["modality"];
@@ -295,22 +299,22 @@ namespace Saltarelle.UI {
 			Element elem = GetElement();
 			
 			if (!areEventsBound) {
-				JQueryProxy.jQuery(elem).lostfocus(Element_LostFocus);
+				jQuery.FromElement(elem).lostfocus(Element_LostFocus);
 				if (!string.IsNullOrEmpty(title)) {
-					JQueryProxy.jQuery(elem.Children[0].GetElementsByTagName("a")[0]).click(delegate(JQueryEvent evt) { Close(); evt.preventDefault(); });
+					jQuery.FromElement(elem.Children[0].GetElementsByTagName("a")[0]).Click(evt => { Close(); evt.PreventDefault(); });
 				}
 				areEventsBound = true;
 			}
 
 			// Defer the bgiframe until opening to save load time.
-			if (!hasBgiframe && jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 7) {
-				JQueryProxy.jQuery(elem).bgiframe();
+			if (!hasBgiframe && jQuery.Browser.MSIE && Utils.ParseDouble(jQuery.Browser.Version) < 7) {
+				jQuery.FromElement(elem).bgiframe();
 				hasBgiframe = true;
 			}
 			
 			short zIndex = FirstDialogZIndex;
-			if (currentShownDialogs.Length > 0) {
-				DialogBase tail = (DialogBase)currentShownDialogs[currentShownDialogs.Length - 1];
+			if (currentShownDialogs.Count > 0) {
+				var tail = currentShownDialogs[currentShownDialogs.Count - 1];
 				zIndex = (short)(tail.GetElement().Style.ZIndex + 2);
 			}
 
@@ -323,9 +327,9 @@ namespace Saltarelle.UI {
 
 			if (position.anchor != AnchoringEnum.TopLeft) {
 				// Center the dialog
-				jQuery wnd = JQueryProxy.jQuery((Element)(object)Window.Self), el = JQueryProxy.jQuery(elem);
-				elem.Style.Left = Math.Round(Document.Body.ScrollLeft + (wnd.width()  - el.width() ) / 2).ToString() + "px";
-				elem.Style.Top  = Math.Round(Document.Body.ScrollTop  + (wnd.height() - el.height()) / 2).ToString() + "px";
+				var el = jQuery.FromElement(elem);
+				elem.Style.Left = Math.Round(Document.Body.ScrollLeft + (jQuery.Window.GetWidth()  - el.GetWidth() ) / 2).ToString() + "px";
+				elem.Style.Top  = Math.Round(Document.Body.ScrollTop  + (jQuery.Window.GetHeight() - el.GetHeight()) / 2).ToString() + "px";
 			}
 			
 			if (modality == DialogModalityEnum.Modal) {
@@ -354,7 +358,7 @@ namespace Saltarelle.UI {
 				return;
 
 			// remove this dialog from the shown list
-			for (int i = 0; i < currentShownDialogs.Length; i++) {
+			for (int i = 0; i < currentShownDialogs.Count; i++) {
 				if (currentShownDialogs[i] == this) {
 					currentShownDialogs.RemoveAt(i);
 					break;
@@ -363,7 +367,7 @@ namespace Saltarelle.UI {
 
 			// find the topmost modal dialog
 			int modalIndex = -1;
-			for (int i = currentShownDialogs.Length - 1; i >= 0; i--) {
+			for (int i = currentShownDialogs.Count - 1; i >= 0; i--) {
 				if (((DialogBase)currentShownDialogs[i]).Modality == DialogModalityEnum.Modal) {
 					modalIndex = i;
 					break;
@@ -381,8 +385,8 @@ namespace Saltarelle.UI {
 			}
 
 			GetElement().Style.Display = "none";
-			if (currentShownDialogs.Length > 0)
-				((DialogBase)currentShownDialogs[currentShownDialogs.Length - 1]).Focus();
+			if (currentShownDialogs.Count > 0)
+				currentShownDialogs[currentShownDialogs.Count - 1].Focus();
 
 			OnClosed(EventArgs.Empty);
 		}
@@ -407,7 +411,7 @@ namespace Saltarelle.UI {
 				Closed(this, e);
 
 			if (removeOnClose) {
-				JQueryProxy.jQuery(GetElement()).remove();
+				jQuery.FromElement(GetElement()).Remove();
 				isAttached = false;
 			}
 		}
@@ -417,13 +421,13 @@ namespace Saltarelle.UI {
 
 			bool ok = false;
 			int i;
-			for (i = 0; i < currentShownDialogs.Length; i++) {
+			for (i = 0; i < currentShownDialogs.Count; i++) {
 				if (currentShownDialogs[i] == this)
 					break;
 			}
-			if (i < currentShownDialogs.Length) {
-				for (i = i + 1; i < currentShownDialogs.Length; i++) {	// allow focus to go to a later dialog
-					if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(activeElem)) {
+			if (i < currentShownDialogs.Count) {
+				for (i = i + 1; i < currentShownDialogs.Count; i++) {	// allow focus to go to a later dialog
+					if (currentShownDialogs[i].GetElement().Contains(activeElem)) {
 						ok = true;
 						break;
 					}
@@ -441,12 +445,12 @@ namespace Saltarelle.UI {
 
 			// find out whether it's a child of ours or of a dialog later in the dialog stack
 			int i = 0;
-			for (i = 0; i < currentShownDialogs.Length; i++) {
+			for (i = 0; i < currentShownDialogs.Count; i++) {
 				if (currentShownDialogs[i] == this)
 					break;
 			}
-			for (; i < currentShownDialogs.Length; i++) {
-				if (((DialogBase)currentShownDialogs[i]).GetElement().Contains(activeElem))
+			for (; i < currentShownDialogs.Count; i++) {
+				if (currentShownDialogs[i].GetElement().Contains(activeElem))
 					return;
 			}
 			
@@ -456,7 +460,7 @@ namespace Saltarelle.UI {
 				Focus();	// Just in case a Closing handler prevented the close.
 		}
 		
-		private void Element_LostFocus(JQueryEvent evt) {
+		private void Element_LostFocus(jQueryEvent evt) {
 			switch (modality) {
 				case DialogModalityEnum.Modal:
 					Window.SetTimeout(ModalFocusOut, 0);
@@ -493,12 +497,12 @@ namespace Saltarelle.UI {
 		public DialogFrame(object config) : base(config) {
 		}
 
-		public Element[] GetInnerElements() {
-			jQuery jq = JQueryProxy.jQuery(GetElement());
-			ArrayList result = new ArrayList();
-			for (int i = 0; i < jq.size(); i++)
-				result.Add(jq.get(i));
-			return (Element[])result;
+		public IList<Element> GetInnerElements() {
+			var jq = jQuery.FromElement(GetElement());
+			var result = new List<Element>();
+			for (int i = 0; i < jq.Size(); i++)
+				result.Add(jq.GetElement(i));
+			return result;
 		}
 #endif
 	}
@@ -544,7 +548,7 @@ namespace Saltarelle.UI {
 		protected ControlDialogBase(object config) : base(config) {
 		}
 
-		protected override void InitConfig(Dictionary config) {
+		protected override void InitConfig(JsDictionary config) {
 			containedControl = (IControl)container.CreateObjectByTypeNameWithConstructorArg((string)config["containedControlType"], config["containedControlData"]);
 			base.InitConfig(config);
 		}
