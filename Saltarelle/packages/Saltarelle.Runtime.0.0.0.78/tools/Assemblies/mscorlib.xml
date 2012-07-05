@@ -598,6 +598,70 @@
             <internalonly /></member>
         <member name="M:System.Decimal.op_LessThanOrEqual(System.Decimal,System.Decimal)">
             <internalonly /></member>
+        <member name="M:System.Delegate.ThisFix``1(System.Action{``0})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``2(System.Action{``0,``1})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``3(System.Action{``0,``1,``2})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``4(System.Action{``0,``1,``2,``3})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``5(System.Action{``0,``1,``2,``3,``4})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``6(System.Action{``0,``1,``2,``3,``4,``5})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``7(System.Action{``0,``1,``2,``3,``4,``5,``6})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``8(System.Action{``0,``1,``2,``3,``4,``5,``6,``7})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``2(System.Func{``0,``1})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``3(System.Func{``0,``1,``2})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``4(System.Func{``0,``1,``2,``3})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``5(System.Func{``0,``1,``2,``3,``4})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``6(System.Func{``0,``1,``2,``3,``4,``5})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``7(System.Func{``0,``1,``2,``3,``4,``5,``6})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``8(System.Func{``0,``1,``2,``3,``4,``5,``6,``7})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
+        <member name="M:System.Delegate.ThisFix``9(System.Func{``0,``1,``2,``3,``4,``5,``6,``7,``8})">
+            <summary>
+            This method will return a delegate that (when called) will call another delegate, with the JavaScript 'this' passed as the first parameter, and 'this' being as expected by the C# code. This is useful when dealing with jQuery.
+            </summary></member>
         <member name="T:System.Double">
             <summary>
             The double data type which is mapped to the Number type in Javascript.

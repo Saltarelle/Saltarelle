@@ -1129,6 +1129,15 @@ Function.remove = function Function$remove(delegate1, delegate2) {
     return delegate1;
 }
 
+Function.thisFix = function Function$thisFix(source) {
+    return function() {
+        var x = [this];
+        for(var i = 0; i < arguments.length; i++)
+            x.push(arguments[i]);
+        return source.apply(source, x);
+    };
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Debug Extensions
 

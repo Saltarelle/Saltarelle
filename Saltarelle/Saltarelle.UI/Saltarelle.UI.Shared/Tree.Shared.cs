@@ -13,6 +13,8 @@ using Saltarelle.Ioc;
 using System.Html;
 using System.Text;
 using jQueryApi;
+using jQueryApi.UI.Interactions;
+
 #endif
 
 namespace Saltarelle.UI {
@@ -532,13 +534,13 @@ namespace Saltarelle.UI {
 		private void MakeDraggable(TreeNode node, bool enable) {
 			var el = jQuery.FromElement(GetNodeElement(node).Children[0]).Children("." + ItemTextClass);
 			if (enable) {
-				el.draggable(new Dictionary("helper", "clone",
-				                            "appendTo", jQuery.FromElement(GetElement()),
-				                            "scroll", true,
-				                            "containment", "parent"));
+				el.Draggable(new DraggableOptions { Helper      = "clone",
+				                                    AppendTo    = jQuery.FromElement(GetElement()),
+				                                    Scroll      = true,
+				                                    Containment = "parent" });
 			}
 			else
-				el.draggable("destroy");
+				((DraggableObject)el).Destroy();
 		}
 
 		private void Element_DragFeedback(jQueryEvent evt) {
@@ -597,7 +599,7 @@ namespace Saltarelle.UI {
 			ChangeDropTarget(!Utils.IsNull(newTarget) ? new TreeDropTarget(newTarget, dropAbove) : null);
 		}
 
-		private void Element_Drop(jQueryEvent evt, DroppableEventObject ui) {
+		private void Element_Drop(jQueryEvent evt, DropEvent ui) {
 			if (Utils.IsNull(currentDropTarget)) {
 				DragEnded();
 				return;
@@ -678,18 +680,18 @@ namespace Saltarelle.UI {
 		private void EnableDroppable(bool enable) {
 			var el = jQuery.FromElement(GetElement());
 			if (enable) {
-				el.droppable(new Dictionary("tolerance", "pointer",
-				                            "greedy",    true,
-				                            "over",      (Callback)delegate() {
-				                                             itemHeight = (invisibleRoot.children.Length > 0 ? (int)JQueryProxy.jQuery(GetNodeElement((TreeNode)invisibleRoot.children[0]).Children[0]).outerHeight() : 1);
-				                                             currentDropTarget = null;
-				                                             JQueryProxy.jQuery(Window.Document).mousemove(dragFeedbackHandler);
-				                                         },
-				                            "out",       (Callback)DragEnded, 
-				                            "drop",      new DroppableEventHandlerDelegate(Element_Drop)));
+				el.Droppable(new DroppableOptions { Tolerance = "pointer",
+                                                    Greedy    = true,
+                                                    OnOver    = (_1, _2) => {
+				                                                          itemHeight = (invisibleRoot.children.Count > 0 ? jQuery.FromElement(GetNodeElement(invisibleRoot.children[0]).Children[0]).GetOuterHeight() : 1);
+				                                                          currentDropTarget = null;
+				                                                          jQuery.Document.MouseMove(dragFeedbackHandler);
+				                                                      },
+				                                    OnOut     = (_1, _2) => DragEnded(),
+                                                    OnDrop    = Element_Drop });
 			}
 			else
-				el.droppable("destroy");
+				((DroppableObject)el).Destroy();
 		}
 		
 		private TreeNode FindTreeNode(Element nodeElem) {

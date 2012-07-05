@@ -235,13 +235,15 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.75\tools\Assemblies\mscorlib.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.78\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="Script.jQuery, Version=0.0.0.35, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.35\lib\Script.jQuery.dll</HintPath>
+    <Reference Include="Script.jQuery, Version=0.0.0.36, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.36\lib\Script.jQuery.dll</HintPath>
     </Reference>
-    <Reference Include="Script.Web, Version=0.0.0.51, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Saltarelle.Web.0.0.0.51\lib\Script.Web.dll</HintPath>
+    <Reference Include="Script.Web, Version=0.0.0.52, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Saltarelle.Web.0.0.0.52\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.42\tools\Saltarelle.Compiler.targets" />
