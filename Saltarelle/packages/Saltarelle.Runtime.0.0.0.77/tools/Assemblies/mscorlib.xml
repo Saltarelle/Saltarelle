@@ -1078,6 +1078,34 @@
             <summary>
             Gets the prototype associated with the type.
             </summary></member>
+        <member name="T:System.TypeOption`2">
+            <summary>
+            Use this type when interacting with external libraries that accept arguments that can be of different types.
+            </summary></member>
+        <member name="T:System.TypeOption`3">
+            <summary>
+            Use this type when interacting with external libraries that accept arguments that can be of different types.
+            </summary></member>
+        <member name="T:System.TypeOption`4">
+            <summary>
+            Use this type when interacting with external libraries that accept arguments that can be of different types.
+            </summary></member>
+        <member name="T:System.TypeOption`5">
+            <summary>
+            Use this type when interacting with external libraries that accept arguments that can be of different types.
+            </summary></member>
+        <member name="T:System.TypeOption`6">
+            <summary>
+            Use this type when interacting with external libraries that accept arguments that can be of different types.
+            </summary></member>
+        <member name="T:System.TypeOption`7">
+            <summary>
+            Use this type when interacting with external libraries that accept arguments that can be of different types.
+            </summary></member>
+        <member name="T:System.TypeOption`8">
+            <summary>
+            Use this type when interacting with external libraries that accept arguments that can be of different types.
+            </summary></member>
         <member name="T:System.UInt16">
             <summary>
             The ushort data type which is mapped to the Number type in Javascript.
