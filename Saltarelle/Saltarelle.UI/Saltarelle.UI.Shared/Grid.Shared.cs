@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Html;
 using System.Text;
 using jQueryApi;
+using jQueryApi.UI;
 using jQueryApi.UI.Interactions;
 
 #endif
@@ -842,11 +843,11 @@ namespace Saltarelle.UI {
 		
 		private void MakeDraggable(jQueryObject row) {
 			row.Draggable(new DraggableOptions { Helper      = "clone",
-			                                     AppendTo    = row.Parent(),
+			                                     AppendTo    = row.Parent().GetElement(0),
 			                                     Scroll      = true,
 			                                     Containment = "parent",
-			                                     OnStart     = Delegate.ThisFix((Action<Element, jQueryEvent, DragStartEvent>)((d, evt, ui) => { jQuery.FromElement(d).AddClass(CurrentDraggingRowClass); })),
-			                                     OnStop      = Delegate.ThisFix((Action<Element, jQueryEvent, DragStopEvent>)((d, evt, ui) => { jQuery.FromElement(d).RemoveClass(CurrentDraggingRowClass); })) });
+			                                     OnStart     = new jQueryUIEventHandler<DragStartEvent>(Delegate.ThisFix((Action<Element, jQueryEvent, DragStartEvent>)((d, evt, ui) => { jQuery.FromElement(d).AddClass(CurrentDraggingRowClass); }))),
+			                                     OnStop      = new jQueryUIEventHandler<DragStopEvent>(Delegate.ThisFix((Action<Element, jQueryEvent, DragStopEvent>)((d, evt, ui) => { jQuery.FromElement(d).RemoveClass(CurrentDraggingRowClass); }))) });
 		}
 		
 		private TableRowElement GetHeaderRow() {
@@ -884,10 +885,10 @@ namespace Saltarelle.UI {
 			var headerTr = jQuery.FromElement(((TableElement)GetElement().Children[0].Children[0]).Rows[0]);
 			headerTr.Children(":not(:last-child)").Children().Resizable(new ResizableOptions {
 				Handles = "e",
-				OnStop  = Delegate.ThisFix((Action<Element, jQueryEvent, ResizeStopEvent>)((d, evt, ui) => {
+				OnStop  = new jQueryUIEventHandler<ResizeStopEvent>(Delegate.ThisFix((Action<Element, jQueryEvent, ResizeStopEvent>)((d, evt, ui) => {
 			                  int index = headerTr.Children().Index(d.ParentNode);
-			                  SetColWidth(index, Math.Round(ui.Size.width));
-			              }))
+			                  SetColWidth(index, Math.Round(ui.Size.Width));
+			              })))
 			});
 			if (jQuery.Browser.MSIE && Utils.ParseDouble(jQuery.Browser.Version) < 8)
 				headerTr.Find(".ui-resizable-e").Height(HeaderHeight);

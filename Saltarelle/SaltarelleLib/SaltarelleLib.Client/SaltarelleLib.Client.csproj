@@ -114,6 +114,7 @@
     <Compile Include="DefaultScriptManagerService.cs" />
     <Compile Include="GlobalServices.Client.cs" />
     <Compile Include="Ioc\DefaultContainer.Client.cs" />
+    <Compile Include="jQueryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.Client.cs" />
     <None Include="packages.config" />
@@ -147,20 +148,20 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.78\tools\Assemblies\mscorlib.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.83\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="Script.jQuery, Version=0.0.0.36, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+    <Reference Include="Script.jQuery, Version=0.0.0.39, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.36\lib\Script.jQuery.dll</HintPath>
+      <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.39\lib\Script.jQuery.dll</HintPath>
     </Reference>
     <Reference Include="Script.Web, Version=0.0.0.52, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Saltarelle.Web.0.0.0.52\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.42\tools\Saltarelle.Compiler.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
   </Target>
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.49\tools\Saltarelle.Compiler.targets" />
 </Project>

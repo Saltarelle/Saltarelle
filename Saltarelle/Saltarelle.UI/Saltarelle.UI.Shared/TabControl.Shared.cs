@@ -344,7 +344,7 @@ namespace Saltarelle.UI {
 
 			UIUtils.FixStrangeIE7SelectIssue(GetElement().Children[SelectedTab + 1]);
 			
-			clickHandler = (jQueryEventHandler)Utils.Wrap(new UnwrappedJQueryEventHandlerDelegate(Link_Click));
+			clickHandler = new jQueryEventHandler(Delegate.ThisFix((Action<Element, jQueryEvent>)Link_Click));
 			
 			Element elem = GetElement();
 			ElementCollection children = elem.Children;
@@ -367,7 +367,7 @@ namespace Saltarelle.UI {
 		
 		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
-		public Element[] GetInnerElements() {
+		public IList<Element> GetInnerElements() {
 			var result = new List<Element>();
 			var children = jQuery.FromElement(GetElement()).Children(":gt(0)").Children();
 			for (int i = 0; i < children.Size(); i++)

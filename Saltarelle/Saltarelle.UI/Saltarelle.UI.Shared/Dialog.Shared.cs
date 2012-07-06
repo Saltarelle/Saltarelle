@@ -217,7 +217,7 @@ namespace Saltarelle.UI {
 			
 			var jq = jQuery.FromHtml("<div id=\"" + ModalCoverId + "\" class=\"ui-widget-overlay\" style=\"display: none\">&nbsp;</div>");
 			if (jQuery.Browser.MSIE && Utils.ParseDouble(jQuery.Browser.Version) < 7.0) {
-				jq.bgiframe();
+				jq.BGIFrame();
 				// Need to position the cover in JavaScript. In all other browsers, this is done in CSS.
 				jQuery.Window.Scroll(evt => {
 					RepositionCover(GetModalCover(false));
@@ -299,7 +299,7 @@ namespace Saltarelle.UI {
 			Element elem = GetElement();
 			
 			if (!areEventsBound) {
-				jQuery.FromElement(elem).lostfocus(Element_LostFocus);
+				jQuery.FromElement(elem).LostFocus(Element_LostFocus);
 				if (!string.IsNullOrEmpty(title)) {
 					jQuery.FromElement(elem.Children[0].GetElementsByTagName("a")[0]).Click(evt => { Close(); evt.PreventDefault(); });
 				}
@@ -308,7 +308,7 @@ namespace Saltarelle.UI {
 
 			// Defer the bgiframe until opening to save load time.
 			if (!hasBgiframe && jQuery.Browser.MSIE && Utils.ParseDouble(jQuery.Browser.Version) < 7) {
-				jQuery.FromElement(elem).bgiframe();
+				jQuery.FromElement(elem).BGIFrame();
 				hasBgiframe = true;
 			}
 			

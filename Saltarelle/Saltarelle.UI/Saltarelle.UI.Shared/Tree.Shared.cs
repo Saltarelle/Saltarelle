@@ -535,7 +535,7 @@ namespace Saltarelle.UI {
 			var el = jQuery.FromElement(GetNodeElement(node).Children[0]).Children("." + ItemTextClass);
 			if (enable) {
 				el.Draggable(new DraggableOptions { Helper      = "clone",
-				                                    AppendTo    = jQuery.FromElement(GetElement()),
+				                                    AppendTo    = GetElement(),
 				                                    Scroll      = true,
 				                                    Containment = "parent" });
 			}
@@ -734,12 +734,12 @@ namespace Saltarelle.UI {
 		}
 		
 		private void Element_KeyPress(jQueryEvent e) {
-			if (!RaiseKeyPress(e.keyCode)) {
+			if (!RaiseKeyPress(e.Which)) {
 				e.PreventDefault();
 				return;
 			}
 
-			switch (e.keyCode) {
+			switch (e.Which) {
 				case 32: {
 					// Space - used to toggle checkmark if there is one.
 					if (hasChecks) {

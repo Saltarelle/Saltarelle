@@ -11,25 +11,25 @@ namespace Saltarelle.UI {
 				return; // don't ever change Alt+key or Ctrl+key
 
 			if (jQuery.Browser.MSIE) {
-				if (evt.keyCode == 13)
+				if (evt.Which == 13)
 					return; // Enter seems to be the only non-printable key we catch in IE.
-				char newc = transformChar((char)evt.keyCode);
+				char newc = transformChar((char)evt.Which);
 				if (newc == 0) {
 					evt.PreventDefault();
 				}
-				else if (newc != evt.keyCode) {
-					Type.SetField(evt.originalEvent, "keyCode", newc);
+				else if (newc != evt.Which) {
+					((dynamic)evt).originalEvent.keyCode = newc;
 				}
 			}
 			else {
-				if (evt.charCode == 0)
+				if (evt.Which == 0)
 					return; // Firefox, and likely other non-IE browsers, lets us trap non-characters, but we don't want that.
 
-				char newc = transformChar(evt.charCode);
+				char newc = transformChar((char)evt.Which);
 				if (newc == 0) {
 					evt.PreventDefault();
 				}
-				else if (newc != evt.charCode) {
+				else if (newc != evt.Which) {
 					int startPos = ((dynamic)el).selectionStart,
 					    endPos   = ((dynamic)el).selectionEnd;
 					string oldVal = el.Value;
@@ -47,7 +47,7 @@ namespace Saltarelle.UI {
             jq.Keydown(handler);
             if (jQuery.Browser.MSIE && (jQuery.Browser.Version == "6.0" || jQuery.Browser.Version == "7.0")) {
 				jq.Keypress(delegate(jQueryEvent e) {
-					if (e.keyCode == 13 || e.keyCode == 27 || (e.keyCode >= 112 && e.keyCode <= 123))
+					if (e.Which == 13 || e.Which == 27 || (e.Which >= 112 && e.Which <= 123))
 						handler(e);
 				});
 			}
