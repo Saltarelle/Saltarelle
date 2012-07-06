@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Runtime.CompilerServices;
 #if CLIENT
 using System.Html;
-using System.Text;
 using jQueryApi;
 using jQueryApi.UI;
 using jQueryApi.UI.Interactions;
-
 #endif
 
 namespace Saltarelle.UI {
@@ -77,7 +76,7 @@ namespace Saltarelle.UI {
 		private List<int> colWidths = new List<int>();
 		private List<string> colClasses = new List<string>();
 		private List<string> colTitles = new List<string>();
-		private List<string[]> rowTextsIfNotRendered;
+		private List<List<string>> rowTextsIfNotRendered;
 		private List<string> rowClassesIfNotRendered;
 		private List<object> rowData;
 		private Position position;
@@ -213,7 +212,11 @@ namespace Saltarelle.UI {
 		
 		public string[] ColTitles {
 			get {
-				return (string[])colTitles.Clone();
+				#if CLIENT
+					return (string[])colTitles.Clone();
+				#else
+					return colTitles.ToArray();
+				#endif
 			}
 			set {
 				if (value.Length != NumColumns)
@@ -406,7 +409,7 @@ namespace Saltarelle.UI {
 					return;
 				}
 			#endif
-			rowTextsIfNotRendered.Insert(index, cellTexts);
+			rowTextsIfNotRendered.Insert(index, new List<string>(cellTexts));
 			rowClassesIfNotRendered.Insert(index, null);
 		}
 		
@@ -426,7 +429,7 @@ namespace Saltarelle.UI {
 			rowClassesIfNotRendered[index] = rowClass;
 		}
 
-		public string GetRowClass(int index, string rowClass) {
+		public string GetRowClass(int index) {
 			if (index < 0 || index >= numRows)
 				return null;
 			
@@ -444,7 +447,7 @@ namespace Saltarelle.UI {
 			#if CLIENT
 				rebuilding = true;
 				if (rowTextsIfNotRendered == null)
-					rowTextsIfNotRendered = new List<string[]>();
+					rowTextsIfNotRendered = new List<List<string>>();
 				if (rowClassesIfNotRendered == null)
 					rowClassesIfNotRendered = new List<string>();
 			#endif
@@ -502,7 +505,7 @@ namespace Saltarelle.UI {
 					return;
 				}
 			#endif
-			rowTextsIfNotRendered[row] = (string[])new List<string>(cellTexts);
+			rowTextsIfNotRendered[row] = new List<string>(cellTexts);
 		}
 		
 		public void DeleteItem(int row) {
@@ -564,8 +567,10 @@ namespace Saltarelle.UI {
 						result[i] = jQuery.FromElement(tr.Cells[i]).GetText();
 					return result;
 				}
+				return (string[])rowTextsIfNotRendered[row];
+			#else
+				return rowTextsIfNotRendered[row].ToArray();
 			#endif
-			return (string[])rowTextsIfNotRendered[row];
 		}
 		
 		public int NumRows {
@@ -574,10 +579,10 @@ namespace Saltarelle.UI {
 			}
 		}
 		
-		private void AddRowHtml(StringBuilder sb, string[] cellTexts, string addClass, bool even, bool selected) {
+		private void AddRowHtml(StringBuilder sb, IList<string> cellTexts, string addClass, bool even, bool selected) {
 			sb.Append("<tr class=\"" + (even ? EvenRowClass : OddRowClass) + (selected ? " " + SelectedRowClass : "") + (!string.IsNullOrEmpty(addClass) ? " " + addClass : "") + "\">");
 			for (int c = 0; c < NumColumns; c++)
-				sb.Append("<td " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (c < cellTexts.Length && !string.IsNullOrEmpty(cellTexts[c]) ? Utils.HtmlEncode(cellTexts[c]) : "&nbsp;") + "</div></div></td>");
+				sb.Append("<td " + (string.IsNullOrEmpty(colClasses[c]) ? "" : (" class=\"" + colClasses[c] + "\"")) + "><div style=\"width: " + Utils.ToStringInvariantInt(colWidths[c]) + "px\"><div>" + (c < cellTexts.Count && !string.IsNullOrEmpty(cellTexts[c]) ? Utils.HtmlEncode(cellTexts[c]) : "&nbsp;") + "</div></div></td>");
 			sb.Append("</tr>");
 		}
 		
@@ -591,7 +596,7 @@ namespace Saltarelle.UI {
 				sb.Append("<th class=\"" + SpacerThClass + "\"><div>&nbsp;</div></th></tr></thead></table></div><div class=\"" + ValuesDivClass + "\" style=\"width: " + (this.width - 2 * BorderSize) + "px; height: " + Utils.ToStringInvariantInt(ContentHeight) + "px\"><table cellpadding=\"0\" cellspacing=\"0\" class=\"" + ValuesTableClass + "\"><tbody>");
 				if (rowTextsIfNotRendered != null) {
 					for (int i = 0; i < rowTextsIfNotRendered.Count; i++) {
-						AddRowHtml(sb, (string[])rowTextsIfNotRendered[i], (string)rowClassesIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
+						AddRowHtml(sb, rowTextsIfNotRendered[i], (string)rowClassesIfNotRendered[i], (i % 2) == 0, i == selectedRowIndex);
 					}
 				}
 				sb.Append("</tbody></table></div>");
@@ -614,7 +619,7 @@ namespace Saltarelle.UI {
 			position = PositionHelper.NotPositioned;
 			width = 300;
 			height = 300;
-			rowTextsIfNotRendered   = new List<string[]>();
+			rowTextsIfNotRendered   = new List<List<string>>();
 			rowClassesIfNotRendered = new List<string>();
 			rowData = new List<object>();
 		}

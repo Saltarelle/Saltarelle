@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 #if SERVER
 using System.Text;
-using System.Collections;
 using System.Linq;
 using Newtonsoft.Json;
 using Saltarelle.Ioc;
@@ -14,7 +13,6 @@ using System.Html;
 using System.Text;
 using jQueryApi;
 using jQueryApi.UI.Interactions;
-
 #endif
 
 namespace Saltarelle.UI {
@@ -33,13 +31,40 @@ namespace Saltarelle.UI {
 	[Record]
 	public sealed class TreeNode
 	{
-		[PreserveName] internal int id;
-		[PreserveName] internal bool expanded;
-		[PreserveName] internal TreeNodeCheckState checkState;
-		[PreserveName] internal string text;
-		[PreserveName] internal string icon;
-		[PreserveName] internal object data;
-		[PreserveName] internal List<TreeNode> children;
+		#if CLIENT
+		[PreserveName]
+		#endif
+		internal int id;
+
+		#if CLIENT
+		[PreserveName]
+		#endif
+		internal bool expanded;
+
+		#if CLIENT
+		[PreserveName]
+		#endif
+		internal TreeNodeCheckState checkState;
+
+		#if CLIENT
+		[PreserveName]
+		#endif
+		internal string text;
+
+		#if CLIENT
+		[PreserveName]
+		#endif
+		internal string icon;
+
+		#if CLIENT
+		[PreserveName]
+		#endif
+		internal object data;
+
+		#if CLIENT
+		[PreserveName]
+		#endif
+		internal List<TreeNode> children;
 
 		#if SERVER
 		[JsonIgnore]
@@ -449,7 +474,7 @@ namespace Saltarelle.UI {
 			config["enableDragDrop"]     = enableDragDrop;
 			config["autoCheckHierarchy"] = autoCheckHierarchy;
 			config["nextNodeId"]         = nextNodeId;	// Yes, it is static, but the worst thing that can happen is that we assign the member more than once during startup.
-			config["selectionPath"]      = (selectedNode != null ? GetTreeNodePath(I(selectedNode), I(invisibleRoot)) : null);
+			config["selectionPath"]      = (selectedNode != null ? GetTreeNodePath(selectedNode, invisibleRoot) : null);
 		}
 
 		public object ConfigObject {
@@ -713,7 +738,7 @@ namespace Saltarelle.UI {
 				if (target.TagName.ToLowerCase() == "input") {
 					TreeNode n = FindTreeNode(target.ParentNode.ParentNode);
 					n.checkState = ((CheckBoxElement)target).Checked ? TreeNodeCheckState.yes : TreeNodeCheckState.no;
-					Type.SetField(target, "defaultChecked", ((CheckBoxElement)target).Checked);
+					((CheckBoxElement)target).DefaultChecked = ((CheckBoxElement)target).Checked;
 					if (autoCheckHierarchy)
 						ApplyCheckHierarchy(n);
 					OnNodeChecked(new TreeNodeEventArgs(n));
@@ -744,7 +769,6 @@ namespace Saltarelle.UI {
 					// Space - used to toggle checkmark if there is one.
 					if (hasChecks) {
 						if (selectedNode != null) {
-							CheckBoxElement cb = (CheckBoxElement)jQuery.FromElement(GetNodeElement(selectedNode).Children[0]).Find("input").GetElement(0);
 							SetTreeNodeCheckState(selectedNode, selectedNode.checkState == TreeNodeCheckState.yes ? TreeNodeCheckState.no : TreeNodeCheckState.yes);
 						}
 						e.PreventDefault();
@@ -924,9 +948,9 @@ namespace Saltarelle.UI {
 			Element nodeElem = GetNodeElement(node);
 			if (nodeElem != null) {
 				CheckBoxElement cb = (CheckBoxElement)jQuery.FromElement(nodeElem.Children[0]).Children("input").GetElement(0);
-				Type.SetField(cb, "indeterminate", checkState == TreeNodeCheckState.indeterminate);
+				cb.Indeterminate = (checkState == TreeNodeCheckState.indeterminate);
 				cb.Checked = (checkState == TreeNodeCheckState.yes);
-				Type.SetField(cb, "defaultChecked", cb.Checked);
+				cb.DefaultChecked = cb.Checked;
 			}
 		}
 		

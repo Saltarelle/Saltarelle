@@ -1,12 +1,11 @@
 using System;
-#if CLIENT
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+#if CLIENT
 using System.Html;
 using System.Runtime.CompilerServices;
-using System.Text;
 using jQueryApi;
-
 #endif
 
 namespace Saltarelle.UI {

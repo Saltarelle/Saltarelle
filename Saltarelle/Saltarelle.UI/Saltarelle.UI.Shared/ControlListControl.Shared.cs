@@ -5,7 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Saltarelle;
 using Saltarelle.Ioc;
-
+#if SERVER
+using System.Linq;
+#endif
 #if CLIENT
 using System.Html;
 using jQueryApi;
@@ -161,10 +163,13 @@ namespace Saltarelle.UI {
 
 		public void AddControl(string controlId, IControl control, object data) {
 			if (!Utils.IsNull(id))
-				control.Id = id + "_" + Utils.ToStringInvariantInt(Utils.ArrayLength(controls));
+				control.Id = id + "_" + Utils.ToStringInvariantInt(controls.Count);
 			controlIds.Add(controlId);
 			controls.Add(control);
 			controlData.Add(data);
+		}
+
+		public void DependenciesAvailable() {
 		}
 #endif
 #if CLIENT

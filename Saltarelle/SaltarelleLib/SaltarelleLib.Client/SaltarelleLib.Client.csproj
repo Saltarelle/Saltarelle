@@ -154,14 +154,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Saltarelle.jQuery.0.0.0.39\lib\Script.jQuery.dll</HintPath>
     </Reference>
-    <Reference Include="Script.Web, Version=0.0.0.52, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+    <Reference Include="Script.Web, Version=0.0.0.53, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Saltarelle.Web.0.0.0.52\lib\Script.Web.dll</HintPath>
+      <HintPath>..\..\packages\Saltarelle.Web.0.0.0.53\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.49\tools\Saltarelle.Compiler.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
   </Target>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.49\tools\Saltarelle.Compiler.targets" />
 </Project>

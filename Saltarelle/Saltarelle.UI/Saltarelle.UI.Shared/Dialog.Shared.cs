@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Saltarelle.Ioc;
-#if SERVER
-using System.Collections.Generic;
-#endif
 #if CLIENT
 using System.Html;
 using jQueryApi;
