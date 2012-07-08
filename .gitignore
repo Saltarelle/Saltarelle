@@ -15,7 +15,6 @@ _ReSharper*/
 Client.dll
 Script.js
 Script.min.js
-Saltarelle/TestAssemblies.txt
 build_out
 Saltarelle/SaltarelleLib/SaltarelleLib.Server/Configuration/SaltarelleConfiguration.cs
 Saltarelle/VSIntegrationInstaller/Version.wxi

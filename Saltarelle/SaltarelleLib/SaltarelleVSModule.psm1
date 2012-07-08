@@ -14,6 +14,6 @@ Function New-SaltarellePair([Parameter(Mandatory=$true)][string]$Name, [string]$
 	$folder.AddFromTemplate($template, "$baseDir\$Name.Client", "$Name.Client", $false)
 	$folder.AddFromTemplate($template, "$baseDir\$Name.Server", "$Name.Server", $false)
 
-	Install-Package -ProjectName "$Name.Client" -Id "SaltarelleCore"
-	Install-Package -ProjectName "$Name.Server" -Id "SaltarelleCore"
+	Install-Package -ProjectName "$Name.Client" -Id "Saltarelle.Framework.Client"
+	Install-Package -ProjectName "$Name.Server" -Id "Saltarelle.Framework.Server"
 }
