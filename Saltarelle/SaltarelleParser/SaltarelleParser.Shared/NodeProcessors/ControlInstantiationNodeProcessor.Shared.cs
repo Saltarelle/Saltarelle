@@ -31,7 +31,7 @@ namespace Saltarelle.NodeProcessors {
 				}
 				else if (attr.Name == "customInstantiate") {
 					string v = attr.Value.ToLowerCase();
-					customInstantiate = Utils.ParseBool(attr.Value);
+					customInstantiate = Utils.ParseBool(v);
 				}
 				else {
 					additionalProperties[attr.Name] = docProcessor.ParseTypedMarkup(attr.Value);

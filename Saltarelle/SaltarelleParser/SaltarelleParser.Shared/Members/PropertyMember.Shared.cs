@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Saltarelle.Ioc;
+#pragma warning disable 414
 
 namespace Saltarelle.Members {
 	public class PropertyMember : IMember {

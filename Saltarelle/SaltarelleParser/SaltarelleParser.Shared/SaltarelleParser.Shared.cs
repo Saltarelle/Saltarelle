@@ -30,7 +30,6 @@ namespace Saltarelle {
 
         #if CLIENT
             private JsDictionary configObject;
-            private IContainer container;
 
             private void EnsureInitialized() {
                 if (configObject == null)

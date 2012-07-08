@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+#pragma warning disable 414
 
 namespace Saltarelle.Fragments {
 	internal class CodeFragment : IFragment {

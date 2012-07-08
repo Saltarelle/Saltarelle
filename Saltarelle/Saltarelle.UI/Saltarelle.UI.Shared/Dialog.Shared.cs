@@ -108,7 +108,6 @@ namespace Saltarelle.UI {
 			get { return className; }
 			set {
 				#if CLIENT
-					string oldClassName = className;
 					className = (value ?? "").Trim();
 					if (isAttached) {
 						GetElement().ClassName = EffectiveDialogClass;
