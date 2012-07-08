@@ -70,6 +70,8 @@ namespace Saltarelle {
 				serverUsings["Saltarelle.Ioc"] = null;
 
 				clientUsings["System"] = null;
+				clientUsings["System.Collections"] = null;
+				clientUsings["System.Collections.Generic"] = null;
 				clientUsings["System.Html"] = null;
 				clientUsings["Saltarelle"] = null;
 				clientUsings["Saltarelle.Ioc"] = null;
@@ -234,7 +236,7 @@ namespace Saltarelle {
 		internal static void WriteClientConstructor(CodeBuilder cb, ITemplate tpl) {
 			cb.AppendLine("[Obsolete(@\"" + DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]")
 			  .AppendLine("public " + tpl.ClassName + "(object config) {").Indent()
-			  .AppendLine(ParserUtils.ConfigObjectName + " = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);")
+			  .AppendLine(ParserUtils.ConfigObjectName + " = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);")
 			  .Outdent().AppendLine("}");
 		}
 
@@ -285,8 +287,8 @@ namespace Saltarelle {
 			  .AppendLine("get { return id; }")
 			  .AppendLine("set {").Indent();
 
-			cb.AppendLine("foreach (" + (server ? "KeyValuePair<string, IControl>" : "DictionaryEntry") + " kvp in controls)").Indent()
-			  .AppendLine((server ? "kvp.Value" : "((IControl)kvp.Value)") + ".Id = value + \"_\" + kvp.Key;").Outdent();
+			cb.AppendLine("foreach (var kvp in controls)").Indent()
+			  .AppendLine("kvp.Value.Id = value + \"_\" + kvp.Key;").Outdent();
 
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, server ? MemberCodePoint.ServerIdChanging : MemberCodePoint.ClientIdChanging, cb);
@@ -397,8 +399,8 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ClientInheritanceList)
 			  .Append(" {").AppendLine().Indent()
-			  .AppendLine("private Dictionary controls = new Dictionary();")
-			  .AppendLine("private Dictionary " + ParserUtils.ConfigObjectName + ";")
+			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();")
+			  .AppendLine("private JsDictionary " + ParserUtils.ConfigObjectName + ";")
 			  .AppendLine()
 			  .AppendLine("private Position position;")
 			  .AppendLine("public Position Position {").Indent()
