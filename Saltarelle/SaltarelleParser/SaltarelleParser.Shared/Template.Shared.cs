@@ -70,7 +70,7 @@ namespace Saltarelle {
 				serverUsings["Saltarelle.Ioc"] = null;
 
 				clientUsings["System"] = null;
-				clientUsings["System.DHTML"] = null;
+				clientUsings["System.Html"] = null;
 				clientUsings["Saltarelle"] = null;
 				clientUsings["Saltarelle.Ioc"] = null;
 			#endif

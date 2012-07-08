@@ -417,7 +417,7 @@ namespace SaltarelleParser.Tests {
 			string p = (withNamespace ? "\t" : "");
 
 			string expected  =     "using System;" + Environment.NewLine
-			                 +     "using System.DHTML;" + Environment.NewLine
+			                 +     "using System.Html;" + Environment.NewLine
 			                 +     "using Saltarelle;" + Environment.NewLine
 			                 +     "using Saltarelle.Ioc;" + Environment.NewLine
 			                 +     "using AddedNamespace.Client;" + Environment.NewLine
