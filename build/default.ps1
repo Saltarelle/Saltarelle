@@ -81,10 +81,6 @@ Task Build-NuGetPackages -Depends Determine-Version, Build-Solution, Run-Tests {
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.dll" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.xml" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.pdb" target="lib"/>
-		<file src="$base_dir\Saltarelle\VSIntegrationInstaller\bin\SaltarelleVSIntegration.msi" target="tools\SaltarelleVSIntegration-$script:ProductVersion.msi"/>
-		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.SalgenTask.dll" target="tools"/>
-		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.targets" target="tools"/>
-		<file src="$base_dir\Saltarelle\Executables\Salgen.exe\bin\salgen.exe" target="tools"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\install-server.ps1" target="tools\install.ps1"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\init.ps1" target="tools"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleVSModule.psm1" target="tools"/>
