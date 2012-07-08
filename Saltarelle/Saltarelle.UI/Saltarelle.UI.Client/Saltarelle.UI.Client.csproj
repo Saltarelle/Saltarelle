@@ -56,18 +56,6 @@
     <NoWarn>0028, 1591</NoWarn>
     <DocumentationFile>bin\Saltarelle.UI.Client.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug With Installer|AnyCPU' ">
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;CLIENT</DefineConstants>
-    <DocumentationFile>bin\Saltarelle.UI.Client.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <NoWarn>0028, 1591</NoWarn>
-    <NoStdLib>True</NoStdLib>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\Saltarelle.snk">
       <Link>Saltarelle.snk</Link>
