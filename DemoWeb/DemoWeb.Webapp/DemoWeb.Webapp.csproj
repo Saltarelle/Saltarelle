@@ -87,6 +87,9 @@
     <Reference Include="Saltarelle.Mvc, Version=0.7.3.9, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <HintPath>..\packages\Saltarelle.Mvc.0.7.3.9\lib\Saltarelle.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="Saltarelle.UI, Version=0.7.3.20, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.20\lib\Saltarelle.UI.dll</HintPath>
+    </Reference>
     <Reference Include="SaltarelleLib, Version=0.7.3.41, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.41\lib\SaltarelleLib.dll</HintPath>
     </Reference>
@@ -231,6 +234,10 @@
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DemoWeb.Plugins\DemoWeb.Plugins.csproj">
+      <Project>{1F661CBA-49A3-4A3B-BB67-088C2ED20FF4}</Project>
+      <Name>DemoWeb.Plugins</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DemoWeb.Server\DemoWeb.Server.csproj">
       <Project>{98625DA7-6346-49AF-85A4-BD4B7EF147E4}</Project>
       <Name>DemoWeb.Server</Name>
