@@ -11,7 +11,7 @@ private const int NumControls = 4;
 
 private int nodeData = 1;
 
-private ITreeNode CreateTreeNode(int numChildLevels) {
+private Saltarelle.UI.TreeNode CreateTreeNode(int numChildLevels) {
 	var n = Tree.CreateTreeNode();
 	Tree.SetTreeNodeText(n, "Node " + nodeData.ToString(CultureInfo.InvariantCulture));
 	Tree.SetTreeNodeData(n, nodeData);

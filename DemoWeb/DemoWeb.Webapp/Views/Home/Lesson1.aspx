@@ -1,14 +1,17 @@
 <%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 <%@ Import Namespace="Saltarelle" %>
+<%@ Import Namespace="Saltarelle.Ioc" %>
 <%@ Import Namespace="Saltarelle.Mvc" %>
 <%@ Import Namespace="DemoWeb" %>
 <script runat="server">
 private Lesson1Control control;
 
 protected override void OnLoad(EventArgs e) {
-	control = new Lesson1Control() { Id = "control" };
+    var container = DependencyResolver.Current.GetService<IContainer>();
+	control = container.CreateObject<Lesson1Control>();
+    control.Id = "control";
 	control.Message = "Hello, world!";
-	GlobalServices.GetService<IScriptManagerService>().RegisterTopLevelControl(control);
+    DependencyResolver.Current.GetService<IScriptManagerService>().RegisterTopLevelControl(control);
 }
 </script>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

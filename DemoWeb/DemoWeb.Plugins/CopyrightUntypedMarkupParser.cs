@@ -8,7 +8,7 @@ using Saltarelle;
 namespace DemoWeb.Plugins {
 	[UntypedMarkupParserImpl]
 	public class CopyrightUntypedMarkupParser : IUntypedMarkupParserImpl {
-		public IFragment TryParse(string markup) {
+		public IFragment TryParse(string markup, ITemplate tpl) {
 			if (markup == "CopyrightNotice")
 				return new CopyrightFragment("Erik Källén");
 			return null;

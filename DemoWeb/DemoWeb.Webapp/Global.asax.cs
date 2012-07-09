@@ -14,7 +14,7 @@ namespace DemoWeb.Webapp {
 		public static void RegisterRoutes(RouteCollection routes) {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 			
-			Saltarelle.Mvc.Routes.RegisterRoutes(routes);
+			Saltarelle.Mvc.MvcRouteService.RegisterRoutes(routes);
 
 			routes.MapRoute(
 				"HomeShortcut",              // Route name

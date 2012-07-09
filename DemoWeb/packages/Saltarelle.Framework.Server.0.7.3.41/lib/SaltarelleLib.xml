@@ -1,0 +1,274 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SaltarelleLib</name>
+    </assembly>
+    <members>
+        <member name="M:Saltarelle.ControlDocumentFragment.#ctor(System.String[],Saltarelle.ScriptManagerConfig,System.String,System.String,System.Object)">
+            <summary>
+            Usually not used. Use <see cref="M:Saltarelle.IScriptManagerService.CreateControlDocumentFragment(Saltarelle.Ioc.IContainer,Saltarelle.IControl)"/> instead.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.ResolveService(System.Type)">
+            <summary>
+            Resolves a service. Throws if the service does not exist.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.ResolveServiceByTypeName(System.String)">
+            <summary>
+            Resolves a service by its type name. Throws if the service does not exist.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.CreateObject(System.Type)">
+            <summary>
+            Creates a new object.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.CreateObjectByTypeName(System.String)">
+            <summary>
+            Creates a new object by its type name.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.FindType(System.String)">
+            <summary>
+            Finds a type by its full (not assembly-qualified) name.
+            </summary>
+            <param name="typeName">Full (not assembly-qualified) name of the type.</param>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.ResolveService``1">
+            <summary>
+            Generic version of <see cref="M:Saltarelle.Ioc.IContainer.ResolveService(System.Type)"/>.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.CreateObject``1">
+            <summary>
+            Generic version of <see cref="M:Saltarelle.Ioc.IContainer.ResolveService(System.Type)"/>.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.RegisterClientService(System.Type)">
+            <summary>
+            Registers that a service should be available on the client.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.RegisterClientService``1(``0)">
+            <summary>
+            Generic version of <see cref="M:Saltarelle.Ioc.IContainer.RegisterClientService(System.Type)"/>
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.ApplyToScriptManager(Saltarelle.IScriptManagerService)">
+            <summary>
+            Performs the necessary steps to write this object to a script manager.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.EnsureTypeClientUsable(System.Type)">
+            <summary>
+            Ensures that a type can be used on the client. This ensures that the code for the type is loaded, as well as all services on which the type depends.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.IContainer.EnsureTypeClientUsable``1">
+            <summary>
+            Generic version of <see cref="M:Saltarelle.Ioc.IContainer.EnsureTypeClientUsable(System.Type)"/>.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.GetUniqueId">
+            <summary>
+            Get a uniqe id, suitable for assignment to a new control.
+            </summary>
+            <returns>A unique id.</returns>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.GetTopLevelControl(System.String)">
+            <summary>
+            Gets a control previously registered by the <see cref="M:Saltarelle.IScriptManagerService.RegisterTopLevelControl(Saltarelle.IControl)"/> method. Returns null if the control has not been registered.
+            </summary>
+            <param name="id">ID under which the control to return is registered as.</param>
+            <returns>The registered control, or null if the control has not been registered.</returns>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.RegisterTopLevelControl(Saltarelle.IControl)">
+            <summary>
+            Register a control as a top level control. This means that its constructor will get called on page load.
+            The control can later be retrieved using the <see cref="M:Saltarelle.IScriptManagerService.GetTopLevelControl(System.String)"/> method with its ID as the key.
+            Note: This does NOT register the assembly containing the type.
+            </summary>
+            <param name="control">The top level control.</param>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.RegisterClientAssembly(System.Reflection.Assembly)">
+            <summary>
+            Register that an assembly, and all assemblies it depends on, is usable from script. User code should normally not need to call this.
+            </summary>
+            <param name="asm">Assembly to register</param>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.AddScriptInclude(System.String,System.Boolean)">
+            <summary>
+            Instruct the client to include a specific script. This script should not be an assembly script, for those use <see cref="M:Saltarelle.IScriptManagerService.RegisterClientAssembly(System.Reflection.Assembly)"/> (or one of the extension methods that delegate to it).
+            Calling this method multiple times for the same script does NOT result in the script being included more than once.
+            </summary>
+            <param name="url">Url of the script to include</param>
+            <param name="includeBeforeAssemblyScripts">True to include the script before any assembly script, false to include it after all assembly scripts.</param>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.RegisterClientService(System.Type,System.Object)">
+            <summary>
+            DON'T USE THIS METHOD FROM USER CODE. Register a client service (called by the container). Always register services in a container.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.GetMarkup">
+            <summary>
+            Gets the markup for the scripts managed by this script manager.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.IScriptManagerService.CreateControlDocumentFragment(Saltarelle.Ioc.IContainer,Saltarelle.IControl)">
+            <summary>
+            Gets the markup for the scripts managed by this script manager.
+            </summary>
+            <param name="container">Container that contains the control.</param>
+            <param name="control">Control to transfer in the fragment.</param>
+        </member>
+        <member name="T:Saltarelle.Configuration.Internal.Xml.saltarelle">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelle.plugins">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelle.routes">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelle.scripts">
+            <remarks/>
+        </member>
+        <member name="T:Saltarelle.Configuration.Internal.Xml.saltarellePlugin">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarellePlugin.assembly">
+            <remarks/>
+        </member>
+        <member name="T:Saltarelle.Configuration.Internal.Xml.saltarelleRoutes">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleRoutes.assemblyScripts">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleRoutes.assemblyCss">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleRoutes.assemblyResources">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleRoutes.delegate">
+            <remarks/>
+        </member>
+        <member name="T:Saltarelle.Configuration.Internal.Xml.saltarelleScripts">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScripts.add">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScripts.debug">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScripts.debugSpecified">
+            <remarks/>
+        </member>
+        <member name="T:Saltarelle.Configuration.Internal.Xml.saltarelleScriptsAdd">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScriptsAdd.url">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScriptsAdd.assembly">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScriptsAdd.resource">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScriptsAdd.position">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.Configuration.Internal.Xml.saltarelleScriptsAdd.positionSpecified">
+            <remarks/>
+        </member>
+        <member name="T:Saltarelle.Configuration.Internal.Xml.scriptPosition">
+            <remarks/>
+        </member>
+        <member name="F:Saltarelle.Configuration.Internal.Xml.scriptPosition.BeforeCoreScripts">
+            <remarks/>
+        </member>
+        <member name="F:Saltarelle.Configuration.Internal.Xml.scriptPosition.BeforeAssemblyScripts">
+            <remarks/>
+        </member>
+        <member name="F:Saltarelle.Configuration.Internal.Xml.scriptPosition.AfterAssemblyScripts">
+            <remarks/>
+        </member>
+        <member name="P:Saltarelle.WebResourceAttribute.ResourceQualifiedName">
+            <summary>
+            Fully qualified name of the resource, e.g. Namespace.SubNamespace.Image.gif
+            </summary>
+        </member>
+        <member name="P:Saltarelle.WebResourceAttribute.PublicResourceName">
+            <summary>
+            Name under which the resource is published e.g. Image.gif.
+            </summary>
+        </member>
+        <member name="P:Saltarelle.CssResourceAttribute.CssVariableName">
+            <summary>
+            The LessCss variable used to identify the resource in css (without @ sign).
+            This may only consist of the letters a-z, hyphen and the underscore character.
+            </summary>
+        </member>
+        <member name="F:Saltarelle.Ioc.DefaultContainer._createdObjects">
+            <summary>
+            The first item in the tuple is the object, the second is the service type implemented by this object, or null if the object does not implement any service (which most objects don't).
+            </summary>
+        </member>
+        <member name="M:Saltarelle.Ioc.DefaultContainer.#ctor(System.Func{System.String,System.Type},System.Func{System.Type,System.Object},System.Func{System.Type,System.Object})">
+            <summary>
+            Constructs an instance.
+            </summary>
+            <param name="findType">Function used to retrieve a type by its name.</param>
+            <param name="resolveService">Function used to resolve a service. When this method creates an object (directly or indirectly), it must make sure to call INotifyCreate.DependenciesAvailable (if applicable).</param>
+            <param name="createObject">Function used to create an object. When this method creates an object, it must make sure to call INotifyCreate.DependenciesAvailable (if applicable).</param>
+        </member>
+        <member name="T:Saltarelle.Ioc.IService">
+            <summary>
+            This interface must be implemented by all global services that should be possible to use on the client.
+            </summary>
+        </member>
+        <member name="P:Saltarelle.Ioc.IService.ConfigObject">
+            <summary>
+            Returns the configuration object which is passed to the client instantiation of the service.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.ImportCssResourceAttribute.#ctor(System.Type,System.String,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="typeInAssembly">A type in the assembly containing the resource.</param>
+            <param name="publicResourceName">PublicResourceName of the resource to import.</param>
+            <param name="cssVariableName">Name of the CSS variable that retrieves the URL for the resource.</param>
+        </member>
+        <member name="P:Saltarelle.ImportCssResourceAttribute.ResourceAssembly">
+            <summary>
+            Assembly to import resource from.
+            </summary>
+        </member>
+        <member name="P:Saltarelle.ImportCssResourceAttribute.PublicResourceName">
+            <summary>
+            Public name of the resource to import. Note: The public resource name, not the qualifed name or the LessCss variable.
+            </summary>
+        </member>
+        <member name="P:Saltarelle.ImportCssResourceAttribute.CssVariableName">
+            <summary>
+            The LessCss variable used to identify the resource in css (without @ sign).
+            This may only consist of the letters a-z, hyphen and the underscore character.
+            </summary>
+        </member>
+        <member name="T:Saltarelle.IBeforeWriteScriptsCallback">
+            <summary>
+            This interface can be implemented by a control or service that wants to be notified just before the script manager renders its script tags.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.IBeforeWriteScriptsCallback.BeforeWriteScripts(Saltarelle.IScriptManagerService)">
+            <summary>
+            This method is called when the script manager is about to render its scripts. Use it eg. if you have to add additional includes.
+            </summary>
+        </member>
+    </members>
+</doc>

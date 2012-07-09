@@ -80,22 +80,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Saltarelle.UI.Client">
-      <HintPath>..\packages\SaltarelleUI.0.7.2.61\lib\Saltarelle.UI.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="SaltarelleLib.Client">
-      <HintPath>..\packages\SaltarelleCore.0.7.2.61\lib\SaltarelleLib.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SaltarelleParser.Client">
-      <HintPath>..\packages\SaltarelleParser.0.7.2.61\lib\SaltarelleParser.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="sscorlib">
-      <HintPath>..\packages\SaltarelleCore.0.7.2.61\lib\sscorlib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Properties\Script.jst" />
     <Compile Include="..\DemoWeb.Shared\Lesson1\Lesson1Control.Shared.cs">
       <Link>Lesson1\Lesson1Control.Shared.cs</Link>
@@ -198,6 +182,31 @@
       <Link>saltarelle.config</Link>
     </None>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\SaltarelleCore.0.7.2.61\tools\nStuff.ScriptSharp.targets" />
-  <Import Project="$(SolutionDir)packages\SaltarelleCore.0.7.2.61\tools\Saltarelle.targets" />
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.96\tools\Assemblies\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.UI.Client">
+      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.20\lib\Saltarelle.UI.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleLib.Client">
+      <HintPath>..\packages\Saltarelle.Framework.Client.0.7.3.41\lib\SaltarelleLib.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleParser.Client">
+      <HintPath>..\packages\Saltarelle.Parser.Client.0.7.3.20\lib\SaltarelleParser.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.jQuery">
+      <HintPath>..\packages\Saltarelle.jQuery.0.0.0.41\lib\Script.jQuery.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Script.jQuery.UI">
+      <HintPath>..\packages\Saltarelle.jQuery.UI.0.0.0.7\lib\Script.jQuery.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.Web">
+      <HintPath>..\packages\Saltarelle.Web.0.0.0.55\lib\Script.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.64\tools\Saltarelle.Compiler.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.41\tools\Saltarelle.targets" />
 </Project>
