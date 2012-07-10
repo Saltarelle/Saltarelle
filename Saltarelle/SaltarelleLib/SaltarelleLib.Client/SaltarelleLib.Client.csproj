@@ -45,7 +45,6 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>0028, 1591</NoWarn>
     <DocumentationFile>bin\SaltarelleLib.Client.xml</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -148,7 +147,7 @@
       <HintPath>..\..\packages\Saltarelle.Web.0.0.0.55\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.64\tools\Saltarelle.Compiler.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.66\tools\Saltarelle.Compiler.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
