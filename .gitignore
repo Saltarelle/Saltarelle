@@ -24,3 +24,4 @@ Saltarelle/Saltarelle.Mvc/Properties/SaltarelleMvcVersion.cs
 Saltarelle/Saltarelle.UI/SaltarelleUIVersion.cs
 Saltarelle/SaltarelleLib/SaltarelleLibVersion.cs
 Saltarelle/SaltarelleParser/SaltarelleParserVersion.cs
+Saltarelle/Saltarelle.Mvc/Resources/Scripts/mscorlib*.js
