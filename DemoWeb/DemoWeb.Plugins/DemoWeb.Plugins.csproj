@@ -60,13 +60,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.4.5.7\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib, Version=0.7.3.41, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleLib, Version=0.7.3.47, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.41\lib\SaltarelleLib.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.47\lib\SaltarelleLib.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleParser, Version=0.7.3.20, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleParser, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Parser.Server.0.7.3.20\lib\SaltarelleParser.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Parser.Server.0.7.3.25\lib\SaltarelleParser.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -90,12 +90,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DemoWeb.Server\DemoWeb.Server.csproj">
-      <Project>{98625DA7-6346-49AF-85A4-BD4B7EF147E4}</Project>
-      <Name>DemoWeb.Server</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Module.less" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -108,6 +102,12 @@
     <EmbeddedResource Include="..\Script.js">
       <Link>Script.js</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DemoWeb.Server\DemoWeb.Server.csproj">
+      <Project>{98625DA7-6346-49AF-85A4-BD4B7EF147E4}</Project>
+      <Name>DemoWeb.Server</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

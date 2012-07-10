@@ -35,7 +35,6 @@ namespace DemoWeb.Webapp {
 				"{controller}/{action}/{id}",                           // URL with parameters
 				new { controller = "Home", action = "Index", id = "" }  // Parameter defaults
 			);
-
 		}
 
 		public static void RegisterSaltarelleCoreServices(IWindsorContainer container, SaltarelleConfig saltarelleConfig) {
@@ -57,6 +56,7 @@ namespace DemoWeb.Webapp {
 			container.RegisterControlsFromAssembly(typeof(Lesson1Control).Assembly);
 			container.RegisterControlsFromAssembly(typeof(Label).Assembly);
 			container.Register(AllTypes.FromAssemblyContaining<HomeController>().BasedOn<IController>().WithService.Self().LifestylePerWebRequest());
+			container.Register(Component.For<ILesson7Service>().ImplementedBy<DefaultLesson7Provider>());
 
 			RegisterRoutes(RouteTable.Routes);
 

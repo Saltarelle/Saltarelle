@@ -99,12 +99,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Lesson4Control.tpl</DependentUpon>
     </Compile>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Shared.cs">
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Shared.cs">
       <Link>Lesson5\Lesson5Control.Shared.cs</Link>
-    </None>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
+    </Compile>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
       <Link>Lesson5\Lesson5InnerControl.Shared.cs</Link>
-    </None>
+    </Compile>
     <Compile Include="..\DemoWeb.Shared\Lesson7\DefaultLesson7Provider.Shared.cs">
       <Link>Lesson7\DefaultLesson7Provider.Shared.cs</Link>
     </Compile>
@@ -166,12 +166,30 @@
       <LastGenOutput>Lesson4Control.Template.cs</LastGenOutput>
       <CustomToolNamespace>DemoWeb</CustomToolNamespace>
     </Salgen>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.tpl">
+    <Salgen Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.tpl">
       <Link>Lesson5\Lesson5Control.tpl</Link>
-    </None>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.tpl">
+      <Generator>Salgen</Generator>
+      <LastGenOutput>Lesson5Control.Template.cs</LastGenOutput>
+      <CustomToolNamespace>DemoWeb</CustomToolNamespace>
+    </Salgen>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Template.cs">
+      <Link>Lesson5\Lesson5Control.Template.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Lesson5Control.tpl</DependentUpon>
+    </Compile>
+    <Salgen Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.tpl">
       <Link>Lesson5\Lesson5InnerControl.tpl</Link>
-    </None>
+      <Generator>Salgen</Generator>
+      <LastGenOutput>Lesson5InnerControl.Template.cs</LastGenOutput>
+      <CustomToolNamespace>DemoWeb</CustomToolNamespace>
+    </Salgen>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Template.cs">
+      <Link>Lesson5\Lesson5InnerControl.Template.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Lesson5InnerControl.tpl</DependentUpon>
+    </Compile>
     <Salgen Include="..\DemoWeb.Shared\Lesson7\Lesson7Control.tpl">
       <Link>Lesson7\Lesson7Control.tpl</Link>
       <Generator>Salgen</Generator>
@@ -180,24 +198,28 @@
     </Salgen>
     <None Include="..\DemoWeb.Shared\saltarelle.config">
       <Link>saltarelle.config</Link>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.96\tools\Assemblies\mscorlib.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.98\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.UI.Client">
-      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.20\lib\Saltarelle.UI.Client.dll</HintPath>
+    <Reference Include="Saltarelle.UI.Client, Version=0.7.3.24, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.24\lib\Saltarelle.UI.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib.Client">
-      <HintPath>..\packages\Saltarelle.Framework.Client.0.7.3.41\lib\SaltarelleLib.Client.dll</HintPath>
+    <Reference Include="SaltarelleLib.Client, Version=0.7.3.47, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Framework.Client.0.7.3.47\lib\SaltarelleLib.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleParser.Client">
-      <HintPath>..\packages\Saltarelle.Parser.Client.0.7.3.20\lib\SaltarelleParser.Client.dll</HintPath>
+    <Reference Include="SaltarelleParser.Client, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Parser.Client.0.7.3.25\lib\SaltarelleParser.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Script.jQuery">
-      <HintPath>..\packages\Saltarelle.jQuery.0.0.0.41\lib\Script.jQuery.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Script.jQuery, Version=0.0.0.42, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.jQuery.0.0.0.42\lib\Script.jQuery.dll</HintPath>
     </Reference>
     <Reference Include="Script.jQuery.UI">
       <HintPath>..\packages\Saltarelle.jQuery.UI.0.0.0.7\lib\Script.jQuery.UI.dll</HintPath>
@@ -208,5 +230,5 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.64\tools\Saltarelle.Compiler.targets" />
-  <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.41\tools\Saltarelle.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.47\tools\Saltarelle.targets" />
 </Project>

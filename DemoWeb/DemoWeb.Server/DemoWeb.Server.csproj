@@ -76,15 +76,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.4.5.7\lib\net35\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.Mvc">
-      <HintPath>..\packages\Saltarelle.Mvc.0.7.3.9\lib\Saltarelle.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Saltarelle.UI">
-      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.20\lib\Saltarelle.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="SaltarelleLib, Version=0.7.3.41, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.Mvc, Version=0.7.3.13, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.41\lib\SaltarelleLib.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Mvc.0.7.3.13\lib\Saltarelle.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.UI, Version=0.7.3.24, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.24\lib\Saltarelle.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleLib, Version=0.7.3.47, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.47\lib\SaltarelleLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -122,12 +124,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Lesson4Control.tpl</DependentUpon>
     </Compile>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Shared.cs">
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Shared.cs">
       <Link>Lesson5\Lesson5Control.Shared.cs</Link>
-    </None>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
+    </Compile>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
       <Link>Lesson5\Lesson5InnerControl.Shared.cs</Link>
-    </None>
+    </Compile>
     <Compile Include="..\DemoWeb.Shared\Lesson7\DefaultLesson7Provider.Shared.cs">
       <Link>Lesson7\DefaultLesson7Provider.Shared.cs</Link>
     </Compile>
@@ -172,10 +174,22 @@
       <Link>Lesson5\Lesson5Control.tpl</Link>
       <LastGenOutput>Lesson5Control.Template.cs</LastGenOutput>
     </None>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Template.cs">
+      <Link>Lesson5\Lesson5Control.Template.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Lesson5Control.tpl</DependentUpon>
+    </Compile>
     <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.tpl">
       <Link>Lesson5\Lesson5InnerControl.tpl</Link>
       <LastGenOutput>Lesson5InnerControl.Template.cs</LastGenOutput>
     </None>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Template.cs">
+      <Link>Lesson5\Lesson5InnerControl.Template.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Lesson5InnerControl.tpl</DependentUpon>
+    </Compile>
     <None Include="..\DemoWeb.Shared\Lesson7\Lesson7Control.tpl">
       <Link>Lesson7\Lesson7Control.tpl</Link>
       <Generator>Salgen</Generator>

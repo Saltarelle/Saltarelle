@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace DemoWeb {
 #if SERVER
-	public class DefaultLesson7Provider : ILesson7Service {
+	public class DefaultLesson7Provider : ILesson7Service, IService {
 		private readonly IContainer _container;
 		private readonly IScriptManagerService _scriptManager;
 		private readonly IRouteService _routes;

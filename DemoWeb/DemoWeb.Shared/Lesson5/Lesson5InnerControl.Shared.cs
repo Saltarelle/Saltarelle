@@ -1,12 +1,16 @@
 using System;
 using Saltarelle;
-#if CLIENT
-using System.XML;
-#endif
+using Saltarelle.Ioc;
+using Saltarelle.UI;
 
 namespace DemoWeb {
 	public partial class Lesson5InnerControl : IControl {
 		public Person Person { get { return person; } set { person = value; } }
+
+		#if SERVER
+		[ClientInject]
+		#endif
+		public ISaltarelleUIService UIService { get; set; }
 	
 #if SERVER
 		private void Constructed() {
@@ -17,7 +21,7 @@ namespace DemoWeb {
 		}
 
 		private void Attached() {
-			PersonDisplay.text("Hello, " + person.FirstName + " " + person.LastName);
+			PersonDisplay.InnerText = "Hello, " + person.FirstName + " " + person.LastName;
 		}
 #endif
 	}

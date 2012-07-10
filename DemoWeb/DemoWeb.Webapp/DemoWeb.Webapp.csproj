@@ -84,18 +84,21 @@
     <Reference Include="Saltarelle.CastleWindsor">
       <HintPath>..\packages\Saltarelle.CastleWindsor.0.7.3.2\lib\Saltarelle.CastleWindsor.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.Mvc, Version=0.7.3.9, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Saltarelle.Mvc.0.7.3.9\lib\Saltarelle.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Saltarelle.UI, Version=0.7.3.20, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.20\lib\Saltarelle.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="SaltarelleLib, Version=0.7.3.41, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.41\lib\SaltarelleLib.dll</HintPath>
-    </Reference>
-    <Reference Include="SaltarelleParser, Version=0.7.3.20, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.Mvc, Version=0.7.3.13, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Parser.Server.0.7.3.20\lib\SaltarelleParser.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Mvc.0.7.3.13\lib\Saltarelle.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.UI, Version=0.7.3.24, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.24\lib\Saltarelle.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleLib, Version=0.7.3.47, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.47\lib\SaltarelleLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleParser, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Parser.Server.0.7.3.25\lib\SaltarelleParser.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
