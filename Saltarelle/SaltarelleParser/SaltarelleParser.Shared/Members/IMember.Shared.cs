@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Saltarelle.Ioc;
 
 namespace Saltarelle {
@@ -51,7 +52,7 @@ namespace Saltarelle {
 		/// <summary>
 		/// The names of all members upon which this member is dependent.
 		/// </summary>
-		string[] Dependencies { get; }
+		IList<string> Dependencies { get; }
 		
 		/// <summary>
 		/// Instantiate this member in the specified control.

@@ -1,7 +1,6 @@
 ﻿using System;
-#if SERVER
+using System.Runtime.CompilerServices;
 using System.Text;
-#endif
 
 namespace Saltarelle.Fragments {
 	internal class LiteralFragment : IFragment {
@@ -61,7 +60,7 @@ namespace Saltarelle.Fragments {
 
 #if CLIENT
 		[AlternateSignature]
-		public extern LiteralFragment(string text);
+		public LiteralFragment(string text) {}
 		public LiteralFragment(string text, bool isCData) {
 			if (Utils.IsNull(text)) throw Utils.ArgumentNullException("text");
 			this.Text = text;

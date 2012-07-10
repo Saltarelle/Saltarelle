@@ -1,22 +1,25 @@
 ﻿using System;
-using System.DHTML;
-using System.XML;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Collections;
+using System.Collections.Generic;
+using System.Html;
+using System.Runtime.CompilerServices;
+using System.Xml;
+using jQueryApi;
 
 namespace Saltarelle {
-	public delegate void XmlAttributeAction(XMLAttribute a);
-	public delegate void XmlNodeAction(XMLNode n);
-
 	public static partial class Utils {
 		public static int ParseInt(string s) {
-			return Number.ParseInt(s, 10);
+			return int.Parse(s, 10);
 		}
 
 		public static double ParseDouble(string s) {
-			return Number.ParseFloat(s);
+			return double.Parse(s);
 		}
 
 		public static string[] RegexExec(string toTest, string pattern, string options) {
-			RegularExpression x = new RegularExpression(pattern, options);
+			var x = new Regex(pattern, options);
 			return x.Exec(toTest);
 		}
 		
@@ -28,18 +31,6 @@ namespace Saltarelle {
 			return d.ToString();
 		}
 		
-		// Script# has a bug which causes "char c = 'a'" to be translated into "var c = 'a'" rather than "var c = 65"
-		public static char CharCode(char c) {
-			return (char)((string)(object)c).CharCodeAt(0);
-		}
-		
-		public static string RepeatChar(char ch, int count) {
-			if (Type.GetScriptType(ch) == "string") // Script# bug, it translates 'A' to 'A' rather than to 65.
-				return string.FromChar(ch, count);
-			else
-				return string.FromCharCode(ch, count);
-		}
-		
 		public static double Round(double value, int numDecimals) {
 			return Math.Round(value * Math.Pow(10, numDecimals)) / Math.Pow(10, numDecimals);
 		}
@@ -48,34 +39,41 @@ namespace Saltarelle {
 			return Math.Ceil(value);
 		}
 
-		public static int ArrayLength(ArrayList l) {
-			return l.Length;
-		}
+		private static Regex escapeable = new Regex(@"[""\\\x00-\x1f\x7f-\x9f]", "g");
+		private static JsDictionary<string, string> substitutions;
 
 		public static string ScriptEncode(string s) {
-			return jQuery.quoteString(s);
+			if (escapeable.Test(s)) {
+				return "\"" + s.ReplaceRegex(escapeable, a => {
+					var c = substitutions[a];
+					if (Type.GetScriptType(c) == "string") {
+					    return c;
+					}
+					int code = a.CharCodeAt(0);
+					return "\\u00" + (code / 16).ToString(16) + (code % 16).ToString(16);
+				}) + "\"";
+			}
+			return "\"" + s + "\"";
 		}
 		
+#warning TODO: Date handling
 		public static string Json(object o) {
-			return jQuery.toJSON(o);
+			return System.Serialization.Json.Stringify(o);
 		}
 		
 		public static object EvalJson(string s) {
-			return jQuery.evalJSON(s);
+			return System.Serialization.Json.Parse(s);
 		}
 
-		public static double NaN {
-			get { return Number.NaN; }
+		[IgnoreGenericArguments]
+		public static T EvalJson<T>(string s) {
+			return System.Serialization.Json.ParseData<T>(s);
 		}
 
-		public static bool IsNaN(double v) {
-			return Number.IsNaN(v);
-		}
-		
 		public static bool IsNull(object o) {
 			return Script.IsNullOrUndefined(o);
 		}
-
+		
 		public static string JoinStrings(string separator, string[] value) {
 			return value.Join(separator);
 		}
@@ -92,38 +90,6 @@ namespace Saltarelle {
 			return decimals == 0 ? ToStringInvariantInt((int)number) : number.Format("F" + decimals);
 		}
 
-		public static Array ArrayResize(Array arr, int size, object newObj) {
-			ArrayList rslt = (ArrayList)(object)arr.Clone();
-			if (size < arr.Length)
-				rslt.RemoveRange(size, arr.Length - size);
-			while (rslt.Length < size)
-				rslt.Add(newObj);
-			return (Array)rslt;
-		}
-
-		public static Array ArrayAppend(Array arr, object item) {
-			ArrayList rslt = (ArrayList)(object)arr.Clone();
-			rslt.Add(item);
-			return (Array)rslt;
-		}
-
-		public static Array ArrayAppendRange(Array arr, Array add) {
-			ArrayList l = (ArrayList)(object)arr.Clone();
-			for (int i = 0; i < add.Length; i++)
-				l.Add(add[i]);
-			return (Array)l;
-		}
-
-		public static Array CloneArray(Array arr) {
-			return arr.Clone();
-		}
-
-		public static Array ArrayRemoveAt(Array arr, int index) {
-			ArrayList result = (ArrayList)(object)arr.Clone();
-			result.RemoveAt(index);
-			return (Array)result;
-		}
-
 		public static double MillisecondDifference(DateTime first, DateTime second) {
 			return first - second;
 		}
@@ -136,39 +102,23 @@ namespace Saltarelle {
 			return s.Unescape();
 		}
 
-		public static void DoForEachAttribute(XMLNode node, XmlAttributeAction a) {
-			XMLNamedNodeMap attr = node.Attributes;
-			for (int i = 0, n = attr.Length; i < n; i++)
-				a((XMLAttribute)attr.Item(i));
+		public static void DoForEachAttribute(XmlNode node, Action<XmlAttribute> a) {
+			var attr = node.Attributes;
+			for (int i = 0, n = attr.Count; i < n; i++)
+				a((XmlAttribute)attr[i]);
 		}
 
-		public static void DoForEachChild(XMLNode node, XmlNodeAction a) {
-			for (int i = 0, n = node.ChildNodes.Length; i < n; i++)
+		public static void DoForEachChild(XmlNode node, Action<XmlNode> a) {
+			for (int i = 0, n = node.ChildNodes.Count; i < n; i++)
 				a(node.ChildNodes[i]);
 		}
 
-		public static int GetNumChildNodes(XMLNode n) {
-			return n.HasChildNodes() ? n.ChildNodes.Length : 0;
+		public static int GetNumChildNodes(XmlNode n) {
+			return n.HasChildNodes() ? n.ChildNodes.Count : 0;
 		}
 
-		public static int GetNumAttributes(XMLNode n) {
-			return n.Attributes.Length;
-		}
-
-		public static string NodeName(XMLNode n) {
-			return n.NodeName;
-		}
-
-		public static string NodeValue(XMLNode n) {
-			return n.NodeValue;
-		}
-		
-		public static string NodeOuterXml(XMLNode n) {
-			return n.Xml;
-		}
-
-		public static XMLDocument ParseXml(string xml) {
-			return XMLDocumentParser.Parse(xml);
+		public static XmlDocument ParseXml(string xml) {
+			return XmlDocumentParser.Parse(xml);
 		}
 
 		public static void ClearStringBuilder(StringBuilder sb) {
@@ -192,7 +142,7 @@ namespace Saltarelle {
 			bool hasNonUppercase = false;
 			int numUppercaseChars = 0;
 			for (int index = 0; index < s.Length; index++) {
-				if (s.CharCodeAt(index) >= Utils.CharCode('A') && s.CharCodeAt(index) <= Utils.CharCode('Z')) {
+				if (s.CharCodeAt(index) >= 'A' && s.CharCodeAt(index) <= 'Z') {
 					numUppercaseChars++;
 				}
 				else {
@@ -234,43 +184,39 @@ namespace Saltarelle {
 		/* Useful functions but not part of the emulation layer. Should perhaps be somehwere else
 		 */
 
-		public static jQuery Parent(jQuery q, string selector) {
-			for (q = q.parent(); q.size() > 0 && !q.isInExpression(selector); q = q.parent())
+		public static jQueryObject Prev(jQueryObject q, string selector) {
+			for (q = q.Prev(); q.Size() > 0 && !q.Is(selector); q = q.Prev())
 				;
 			return q;
 		}
 
-		public static jQuery Prev(jQuery q, string selector) {
-			for (q = q.prev(); q.size() > 0 && !q.isInExpression(selector); q = q.prev())
+		public static jQueryObject Next(jQueryObject q, string selector) {
+			for (q = q.Next(); q.Size() > 0 && !q.Is(selector); q = q.Next())
 				;
 			return q;
 		}
 
-		public static jQuery Next(jQuery q, string selector) {
-			for (q = q.next(); q.size() > 0 && !q.isInExpression(selector); q = q.next())
-				;
-			return q;
-		}
-
-        public static Delegate Wrap(Delegate d) {
-            return (Delegate)Script.Literal("function(){{var x=[this];for(var i=0;i<arguments.length;i++)x.push(arguments[i]);{0}.apply({0},x);}}", d);
-        }
-
-		public static void RenderControl(IClientCreateControl c, DOMElement parent) {
-			DOMElement newEl = JQueryProxy.jQuery(c.Html).get(0);
+		public static void RenderControl(IClientCreateControl c, Element parent) {
+			var newEl = jQuery.FromHtml(c.Html).GetElement(0);
 			parent.AppendChild(newEl);
 			c.Attach();
 		}
 
-		public static void Ajax(Dictionary data, string url, bool post, Delegate success, Delegate error) {
-			jQuery.ajax(new Dictionary("data", data,
-			                           "dataFilter", new EvalJsonDelegate(jQuery.evalJSON),
-			                           "dataType", "json",
-			                           "cache", false,
-			                           "type", post ? "POST" : "GET",
-			                           "url", url,
-			                           "success", success,
-			                           "error", error));
+		public static jQueryXmlHttpRequest Ajax(JsDictionary<string, object> data, string url, bool post, AjaxRequestCallback success, AjaxErrorCallback error) {
+			var converters = new JsDictionary<string, Func<string, object>>();
+			converters["text json"] = EvalJson;
+			return jQuery.Ajax(new jQueryAjaxOptions { Data = data, Converters = converters, DataType = "json", Cache = false, Type = post ? "POST" : "GET", Url = url, Success = success, Error = error });
+		}
+
+		static Utils() {
+			substitutions = new JsDictionary<string, string>();
+			substitutions["\b"] = "\\b";
+			substitutions["\t"] = "\\t";
+			substitutions["\n"] = "\\n";
+			substitutions["\f"] = "\\f";
+			substitutions["\r"] = "\\r";
+			substitutions["\""] = "\\\"";
+			substitutions["\\"] = "\\\\";
 		}
 	}
 }

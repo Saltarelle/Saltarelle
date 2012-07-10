@@ -1,6 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Saltarelle;
 using Saltarelle.UI;
+#if CLIENT
+using System.Html;
+using jQueryApi;
+#endif
 
 namespace DemoWeb {
 	[Record]
@@ -124,25 +130,22 @@ namespace DemoWeb {
 		                                                   null) };
 		#endregion
 
-		private ITreeNode CreateTreeNode(Department d) {
-			ITreeNode n = Tree.CreateTreeNode();
+		private TreeNode CreateTreeNode(Department d) {
+			TreeNode n = Tree.CreateTreeNode();
 			Tree.SetTreeNodeText(n, d.name);
 			Tree.SetTreeNodeData(n, d.employees);
 			if (d.children != null) {
 				foreach (var c in d.children) {
-					ITreeNode x = CreateTreeNode(c);
+					TreeNode x = CreateTreeNode(c);
 					Tree.AddTreeNodeChild(x, n);
 				}
 			}
 			return n;
 		}
 
-		private void AddDepartmentToTree(Department d, ITreeNode parentNode) {
-		}
-
 		private void Constructed() {
 			foreach (var d in data) {
-				ITreeNode n = CreateTreeNode(d);
+				TreeNode n = CreateTreeNode(d);
 				Tree.AddTreeNodeChild(n, DepartmentsTree.InvisibleRoot);
 			}
 			Tree.SetTreeNodeExpanded(DepartmentsTree.InvisibleRoot, true, true);
@@ -157,8 +160,8 @@ namespace DemoWeb {
 		}
 		
 		private void Attached() {
-			JQueryProxy.jQuery(EditEmployeeOKButton).click(EditEmployeeOKButton_Click);
-			JQueryProxy.jQuery(EditEmployeeCancelButton).click(delegate { EditEmployeeDialog.Close(); });
+			jQuery.FromElement(EditEmployeeOKButton).Click(EditEmployeeOKButton_Click);
+			jQuery.FromElement(EditEmployeeCancelButton).Click(delegate { EditEmployeeDialog.Close(); });
 			DepartmentsTree_SelectionChanged(DepartmentsTree, EventArgs.Empty);
 		}
 		
@@ -173,7 +176,7 @@ namespace DemoWeb {
 		}
 
 		private void DepartmentsTree_SelectionChanged(object sender, EventArgs _) {
-			ITreeNode node = DepartmentsTree.SelectedNode;
+			TreeNode node = DepartmentsTree.SelectedNode;
 			Employee[] emps = ((node != null ? (Employee[])Tree.GetTreeNodeData(node) : null) ?? new Employee[0]);
 			EmployeesGrid.BeginRebuild();
 			foreach (Employee e in emps)
@@ -190,25 +193,25 @@ namespace DemoWeb {
 			EditEmployeeDialog.Open();
 		}
 		
-		private void EditEmployeeOKButton_Click(JQueryEvent evt) {
+		private void EditEmployeeOKButton_Click(jQueryEvent evt) {
 			string firstName = FirstNameInput.Value.Trim(),
 			       lastName  = LastNameInput.Value.Trim(),
 			       title     = TitleInput.Value.Trim(),
 			       email     = EmailInput.Value.Trim();
 			if (firstName == "") {
-				Script.Alert("You must enter a first name.");
+				Window.Alert("You must enter a first name.");
 				FirstNameInput.Focus();
 				return;
 			}
 			if (lastName == "") {
-				Script.Alert("You must enter a last name.");
+				Window.Alert("You must enter a last name.");
 				LastNameInput.Focus();
 				return;
 			}
 			if (title == "")
 				title = null;
 			if (email == "") {
-				Script.Alert("You must enter an email address.");
+				Window.Alert("You must enter an email address.");
 				EmailInput.Focus();
 				return;
 			}
@@ -224,14 +227,14 @@ namespace DemoWeb {
 			EditEmployeeDialog.Close();
 		}
 		
-		private Employee[] GetCurrentEmployees() {
-			Employee[] arr = new Employee[0];
+		private List<Employee> GetCurrentEmployees() {
+			var l = new List<Employee>();
 			for (int i = 0, n = EmployeesGrid.NumRows; i < n; i++) {
-				Employee e = (Employee)EmployeesGrid.GetData(i);
+				var e = (Employee)EmployeesGrid.GetData(i);
 				if (e != null)
-					arr = (Employee[])Utils.ArrayAppend(arr, e);
+					l.Add(e);
 			}
-			return arr;
+			return l;
 		}
 
 #endif

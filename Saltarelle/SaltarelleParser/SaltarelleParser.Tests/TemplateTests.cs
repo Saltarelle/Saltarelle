@@ -81,7 +81,7 @@ namespace SaltarelleParser.Tests {
 			
 			string expected =  "[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                +  "public TestClass(object config) {" + Environment.NewLine
-			                +  "	__cfg = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);" + Environment.NewLine
+			                +  "	__cfg = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
 			Template.WriteClientConstructor(cb, tpl);
@@ -220,7 +220,7 @@ namespace SaltarelleParser.Tests {
 			                +  "public string Id {" + Environment.NewLine
 			                +  "	get { return id; }" + Environment.NewLine
 			                +  "	set {" + Environment.NewLine
-			                +  "		foreach (KeyValuePair<string, IControl> kvp in controls)" + Environment.NewLine
+			                +  "		foreach (var kvp in controls)" + Environment.NewLine
 			                +  "			kvp.Value.Id = value + \"_\" + kvp.Key;" + Environment.NewLine
 			                +  "		[a]" + Environment.NewLine
 			                +  "		[b]" + Environment.NewLine
@@ -253,8 +253,8 @@ namespace SaltarelleParser.Tests {
 			                +  "public string Id {" + Environment.NewLine
 			                +  "	get { return id; }" + Environment.NewLine
 			                +  "	set {" + Environment.NewLine
-			                +  "		foreach (DictionaryEntry kvp in controls)" + Environment.NewLine
-			                +  "			((IControl)kvp.Value).Id = value + \"_\" + kvp.Key;" + Environment.NewLine
+			                +  "		foreach (var kvp in controls)" + Environment.NewLine
+			                +  "			kvp.Value.Id = value + \"_\" + kvp.Key;" + Environment.NewLine
 			                +  "		[a]" + Environment.NewLine
 			                +  "		[b]" + Environment.NewLine
 			                +  "		if (isAttached)" + Environment.NewLine
@@ -308,6 +308,8 @@ namespace SaltarelleParser.Tests {
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
+			                 + p + "	partial void Constructed();" + Environment.NewLine
+			                 +     Environment.NewLine
 			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position = PositionHelper.NotPositioned;" + Environment.NewLine
@@ -317,7 +319,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	public string Id {" + Environment.NewLine
 			                 + p + "		get { return id; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
-			                 + p + "			foreach (KeyValuePair<string, IControl> kvp in controls)" + Environment.NewLine
+			                 + p + "			foreach (var kvp in controls)" + Environment.NewLine
 			                 + p + "				kvp.Value.Id = value + \"_\" + kvp.Key;" + Environment.NewLine
 			                 + p + "			this.id = value;" + Environment.NewLine
 			                 + p + "		}" + Environment.NewLine
@@ -417,15 +419,20 @@ namespace SaltarelleParser.Tests {
 			string p = (withNamespace ? "\t" : "");
 
 			string expected  =     "using System;" + Environment.NewLine
-			                 +     "using System.DHTML;" + Environment.NewLine
+			                 +     "using System.Collections;" + Environment.NewLine
+			                 +     "using System.Collections.Generic;" + Environment.NewLine
+			                 +     "using System.Html;" + Environment.NewLine
 			                 +     "using Saltarelle;" + Environment.NewLine
 			                 +     "using Saltarelle.Ioc;" + Environment.NewLine
 			                 +     "using AddedNamespace.Client;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
-			                 + p + "	private Dictionary controls = new Dictionary();" + Environment.NewLine
-			                 + p + "	private Dictionary __cfg;" + Environment.NewLine
+			                 + p + "	partial void Constructed();" + Environment.NewLine
+			                 + p + "	partial void Attached();" + Environment.NewLine
+			                 +     Environment.NewLine
+			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
+			                 + p + "	private JsDictionary __cfg;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position;" + Environment.NewLine
 			                 + p + "	public Position Position {" + Environment.NewLine
@@ -438,14 +445,14 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	}" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private bool isAttached = false;" + Environment.NewLine
-			                 + p + "	public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }" + Environment.NewLine
+			                 + p + "	public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private string id;" + Environment.NewLine
 			                 + p + "	public string Id {" + Environment.NewLine
 			                 + p + "		get { return id; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
-			                 + p + "			foreach (DictionaryEntry kvp in controls)" + Environment.NewLine
-			                 + p + "				((IControl)kvp.Value).Id = value + \"_\" + kvp.Key;" + Environment.NewLine
+			                 + p + "			foreach (var kvp in controls)" + Environment.NewLine
+			                 + p + "				kvp.Value.Id = value + \"_\" + kvp.Key;" + Environment.NewLine
 			                 + p + "			if (isAttached)" + Environment.NewLine
 			                 + p + "				GetElement().ID = value;" + Environment.NewLine
 			                 + p + "			this.id = value;" + Environment.NewLine
@@ -481,11 +488,11 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
 			                 + p + "	[AlternateSignature]" + Environment.NewLine
-			                 + p + "	public extern TestClass();" + Environment.NewLine
+			                 + p + "	public TestClass() {}" + Environment.NewLine
 			                 : "")
 			                 + p + "	[Obsolete(@\"" + Template.DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]" + Environment.NewLine
 			                 + p + "	public TestClass(object config) {" + Environment.NewLine
-			                 + p + "		__cfg = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);" + Environment.NewLine
+			                 + p + "		__cfg = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
 			                 + p + "	public void DependenciesAvailable() {" + Environment.NewLine

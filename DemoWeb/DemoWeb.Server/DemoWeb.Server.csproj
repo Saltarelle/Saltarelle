@@ -10,12 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DemoWeb</RootNamespace>
     <AssemblyName>DemoWeb</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,45 +56,46 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="dotless.Core, Version=1.2.2.0, Culture=neutral, PublicKeyToken=96b446c9e63eae34, processorArchitecture=MSIL">
-      <HintPath>..\packages\dotless.1.2.2.0\lib\dotless.Core.dll</HintPath>
+    <Reference Include="dotless.Core">
+      <HintPath>..\packages\dotless.1.3.0.4\lib\dotless.Core.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.9.5.2\lib\net35\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.0.7.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.4.0.7\lib\net35\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Saltarelle.Mvc, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SaltarelleMvc.0.7.2.61\lib\Saltarelle.Mvc.dll</HintPath>
+      <HintPath>..\packages\Mono.Cecil.0.9.5.3\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.UI, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SaltarelleUI.0.7.2.61\lib\Saltarelle.UI.dll</HintPath>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.3\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SaltarelleCore.0.7.2.61\lib\SaltarelleLib.dll</HintPath>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.3\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleParser, Version=0.7.2.61, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\packages\Mono.Cecil.0.9.5.3\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SaltarelleParser.0.7.2.61\lib\SaltarelleParser.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.4.5.7\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.Mvc, Version=0.7.3.13, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Mvc.0.7.3.13\lib\Saltarelle.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Saltarelle.UI, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.25\lib\Saltarelle.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="SaltarelleLib, Version=0.7.3.49, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.49\lib\SaltarelleLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages-manual\ASP.NET MVC 3\System.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -122,12 +124,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Lesson4Control.tpl</DependentUpon>
     </Compile>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Shared.cs">
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Shared.cs">
       <Link>Lesson5\Lesson5Control.Shared.cs</Link>
-    </None>
-    <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
+    </Compile>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Shared.cs">
       <Link>Lesson5\Lesson5InnerControl.Shared.cs</Link>
-    </None>
+    </Compile>
     <Compile Include="..\DemoWeb.Shared\Lesson7\DefaultLesson7Provider.Shared.cs">
       <Link>Lesson7\DefaultLesson7Provider.Shared.cs</Link>
     </Compile>
@@ -154,9 +156,6 @@
     <EmbeddedResource Include="..\Script.js">
       <Link>Script.js</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Script.min.js">
-      <Link>Script.min.js</Link>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\demoweb.shared\lesson1\Lesson1Control.tpl">
@@ -175,10 +174,22 @@
       <Link>Lesson5\Lesson5Control.tpl</Link>
       <LastGenOutput>Lesson5Control.Template.cs</LastGenOutput>
     </None>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5Control.Template.cs">
+      <Link>Lesson5\Lesson5Control.Template.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Lesson5Control.tpl</DependentUpon>
+    </Compile>
     <None Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.tpl">
       <Link>Lesson5\Lesson5InnerControl.tpl</Link>
       <LastGenOutput>Lesson5InnerControl.Template.cs</LastGenOutput>
     </None>
+    <Compile Include="..\DemoWeb.Shared\Lesson5\Lesson5InnerControl.Template.cs">
+      <Link>Lesson5\Lesson5InnerControl.Template.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Lesson5InnerControl.tpl</DependentUpon>
+    </Compile>
     <None Include="..\DemoWeb.Shared\Lesson7\Lesson7Control.tpl">
       <Link>Lesson7\Lesson7Control.tpl</Link>
       <Generator>Salgen</Generator>

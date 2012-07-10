@@ -1,7 +1,5 @@
 ﻿using System;
-#if SERVER
 using System.Text;
-#endif
 
 namespace Saltarelle.Fragments {
 	internal class InstantiatedControlFragment : IFragment {

@@ -1,21 +1,14 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Saltarelle.Fragments;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlNodeType = System.XML.XMLNodeType;
-using XmlAttribute = System.XML.XMLAttribute;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
+using System.Text;
 
 namespace Saltarelle.NodeProcessors {
 	internal class LeafNodeProcessor : INodeProcessor {
 		private static string NormalizeSpaces(string s) {
 			#if CLIENT
-				return s.Replace(new RegularExpression("\\s+", "g"), " ");
+				return s.ReplaceRegex(new Regex("\\s+", "g"), " ");
 			#else
 				StringBuilder sb = new StringBuilder();
 				bool atSpace = false;
@@ -35,12 +28,8 @@ namespace Saltarelle.NodeProcessors {
 
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
 			switch (node.NodeType) {
-				#if CLIENT
-					case XmlNodeType.CharacterData:
-				#else
-					case XmlNodeType.CDATA:
-				#endif
-					currentRenderFunction.AddFragment(new LiteralFragment(Utils.NodeValue(node), true));
+				case XmlNodeType.CDATA:
+					currentRenderFunction.AddFragment(new LiteralFragment(node.Value, true));
 					return true;
 
 				case XmlNodeType.Text:
@@ -48,7 +37,7 @@ namespace Saltarelle.NodeProcessors {
 					case XmlNodeType.Whitespace:
 					case XmlNodeType.SignificantWhitespace:
 				#endif
-					currentRenderFunction.AddFragment(new LiteralFragment(NormalizeSpaces(Utils.NodeValue(node))));
+					currentRenderFunction.AddFragment(new LiteralFragment(NormalizeSpaces(node.Value)));
 					return true;
 
 				case XmlNodeType.Comment:

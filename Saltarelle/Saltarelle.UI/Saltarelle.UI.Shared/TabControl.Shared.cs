@@ -1,10 +1,11 @@
 using System;
-#if SERVER
-using System.Text;
+using System.Collections;
 using System.Collections.Generic;
-#endif
+using System.Text;
 #if CLIENT
-using System.DHTML;
+using System.Html;
+using System.Runtime.CompilerServices;
+using jQueryApi;
 #endif
 
 namespace Saltarelle.UI {
@@ -38,7 +39,7 @@ namespace Saltarelle.UI {
 			public event TabControlSelectedTabChangingEventHandler SelectedTabChanging;
 			public event EventHandler SelectedTabChanged;
 			
-			private JQueryEventHandlerDelegate clickHandler;
+			private jQueryEventHandler clickHandler;
 		#endif
 	
 		public string Id {
@@ -80,7 +81,7 @@ namespace Saltarelle.UI {
 						for (int i = 0; i < oldNum; i++)
 							tabCaptions[i] = (i < value.Length ? value[i] : null) ?? "";
 						
-						DOMElementCollection children = GetElement().Children[0].Children[0].Children;
+						var children = GetElement().Children[0].Children[0].Children;
 						for (int i = 0; i < children.Length; i++)
 							children[i].Children[0].InnerHTML = (!string.IsNullOrEmpty(tabCaptions[i]) ? Utils.HtmlEncode(tabCaptions[i]) : "&nbsp");
 						return;
@@ -95,8 +96,8 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (isAttached && value != rightAlignTabs) {
-						DOMElement elem = GetElement();
-						JQueryProxy.jQuery(elem.Children[0].Children[0]).css("float", (value ? "right" : "left"));
+						Element elem = GetElement();
+						jQuery.FromElement(elem.Children[0].Children[0]).CSS("float", (value ? "right" : "left"));
 					}
 				#endif
 				rightAlignTabs = value;
@@ -141,7 +142,7 @@ namespace Saltarelle.UI {
 					throw new Exception("Must set ID before render");
 				string style = PositionHelper.CreateStyle(position, -1, -1);
 
-				StringBuilder sb = new StringBuilder();
+				var sb = new StringBuilder();
 				sb.Append("<div id=\"" + id + "\" style=\"" + style + "\" class=\"" + MainClass + "\"><div class=\"" + TabBarClass + "\"><ul style=\"float: " + (rightAlignTabs ? "right" : "left") + "\">");
 				for (int i = 0; i < tabCaptions.Length; i++) {
 					sb.Append(GetButtonHtml(tabCaptions[i], i == selectedTab));
@@ -186,17 +187,17 @@ namespace Saltarelle.UI {
 				}
 				tabCaptions = newCaptions;
 
-				DOMElement elem = GetElement();
-				jQuery newPage = JQueryProxy.jQuery(GetTabPageHtml(html));
-				JQueryProxy.jQuery(elem.Children[position]).after(newPage);	// use this index since we have the tab caption list before everything else.
-				newPage.css("display", "none");
+				Element elem = GetElement();
+				var newPage = jQuery.FromHtml(GetTabPageHtml(html));
+				jQuery.FromElement(elem.Children[position]).After(newPage);	// use this index since we have the tab caption list before everything else.
+				newPage.CSS("display", "none");
 				
-				jQuery newButton = JQueryProxy.jQuery(GetButtonHtml(title, false));
-				newButton.children().click(clickHandler);
+				var newButton = jQuery.FromHtml(GetButtonHtml(title, false));
+				newButton.Children().Click(clickHandler);
 				if (position == 0)
-					JQueryProxy.jQuery(elem.Children[0].Children[0]).prepend(newButton);
+					jQuery.FromElement(elem.Children[0].Children[0]).Prepend(newButton);
 				else
-					JQueryProxy.jQuery(elem.Children[0].Children[0].Children[position - 1]).after(newButton);
+					jQuery.FromElement(elem.Children[0].Children[0].Children[position - 1]).After(newButton);
 			}
 			else {
 			#endif
@@ -238,14 +239,14 @@ namespace Saltarelle.UI {
 				}
 				tabCaptions = newCaptions;
 				
-				DOMElement elem = GetElement();
+				Element elem = GetElement();
 				elem.RemoveChild(elem.Children[position + 1]);
 				elem.Children[0].Children[0].RemoveChild(elem.Children[0].Children[0].Children[position]);
 
 				if (selectedTab > position)
 					selectedTab--;
 				else if (selectedTab == position) {
-					int newSel = Math.Min(selectedTab, tabCaptions.Length);
+					int newSel = (int)Math.Min(selectedTab, tabCaptions.Length);
 					ChangeSelectionUI(-1, newSel);
 					selectedTab = newSel;
 				}
@@ -267,7 +268,7 @@ namespace Saltarelle.UI {
 				if (selectedTab > position)
 					selectedTab--;
 				else if (selectedTab == position)
-					selectedTab = Math.Min(selectedTab, tabCaptions.Length);
+					selectedTab = (int)Math.Min(selectedTab, tabCaptions.Length);
 			#if CLIENT
 			}
 			#endif
@@ -295,16 +296,16 @@ namespace Saltarelle.UI {
 #endif
 #if CLIENT
 		[AlternateSignature]
-		public extern TabControl();
+		public TabControl() {}
 		public TabControl(object config) {
 			if (!Script.IsUndefined(config)) {
-				InitConfig(Dictionary.GetDictionary(config));
+				InitConfig(JsDictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
-		protected virtual void InitConfig(Dictionary config) {
+		protected virtual void InitConfig(JsDictionary config) {
 			id = (string)config["id"];
 			tabCaptions = (string[])config["tabCaptions"];
 			position = (Position)config["position"];
@@ -314,7 +315,7 @@ namespace Saltarelle.UI {
 		}
 		
 		private void ChangeSelectionUI(int oldSelection, int newSelection) {
-			DOMElementCollection children = GetElement().Children;
+			ElementCollection children = GetElement().Children;
 			if (oldSelection != -1) {
 				children[oldSelection + 1].Style.Display = "none";
 				children[0].Children[0].Children[oldSelection].ClassName = InactiveTabClass;
@@ -323,10 +324,10 @@ namespace Saltarelle.UI {
 			children[0].Children[0].Children[newSelection].ClassName = ActiveTabClass;
 		}
 
-		private void Link_Click(DOMElement el, JQueryEvent evt) {
-			evt.preventDefault();
-			DOMElement li = el.ParentNode;
-			DOMElementCollection lis = li.ParentNode.Children;
+		private void Link_Click(Element el, jQueryEvent evt) {
+			evt.PreventDefault();
+			Element li = el.ParentNode;
+			ElementCollection lis = li.ParentNode.Children;
 			for (int i = 0; i < lis.Length; i++) {
 				if (li == lis[i]) {
 					SelectedTab = i;
@@ -342,35 +343,35 @@ namespace Saltarelle.UI {
 
 			UIUtils.FixStrangeIE7SelectIssue(GetElement().Children[SelectedTab + 1]);
 			
-			clickHandler = (JQueryEventHandlerDelegate)Utils.Wrap(new UnwrappedJQueryEventHandlerDelegate(Link_Click));
+			clickHandler = new jQueryEventHandler(Delegate.ThisFix((Action<Element, jQueryEvent>)Link_Click));
 			
-			DOMElement elem = GetElement();
-			DOMElementCollection children = elem.Children;
+			Element elem = GetElement();
+			ElementCollection children = elem.Children;
 			for (int i = 0; i < tabCaptions.Length; i++) {
 				if (i != selectedTab)
 					children[i + 1].Style.Display = "none";
 			}
 			
-			ArrayList links = new ArrayList();
-			DOMElementCollection lis = children[0].Children[0].Children;
+			var links = new List<Element>();
+			ElementCollection lis = children[0].Children[0].Children;
 			for (int i = 0; i < lis.Length; i++)
 				links.Add(lis[i].Children[0]);
 
-			JQueryProxy.jQuery((DOMElement[])links).click(clickHandler);
+			jQuery.FromElements((Element[])links).Click(clickHandler);
 			
-			if (jQuery.browser.msie && Utils.ParseDouble(jQuery.browser.version) < 8) {
+			if (jQuery.Browser.MSIE && Utils.ParseDouble(jQuery.Browser.Version) < 8) {
 				elem.Style.Width = children[1].ClientWidth + "px";
 			}
 		}
 		
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
-		public DOMElement[] GetInnerElements() {
-			ArrayList result = new ArrayList();
-			jQuery children = JQueryProxy.jQuery(GetElement()).children(":gt(0)").children();
-			for (int i = 0; i < children.size(); i++)
-				result.Add(children.get(i));
-			return (DOMElement[])result;
+		public IList<Element> GetInnerElements() {
+			var result = new List<Element>();
+			var children = jQuery.FromElement(GetElement()).Children(":gt(0)").Children();
+			for (int i = 0; i < children.Size(); i++)
+				result.Add(children.GetElement(i));
+			return (Element[])result;
 		}
 		
 		protected virtual void OnSelectedTabChanging(TabControlSelectedTabChangingEventArgs e) {

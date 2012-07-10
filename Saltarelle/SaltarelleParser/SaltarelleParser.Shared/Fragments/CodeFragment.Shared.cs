@@ -1,7 +1,6 @@
 ﻿using System;
-#if SERVER
 using System.Text;
-#endif
+#pragma warning disable 414
 
 namespace Saltarelle.Fragments {
 	internal class CodeFragment : IFragment {

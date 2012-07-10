@@ -1,14 +1,9 @@
 ﻿using System;
 #if CLIENT
-using NullableDateTime = System.DateTime;
+using System.Runtime.CompilerServices;
 using ArgumentException = System.Exception;
-using ParameterDictionary = System.Dictionary;
-using ParameterEntry = System.DictionaryEntry;
 #else
-using NullableDateTime = System.Nullable<System.DateTime>;
 using System.Text;
-using ParameterDictionary = System.Collections.Generic.IDictionary<string, object>;
-using ParameterEntry = System.Collections.Generic.KeyValuePair<string, object>;
 using System.Globalization;
 #endif
 
@@ -39,11 +34,7 @@ namespace Saltarelle {
 			return string.IsNullOrEmpty(s) ? null : s;
 		}
 
-#if CLIENT
-		[AlternateSignature]
-		public extern static string IdAndStyle(string id, Position p, int width, int height);
-#endif
-		public static string IdAndStyle(string id, Position p, int width, int height, string additionalStyles) {
+		public static string IdAndStyle(string id, Position p, int width, int height, string additionalStyles = null) {
 			string s = PositionHelper.CreateStyle(p, width, height);
 			if (!string.IsNullOrEmpty(additionalStyles))
 				s = (!string.IsNullOrEmpty(s) ? s + "; " : "") + additionalStyles;

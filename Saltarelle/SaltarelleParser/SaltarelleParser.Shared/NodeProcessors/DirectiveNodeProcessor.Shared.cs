@@ -1,14 +1,5 @@
 ﻿using System;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	class DirectiveNodeProcessor : INodeProcessor {
@@ -16,7 +7,7 @@ namespace Saltarelle.NodeProcessors {
 			if (node.NodeType != XmlNodeType.ProcessingInstruction)
 				return false;
 
-			switch (Utils.NodeName(node)) {
+			switch (node.Name) {
 				case "enableClientCreate":
 					if (!isRoot)
 						throw ParserUtils.TemplateErrorException("The enableClientCreate directive can only appear outside of the template.");

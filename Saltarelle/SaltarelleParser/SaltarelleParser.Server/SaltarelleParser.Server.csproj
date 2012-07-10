@@ -41,16 +41,6 @@
     <DocumentationFile>bin\SaltarelleParser.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug With Installer|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;SERVER</DefineConstants>
-    <DocumentationFile>bin\SaltarelleParser.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -211,9 +201,6 @@
     <EmbeddedResource Include="..\Script.js">
       <Link>Script.js</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Script.min.js">
-      <Link>Script.min.js</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\Client.dll">
       <Link>Client.dll</Link>
     </EmbeddedResource>
@@ -222,6 +209,11 @@
     <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Server\SaltarelleLib.Server.csproj">
       <Project>{23878C4C-4B77-4F13-B821-BECCA3E0BA98}</Project>
       <Name>SaltarelleLib.Server</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SaltarelleParser.Client\SaltarelleParser.Client.csproj">
+      <Project>{41ED1FAC-B0D3-4320-83E2-21A3545B3344}</Project>
+      <Name>SaltarelleParser.Client</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

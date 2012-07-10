@@ -1,10 +1,10 @@
-using System;
+using System.Runtime.CompilerServices;
 #if SERVER
 using ServiceDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.ScriptManagerConfigServiceEntry>;
 using InjectionDictionary = System.Collections.Generic.Dictionary<string, System.Collections.Generic.IList<Saltarelle.ScriptManagerConfigInjectedPropertyRow>>;
 #else
-using ServiceDictionary = System.Dictionary;
-using InjectionDictionary = System.Dictionary;
+using ServiceDictionary = System.Collections.Generic.JsDictionary<string, Saltarelle.ScriptManagerConfigServiceEntry>;
+using InjectionDictionary = System.Collections.Generic.JsDictionary<string, System.Collections.Generic.List<Saltarelle.ScriptManagerConfigInjectedPropertyRow>>;
 #endif
 
 namespace Saltarelle {

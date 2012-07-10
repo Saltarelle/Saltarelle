@@ -1,15 +1,9 @@
 ﻿using System;
 using Saltarelle.Members;
 using Saltarelle.Fragments;
-#if CLIENT
-using XmlNode      = System.XML.XMLNode;
-using XmlNodeType  = System.XML.XMLNodeType;
-using XmlAttribute = System.XML.XMLAttribute;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
+#if SERVER
+using System.Linq;
 #endif
 
 namespace Saltarelle.NodeProcessors {
@@ -89,19 +83,19 @@ namespace Saltarelle.NodeProcessors {
 
 			GenericElementProcessorContext context = new GenericElementProcessorContext();
 
-			currentRenderFunction.AddFragment(new LiteralFragment("<" + Utils.NodeName(node)));
+			currentRenderFunction.AddFragment(new LiteralFragment("<" + node.Name));
 			AddAttributeFragments(docProcessor, node, isRoot, template, currentRenderFunction, context);
 
 			if (context.Id != null) {
-				string tagName = Utils.NodeName(node);
+				string tagName = node.Name;
 				if (tagName.ToLowerCase() == "input" && context.Type != null)
 					tagName += "/" + context.Type;
 				template.AddMember(new NamedElementMember(tagName, context.Id));
 			}
 
-			if (noContentTags.Contains(Utils.NodeName(node))) {
+			if (noContentTags.Contains(node.Name)) {
 				if (Utils.GetNumChildNodes(node) > 0)
-					throw ParserUtils.TemplateErrorException("The tag " + Utils.NodeName(node) + " can not have children.");
+					throw ParserUtils.TemplateErrorException("The tag " + node.Name + " can not have children.");
 				currentRenderFunction.AddFragment(new LiteralFragment("/>"));
 			}
 			else {
@@ -109,7 +103,7 @@ namespace Saltarelle.NodeProcessors {
 				Utils.DoForEachChild(node, delegate(XmlNode child) {
 					docProcessor.ProcessRecursive(child, template, currentRenderFunction);
 				});
-				currentRenderFunction.AddFragment(new LiteralFragment("</" + Utils.NodeName(node) + ">"));
+				currentRenderFunction.AddFragment(new LiteralFragment("</" + node.Name + ">"));
 			}
 
 			return true;

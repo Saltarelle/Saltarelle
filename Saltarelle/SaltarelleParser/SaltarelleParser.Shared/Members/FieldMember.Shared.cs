@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Saltarelle.Ioc;
 
 namespace Saltarelle.Members {
@@ -19,7 +20,7 @@ namespace Saltarelle.Members {
 			this.clientType = clientType;
 		}
 
-		public string[] Dependencies {
+		public IList<string> Dependencies {
 			get { return new string[0]; }
 		}
 

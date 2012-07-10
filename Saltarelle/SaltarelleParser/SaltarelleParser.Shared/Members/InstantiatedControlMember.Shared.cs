@@ -1,29 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using Saltarelle.Ioc;
-#if SERVER
 using System.Text;
-using AdditionalPropertiesDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.TypedMarkupData>;
-using AdditionalPropertiesEntry      = System.Collections.Generic.KeyValuePair<string, Saltarelle.TypedMarkupData>;
-#else
-using AdditionalPropertiesDictionary = System.Dictionary;
-using AdditionalPropertiesEntry      = System.DictionaryEntry;
-#endif
 
 namespace Saltarelle.Members {
 	internal class InstantiatedControlMember : IMember {
 		private readonly string name;
 		private readonly string typeName;
 		private readonly bool customInstantiate;
-		private readonly AdditionalPropertiesDictionary additionalProperties;
-		private readonly string[] dependencies;
+		private readonly IDictionary<string, TypedMarkupData> additionalProperties;
+		private readonly IList<string> dependencies;
 		
 		public string Name { get { return name; } }
 		
 		internal string TypeName { get { return typeName; } }
 		internal bool CustomInstantiate { get { return customInstantiate; } }
-		internal AdditionalPropertiesDictionary AdditionalProperties { get { return additionalProperties; } }
+		internal IDictionary<string, TypedMarkupData> AdditionalProperties { get { return additionalProperties; } }
 		
-		public InstantiatedControlMember(string name, string typeName, bool customInstantiate, AdditionalPropertiesDictionary additionalProperties, IMember[] dependencies) {
+		public InstantiatedControlMember(string name, string typeName, bool customInstantiate, IDictionary<string, TypedMarkupData> additionalProperties, IList<IMember> dependencies) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("id");
 			if (string.IsNullOrEmpty(typeName)) throw Utils.ArgumentException("type");
 			if (Utils.IsNull(additionalProperties)) throw Utils.ArgumentNullException("additionalProperties");
@@ -32,37 +26,35 @@ namespace Saltarelle.Members {
 			this.typeName = typeName;
 			this.customInstantiate = customInstantiate;
 			this.additionalProperties = additionalProperties;
-			this.dependencies = new string[dependencies.Length];
-			for (int i = 0; i < dependencies.Length; i++)
-				this.dependencies[i] = dependencies[i].Name;
+			this.dependencies = new List<string>();
+			for (int i = 0; i < dependencies.Count; i++)
+				this.dependencies.Add(dependencies[i].Name);
 		}
 
 		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl ctl, IContainer container) {
 			if (CustomInstantiate)
 				throw ParserUtils.TemplateErrorException("Dynamically instantiated templates cannot have customInstantiate controls.");
-			IControl newCtl;
+			var newCtl = (IControl)container.CreateObjectByTypeName(typeName);
 
-			newCtl = (IControl)container.CreateObjectByTypeName(typeName);
-
-			foreach (AdditionalPropertiesEntry prop in additionalProperties)
+			foreach (var prop in additionalProperties)
 				Utils.SetPropertyValue(newCtl, prop.Key, ((TypedMarkupData)prop.Value).ValueRetriever());
 			ctl.AddControl(name, newCtl);
 		}
 
-		public string[] Dependencies {
+		public IList<string> Dependencies {
 			get { return dependencies; }
 		}
 
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = obj as InstantiatedControlMember;
-			if (Utils.IsNull(other) || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Length != dependencies.Length)
+			if (Utils.IsNull(other) || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Count != dependencies.Count)
 				return false;
 			foreach (var kvp in additionalProperties) {
 				if (!other.additionalProperties.ContainsKey(kvp.Key) || other.additionalProperties[kvp.Key].InitializerString != kvp.Value.InitializerString)
 					return false;
 			}
-			for (int i = 0; i < dependencies.Length; i++) {
+			for (int i = 0; i < dependencies.Count; i++) {
 				if (other.dependencies[i] != dependencies[i])
 					return false;
 			}

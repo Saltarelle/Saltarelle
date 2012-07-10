@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Saltarelle.Ioc;
+#pragma warning disable 414
 
 namespace Saltarelle.Members {
 	public class PropertyMember : IMember {
@@ -39,7 +41,7 @@ namespace Saltarelle.Members {
 			get { return name; }
 		}
 
-		public string[] Dependencies {
+		public IList<string> Dependencies {
 			get { return new string[0]; }
 		}
 

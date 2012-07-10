@@ -57,7 +57,7 @@ namespace SaltarelleParser.Tests {
 
 			cb = new CodeBuilder();
 			new NamedElementMember("inputx", "ElementName").WriteCode(tpl, MemberCodePoint.ClientDefinition, cb);
-			Assert.AreEqual("private DOMElement ElementName { get { return (DOMElement)Document.GetElementById(id + \"_ElementName\"); } }" + Environment.NewLine + Environment.NewLine, cb.ToString());
+			Assert.AreEqual("private Element ElementName { get { return (Element)Document.GetElementById(id + \"_ElementName\"); } }" + Environment.NewLine + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 
 			mocks.VerifyAll();

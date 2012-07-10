@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Saltarelle.CastleWindsor</name>
+    </assembly>
+    <members>
+        <member name="T:Saltarelle.CastleWindsor.ContainerFactory">
+            <summary>
+            This class contains methods to create and <see cref="T:Saltarelle.Ioc.IContainer"/> powered by Castle Windsor.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.ContainerFactory.CreateContainer(Castle.Windsor.IWindsorContainer)">
+            <summary>
+            Create a container based on a Castle Windsor container.
+            </summary>
+            <param name="underlyingContainer">Underlying Winsor container to resolve components.</param>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.ContainerFactory.PrepareWindsorContainer(Castle.Windsor.IWindsorContainer)">
+            <summary>
+            Prepares a windsor container so it can be used in the <see cref="M:Saltarelle.CastleWindsor.ContainerFactory.CreateContainer(Castle.Windsor.IWindsorContainer)"/> method. This will change the release policy for the container.
+            </summary>
+        </member>
+        <member name="T:Saltarelle.CastleWindsor.ExtensionMethods.WindsorExtensions">
+            <summary>
+            This class contains extension methods for CastleWinsor registration.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.ExtensionMethods.WindsorExtensions.RegisterPluginsFromAssembly(Castle.Windsor.IWindsorContainer,System.Reflection.Assembly)">
+            <summary>
+            Registers all plugins in an assembly.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.ExtensionMethods.WindsorExtensions.RegisterPluginsFromAssemblyOf``1(Castle.Windsor.IWindsorContainer)">
+            <summary>
+            Registers all plugins in an assembly.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.ExtensionMethods.WindsorExtensions.RegisterControlsFromAssembly(Castle.Windsor.IWindsorContainer,System.Reflection.Assembly)">
+            <summary>
+            Registers all controls in an assembly.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.ExtensionMethods.WindsorExtensions.RegisterControlsFromAssemblyOf``1(Castle.Windsor.IWindsorContainer)">
+            <summary>
+            Registers all controls in an assembly.
+            </summary>
+        </member>
+        <member name="T:Saltarelle.CastleWindsor.TrulyTransientLifestyle">
+            <summary>
+            a custom Lifestyle, it will inerit from the standard class so if the TrulyTransientReleasePolicy policy
+            isn't used these objects are handled as standard transient objects 
+            </summary>
+        </member>
+        <member name="T:Saltarelle.CastleWindsor.TrulyTransientReleasePolicy">
+            <summary>
+            Inherits from the default ReleasePolicy; do not track our own transient objects.
+            Only tracks components that have decommission steps
+            registered or have pooled lifestyle.
+            </summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.TrulyTransientReleasePolicy.#ctor(Castle.MicroKernel.IKernel)">
+            <summary></summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.TrulyTransientReleasePolicy.#ctor(Castle.Windsor.Diagnostics.ITrackedComponentsDiagnostic,Castle.Windsor.Diagnostics.ITrackedComponentsPerformanceCounter)">
+            <summary></summary>
+        </member>
+        <member name="M:Saltarelle.CastleWindsor.TrulyTransientReleasePolicy.Track(System.Object,Castle.MicroKernel.Burden)">
+            <summary></summary>
+        </member>
+    </members>
+</doc>

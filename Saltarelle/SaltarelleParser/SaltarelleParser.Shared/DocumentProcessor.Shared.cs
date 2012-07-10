@@ -1,10 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Saltarelle.NodeProcessors;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-#else
 using System.Xml;
-#endif
 
 namespace Saltarelle {
 	public interface IDocumentProcessor {
@@ -27,12 +24,15 @@ namespace Saltarelle {
 		                                                          new EmbeddedCodeNodeProcessor(),
 		                                                        };
 
-		private INodeProcessor[] processors;
+		private List<INodeProcessor> processors;
 		private ITypedMarkupParser typedMarkupParser;
 		private IUntypedMarkupParser untypedMarkupParser;
 
-		public DocumentProcessor(INodeProcessor[] pluginNodeProcessors, ITypedMarkupParser typedMarkupParser, IUntypedMarkupParser untypedMarkupParser) {
-			processors = (INodeProcessor[])Utils.ArrayAppendRange((pluginNodeProcessors ?? new INodeProcessor[0]), defaultNodeProcessors);
+		public DocumentProcessor(IList<INodeProcessor> pluginNodeProcessors, ITypedMarkupParser typedMarkupParser, IUntypedMarkupParser untypedMarkupParser) {
+			processors = new List<INodeProcessor>();
+			if (pluginNodeProcessors != null)
+				processors.AddRange(pluginNodeProcessors);
+			processors.AddRange(defaultNodeProcessors);
 			this.typedMarkupParser = typedMarkupParser ?? new TypedMarkupParser(null);
 			this.untypedMarkupParser = untypedMarkupParser ?? new UntypedMarkupParser(null);
 		}

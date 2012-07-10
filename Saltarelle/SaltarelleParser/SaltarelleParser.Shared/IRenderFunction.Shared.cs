@@ -1,10 +1,7 @@
 ﻿using System;
 
 namespace Saltarelle {
-	public interface IRenderFunction
-	#if SERVER
-		: IMember
-	#endif
+	public interface IRenderFunction : IMember
 	{
 		void AddDependency(IMember dependency);
 		void AddFragment(IFragment fragment);

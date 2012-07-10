@@ -1,10 +1,7 @@
 using System;
-#if SERVER
-using ControlDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.IControl>;
-#endif
 #if CLIENT
-using System.DHTML;
-using ControlDictionary = System.Dictionary;
+using System.Collections.Generic;
+using System.Html;
 #endif
 
 namespace Saltarelle
@@ -14,7 +11,7 @@ namespace Saltarelle
 		string Id { get; set; }
 
 #if CLIENT
-		DOMElement GetElement();
+		Element GetElement();
 #endif
 
 #if SERVER
@@ -23,10 +20,7 @@ namespace Saltarelle
 #endif
 	}
 	
-	public interface IClientCreateControl
-	#if SERVER
-		: IControl
-	#endif
+	public interface IClientCreateControl : IControl
 	{
 		#if CLIENT
 			string Html { get; }
@@ -34,14 +28,11 @@ namespace Saltarelle
 		#endif
 	}
 	
-	public interface IControlHost
-	#if SERVER
-		: IControl
-	#endif
+	public interface IControlHost : IControl
 	{
 		void SetInnerFragments(string[] innerFragments);
 		#if CLIENT
-			DOMElement[] GetInnerElements();
+			IList<Element> GetInnerElements();
 		#endif
 	}
 }

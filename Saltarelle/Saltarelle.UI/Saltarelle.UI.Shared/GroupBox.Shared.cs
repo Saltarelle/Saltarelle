@@ -3,7 +3,12 @@ using System;
 using System.Collections.Generic;
 #endif
 #if CLIENT
-using System.DHTML;
+using System.Collections;
+using System.Collections.Generic;
+using System.Html;
+using System.Runtime.CompilerServices;
+using jQueryApi;
+
 #endif
 
 namespace Saltarelle.UI {
@@ -52,17 +57,17 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (isAttached) {
-						jQuery element = JQueryProxy.jQuery(GetElement());
+						var element = jQuery.FromElement(GetElement());
 						if (string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(value)) {
-							element.prepend(JQueryProxy.jQuery("<legend>" + Utils.HtmlEncode(value) + "</legend>")); // add legend
-							element.children().removeClass(NoLegendChildClassName);
+							element.Prepend(jQuery.FromHtml("<legend>" + Utils.HtmlEncode(value) + "</legend>")); // add legend
+							element.Children().RemoveClass(NoLegendChildClassName);
 						}
 						else if (!string.IsNullOrEmpty(title) && string.IsNullOrEmpty(value)) {
-							element.children().eq(0).remove(); // remove legend
-							element.children(":not(legend)").removeClass(NoLegendChildClassName);
+							element.Children().Eq(0).Remove(); // remove legend
+							element.Children(":not(legend)").RemoveClass(NoLegendChildClassName);
 						}
 						else if (!string.IsNullOrEmpty(value))
-							element.children().eq(0).text(value);
+							element.Children().Eq(0).Text(value);
 					}
 				#endif
 			
@@ -109,22 +114,22 @@ namespace Saltarelle.UI {
 #endif
 #if CLIENT
 		[AlternateSignature]
-		public extern GroupBox();
+		public GroupBox() {}
 		public GroupBox(object config) {
 			if (!Script.IsUndefined(config)) {
-				InitConfig(Dictionary.GetDictionary(config));
+				InitConfig(JsDictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
-		protected virtual void InitConfig(Dictionary config) {
+		protected virtual void InitConfig(JsDictionary config) {
 			id    = (string)config["id"];
 			title = (string)config["title"];
 			Attach();
 		}
 
-		public DOMElement GetElement() {
+		public Element GetElement() {
 			return isAttached ? Document.GetElementById(id) : null;
 		}
 
@@ -133,19 +138,19 @@ namespace Saltarelle.UI {
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
 
-			jQuery element = JQueryProxy.jQuery(GetElement());
+			var element = jQuery.FromElement(GetElement());
 			if (string.IsNullOrEmpty(title))
-				element.children(":not(legend)").addClass(NoLegendChildClassName);
+				element.Children(":not(legend)").AddClass(NoLegendChildClassName);
 		}
 		
-		public DOMElement[] GetInnerElements() {
-			ArrayList result = new ArrayList();
-			DOMElementCollection children = GetElement().ChildNodes;
+		public IList<Element> GetInnerElements() {
+			var result = new List<Element>();
+			ElementCollection children = GetElement().ChildNodes;
 			for (int i = 0; i < children.Length; i++) {
-				if (children[i].NodeType == DOMElementType.Element && children[i].TagName != "LEGEND")
+				if (children[i].NodeType == ElementType.Element && children[i].TagName.ToUpperCase() != "LEGEND")
 					result.Add(children[i]);
 			}
-			return (DOMElement[])result;
+			return (Element[])result;
 		}
 #endif
 	}

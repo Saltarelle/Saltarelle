@@ -1,23 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 using Saltarelle.Members;
 using Saltarelle.Fragments;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-using TypedMarkupDictionary = System.Dictionary;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using TypedMarkupDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.TypedMarkupData>;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	internal class ControlInstantiationNodeProcessor : INodeProcessor {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (node.NodeType != XmlNodeType.Element || Utils.NodeName(node) != "control")
+			if (node.NodeType != XmlNodeType.Element || node.Name != "control")
 				return false;
 			
 			if (isRoot)
@@ -26,7 +16,7 @@ namespace Saltarelle.NodeProcessors {
 			string id = null;
 			string type = null;
 			bool customInstantiate = false;
-			TypedMarkupDictionary additionalProperties = new TypedMarkupDictionary();
+			Dictionary<string, TypedMarkupData> additionalProperties = new Dictionary<string, TypedMarkupData>();
 
 			Utils.DoForEachAttribute(node, delegate(XmlAttribute attr) {
 				if (attr.Name == "id") {
@@ -41,7 +31,7 @@ namespace Saltarelle.NodeProcessors {
 				}
 				else if (attr.Name == "customInstantiate") {
 					string v = attr.Value.ToLowerCase();
-					customInstantiate = Utils.ParseBool(attr.Value);
+					customInstantiate = Utils.ParseBool(v);
 				}
 				else {
 					additionalProperties[attr.Name] = docProcessor.ParseTypedMarkup(attr.Value);
@@ -58,11 +48,11 @@ namespace Saltarelle.NodeProcessors {
 			if (template.HasMember(id))
 				throw ParserUtils.TemplateErrorException("Duplicate definition of member " + id);
 
-			IMember[] dependencies = new IMember[0];
+			var dependencies = new List<IMember>();
 			int numInnerFragments = 0;
 			if (Utils.GetNumChildNodes(node) > 0) {
 				Utils.DoForEachChild(node, delegate(XmlNode n) {
-					if (Utils.NodeOuterXml(n).Trim() != "") {
+					if (n.OuterXml.Trim() != "") {
 						numInnerFragments++;
 						string innerName = id + "_inner" + Utils.ToStringInvariantInt(numInnerFragments);
 						if (template.HasMember(innerName))
@@ -70,7 +60,7 @@ namespace Saltarelle.NodeProcessors {
 						IRenderFunction innerFunction = new RenderFunctionMember(innerName, "");
 						template.AddMember((IMember)innerFunction);
 						docProcessor.ProcessRecursive(n, template, innerFunction);
-						dependencies = (IMember[])Utils.ArrayAppend(dependencies, innerFunction);
+						dependencies.Add(innerFunction);
 					}
 				});
 			}

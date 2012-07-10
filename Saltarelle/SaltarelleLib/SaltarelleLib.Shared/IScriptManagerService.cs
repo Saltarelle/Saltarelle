@@ -53,6 +53,12 @@ namespace Saltarelle {
 		void RegisterClientService(Type serviceType, object implementer);
 
 		/// <summary>
+		/// Determines if a client service is registered.
+		/// </summary>
+		/// <param name="serviceType">Type to check (should be an interface).</param>
+		bool IsClientServiceRegistered(Type serviceType);
+
+		/// <summary>
 		/// Gets the markup for the scripts managed by this script manager.
 		/// </summary>
         IHtmlString GetMarkup();

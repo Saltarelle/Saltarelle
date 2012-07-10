@@ -1,36 +1,30 @@
 ﻿using System;
-using Saltarelle.Ioc;
-#if CLIENT
-using FragmentList = System.ArrayList;
-using StringList   = System.ArrayList;
-#else
-using FragmentList = System.Collections.Generic.List<Saltarelle.IFragment>;
-using StringList   = System.Collections.Generic.List<string>;
+using System.Collections.Generic;
 using System.Text;
-#endif
+using Saltarelle.Ioc;
 
 namespace Saltarelle.Members {
 	internal class RenderFunctionMember : IRenderFunction, IMember {
 		private readonly string name;
 		private readonly string parameters;
-		private FragmentList fragments;
-		private StringList dependencies;
+		private List<IFragment> fragments;
+		private List<string> dependencies;
 		
 		public string Name { get { return name; } }
 		public string Parameters { get { return parameters; } }
-		public FragmentList Fragments { get { return fragments; } }
+		public IList<IFragment> Fragments { get { return fragments; } }
 		
 		public RenderFunctionMember(string name, string parameters) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("name");
 			if (Utils.IsNull(parameters)) throw Utils.ArgumentNullException("parameters");
 			this.name         = name;
 			this.parameters   = parameters;
-			this.fragments    = new FragmentList();
-			this.dependencies = new StringList();
+			this.fragments    = new List<IFragment>();
+			this.dependencies = new List<string>();
 		}
 
 		public bool IsEmpty {
-			get { return Utils.ArrayLength(fragments) == 0; }
+			get { return fragments.Count == 0; }
 		}
 		
 		public void AddDependency(IMember dependency) {
@@ -41,13 +35,9 @@ namespace Saltarelle.Members {
 			fragments.Add(fragment);
 		}
 		
-		public string[] Dependencies {
+		public IList<string> Dependencies {
 			get {
-				#if SERVER
-					return dependencies.ToArray();
-				#else
-					return (string[])dependencies;
-				#endif
+				return dependencies;
 			}
 		}
 
@@ -55,7 +45,7 @@ namespace Saltarelle.Members {
 		}
 		
 		public string Render(ITemplate tpl, IInstantiatedTemplateControl ctl) {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			foreach (IFragment f in ParserUtils.MergeFragments(fragments))
 				f.Render(tpl, ctl, sb);
 			return sb.ToString();

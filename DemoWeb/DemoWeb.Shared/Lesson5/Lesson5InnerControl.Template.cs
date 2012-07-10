@@ -1,11 +1,13 @@
+#pragma warning disable 1591
 #if SERVER
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson5InnerControl : IControl {
+	public partial class Lesson5InnerControl : IControl, INotifyCreated {
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 
 		private Position position = PositionHelper.NotPositioned;
@@ -15,17 +17,20 @@ namespace DemoWeb {
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
-				foreach (KeyValuePair<string, IControl> kvp in controls)
+				foreach (var kvp in controls)
 					kvp.Value.Id = value + "_" + kvp.Key;
+				this.id = value;
 			}
 		}
 
-		private Dictionary<string, object> GetConfig() {
-			Dictionary<string, object> __cfg = new Dictionary<string, object>();
-			__cfg["person"] = this.person;
-			__cfg["copyrightYear"] = this.copyrightYear;
-			return __cfg;
+		public object ConfigObject {
+			get {
+				Dictionary<string, object> __cfg = new Dictionary<string, object>();
+				__cfg["id"] = id;
+				__cfg["person"] = this.person;
+				__cfg["copyrightYear"] = this.copyrightYear;
+				return __cfg;
+			}
 		}
 
 		private string GetHtml() {
@@ -34,14 +39,12 @@ namespace DemoWeb {
 			sb.Append(Id);
 			sb.Append(@""" style=""");
 			sb.Append(PositionHelper.CreateStyle(Position, -1, -1));
-			sb.Append(@"""");
-			sb.Append(" __cfg=\"" + Utils.HtmlEncode(Utils.Json(GetConfig())) + "\"");
-			sb.Append(@"> <div id=""");
+			sb.Append(@"""> <div id=""");
 			sb.Append(Id);
 			sb.Append(@"_PersonDisplay"">&nbsp;</div> <img title=""");
 			sb.Append("Copyright &copy; " + Utils.ToStringInvariantInt(this.copyrightYear) + @" Erik Källén");
 			sb.Append(@""" src=""");
-			sb.Append(GlobalServices.GetService<IUrlService>().BlankImageUrl);
+			sb.Append(UIService.BlankImageUrl);
 			sb.Append(@""" width=""100"" height=""100"" style=""background-color: blue""/> ");
 			sb.Append("Copyright &copy; " + Utils.ToStringInvariantInt(this.copyrightYear) + @" Erik Källén");
 			sb.Append(@" </div> ");
@@ -64,8 +67,11 @@ namespace DemoWeb {
 			}
 		}
 
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
 		public Lesson5InnerControl() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
+		}
+
+		public void DependenciesAvailable() {
 			copyrightYear = DateTime.Now.Year;
 			Constructed();
 		}
@@ -74,39 +80,46 @@ namespace DemoWeb {
 #endif
 #if CLIENT
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Html;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson5InnerControl : IControl {
-		private Dictionary controls = new Dictionary();
+	public partial class Lesson5InnerControl : IControl, INotifyCreated {
+		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
+		private JsDictionary __cfg;
 
 		private Position position;
 		public Position Position {
-			get { return element != null ? PositionHelper.GetPosition(element) : position; }
+			get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }
 			set {
 				position = value;
-				if (element != null)
-					PositionHelper.ApplyPosition(element, value);
+				if (isAttached)
+					PositionHelper.ApplyPosition(GetElement(), value);
 			}
 		}
 
-		private jQuery element;
-		public jQuery Element { get { return element; } }
+		private bool isAttached = false;
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private string id;
 		public string Id {
 			get { return id; }
 			set {
+				foreach (var kvp in controls)
+					kvp.Value.Id = value + "_" + kvp.Key;
+				this.PersonDisplay.ID = value + "_PersonDisplay";
+				if (isAttached)
+					GetElement().ID = value;
 				this.id = value;
-				foreach (DictionaryEntry kvp in controls)
-					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
-				PersonDisplay.attr("id", value + "_PersonDisplay");
 			}
 		}
 
 		private DemoWeb.Person person;
 
-		private jQuery PersonDisplay;
+		private DivElement PersonDisplay { get { return (DivElement)Document.GetElementById(id + "_PersonDisplay"); } }
 
 		private int copyrightYear;
 		public int CopyrightYear {
@@ -115,15 +128,18 @@ namespace DemoWeb {
 		}
 
 		private void AttachSelf() {
-			this.element = JQueryProxy.jQuery("#" + id);
-			this.PersonDisplay = JQueryProxy.jQuery("#" + id + "_PersonDisplay");
+			this.isAttached = true;
 			Attached();
 		}
 
-		public Lesson5InnerControl(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
+		public Lesson5InnerControl(object config) {
+			__cfg = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);
+		}
+
+		public void DependenciesAvailable() {
+			if (!Utils.IsNull(__cfg)) {
+				this.id = (string)__cfg["id"];
 				this.person = (DemoWeb.Person)__cfg["person"];
 				copyrightYear = (int)__cfg["copyrightYear"];
 				Constructed();

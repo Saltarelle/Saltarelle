@@ -14,8 +14,7 @@
     </Salgen>
   </Target>
   <Target Name="CopyFilesWhereServerFacetCanFindThem">
-    <Copy SourceFiles="@(DebugScriptFile)" DestinationFiles="$(ProjectDir)..\Script.js" />
-    <Copy SourceFiles="@(ReleaseScriptFile)" DestinationFiles="$(ProjectDir)..\Script.min.js" />
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
   </Target>
 </Project>

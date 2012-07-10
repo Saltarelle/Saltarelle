@@ -56,16 +56,6 @@
     <DocumentationFile>bin\SaltarelleLib.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug With Installer|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SERVER</DefineConstants>
-    <DocumentationFile>bin\SaltarelleLib.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.4.5.7\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -147,9 +137,6 @@
     <EmbeddedResource Include="..\Script.js">
       <Link>Script.js</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Script.min.js">
-      <Link>Script.min.js</Link>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Saltarelle.snk" />
@@ -182,6 +169,13 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SaltarelleLib.Client\SaltarelleLib.Client.csproj">
+      <Project>{B122334A-1FF6-4060-861B-20BE836169C3}</Project>
+      <Name>SaltarelleLib.Client</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

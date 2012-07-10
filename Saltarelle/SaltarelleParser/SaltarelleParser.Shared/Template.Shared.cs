@@ -1,32 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Saltarelle.Members;
 using Saltarelle.Ioc;
-#if CLIENT
-using MemberList             = System.ArrayList;
-using HashMapDictionary      = System.Dictionary;
-using StringList             = System.ArrayList;
-using MemberDictionary       = System.Dictionary;
-using MemberEntry            = System.DictionaryEntry;
-using TopSortWorkingSet      = System.Dictionary;
-using TopSortWorkingSetEntry = System.DictionaryEntry;
-#else
-using MemberList             = System.Collections.Generic.List<Saltarelle.IMember>;
-using HashMapDictionary      = System.Collections.Generic.Dictionary<string, object>;
-using StringList             = System.Collections.Generic.List<string>;
-using MemberDictionary       = System.Collections.Generic.Dictionary<string, Saltarelle.IMember>;
-using MemberEntry            = System.Collections.Generic.KeyValuePair<string, Saltarelle.IMember>;
-using TopSortWorkingSet      = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
-using TopSortWorkingSetEntry = System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<string>>;
+#if SERVER
 using System.Linq;
-using System.Text;
 using System.Reflection;
 #endif
+
 namespace Saltarelle {
-	public interface ITemplate
-#if SERVER
-		: IInstantiable
-#endif
-	{
+	public interface ITemplate : IInstantiable {
 		IRenderFunction MainRenderFunction { get; }
 
 		string ServerInherits { get; set; }
@@ -63,12 +46,12 @@ namespace Saltarelle {
 	public class Template : ITemplate, IInstantiable {
 		public const string MainRenderFunctionName = "GetHtml";
 	
-		private readonly MemberDictionary members = new MemberDictionary();
+		private readonly Dictionary<string, IMember> members = new Dictionary<string, Saltarelle.IMember>();
 		
-		private readonly HashMapDictionary serverUsings     = new HashMapDictionary();
-		private readonly HashMapDictionary clientUsings     = new HashMapDictionary();
-		private readonly HashMapDictionary serverInterfaces = new HashMapDictionary();
-		private readonly HashMapDictionary clientInterfaces = new HashMapDictionary();
+		private readonly Dictionary<string, object> serverUsings     = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> clientUsings     = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> serverInterfaces = new Dictionary<string, object>();
+		private readonly Dictionary<string, object> clientInterfaces = new Dictionary<string, object>();
 		private string serverInherits;
 		private string clientInherits;
 		private string className;
@@ -87,7 +70,9 @@ namespace Saltarelle {
 				serverUsings["Saltarelle.Ioc"] = null;
 
 				clientUsings["System"] = null;
-				clientUsings["System.DHTML"] = null;
+				clientUsings["System.Collections"] = null;
+				clientUsings["System.Collections.Generic"] = null;
+				clientUsings["System.Html"] = null;
 				clientUsings["Saltarelle"] = null;
 				clientUsings["Saltarelle.Ioc"] = null;
 			#endif
@@ -174,35 +159,35 @@ namespace Saltarelle {
 			return "_ctl" + Utils.ToStringInvariantInt(nextUniqueId++);
 		}
 
-		internal static MemberList TopologicalSort(MemberDictionary members) {
-			TopSortWorkingSet workingSet = new TopSortWorkingSet();
-			MemberList result = new MemberList();
-			foreach (MemberEntry m in members) {
-				StringList l = new StringList();
+		internal static List<IMember> TopologicalSort(Dictionary<string, IMember> members) {
+			var workingSet = new Dictionary<string, List<string>>();
+			var result = new List<IMember>();
+			foreach (var m in members) {
+				var l = new List<string>();
 				l.AddRange(((IMember)m.Value).Dependencies);
 				workingSet[m.Key] = l;
 			}
 
 			while (workingSet.Count > 0) {
-				StringList currentSet = new StringList();
-				foreach (TopSortWorkingSetEntry kvp in workingSet) {
-					if (Utils.ArrayLength((StringList)kvp.Value) == 0)
+				var currentSet = new List<string>();
+				foreach (var kvp in workingSet) {
+					if (kvp.Value.Count == 0)
 						currentSet.Add(kvp.Key);
 				}
 				foreach (string name in currentSet) {
 					result.Add(members[name]);
 					workingSet.Remove(name);
 				}
-				foreach (TopSortWorkingSetEntry kvp in workingSet) {
+				foreach (var kvp in workingSet) {
 					#if SERVER
-						string[] l = kvp.Value.Where(delegate(string s) { return !currentSet.Contains(s); }).ToArray();
+						var l = kvp.Value.Where(delegate(string s) { return !currentSet.Contains(s); }).ToArray();
 					#else
-						string[] l = (string[])((StringList)kvp.Value).Filter(delegate(object s) { return !currentSet.Contains((string)s); } );
+						var l = kvp.Value.Filter(delegate(string s) { return !currentSet.Contains(s); } );
 					#endif
-					((StringList)kvp.Value).Clear();
-					((StringList)kvp.Value).AddRange(l);
+					kvp.Value.Clear();
+					kvp.Value.AddRange(l);
 				}
-				if (Utils.ArrayLength(currentSet) == 0)
+				if (currentSet.Count == 0)
 					throw Utils.ArgumentException("There are either cycles in the member dependency graph, or a non-existent dependency.");
 			}
 
@@ -210,7 +195,7 @@ namespace Saltarelle {
 		}
 
 		public IControl Instantiate(IContainer container) {
-			MemberList orderedMembers = TopologicalSort(members);
+			List<IMember> orderedMembers = TopologicalSort(members);
 			InstantiatedTemplateControl ctl = new InstantiatedTemplateControl(delegate(IInstantiatedTemplateControl x) { return MainRenderFunction.Render(this, x); });
 			foreach (IMember m in orderedMembers) {
 				try {
@@ -240,7 +225,7 @@ namespace Saltarelle {
 			  .AppendLine("}");
 		}
 
-		internal static void WriteServerDependenciesAvailable(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteServerDependenciesAvailable(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("public void DependenciesAvailable() {").Indent();
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.ServerConstructor, cb);
@@ -251,11 +236,11 @@ namespace Saltarelle {
 		internal static void WriteClientConstructor(CodeBuilder cb, ITemplate tpl) {
 			cb.AppendLine("[Obsolete(@\"" + DoNotCallConstructorMessage.Replace("\"", "\"\"") + "\")]")
 			  .AppendLine("public " + tpl.ClassName + "(object config) {").Indent()
-			  .AppendLine(ParserUtils.ConfigObjectName + " = (!Script.IsUndefined(config) ? Dictionary.GetDictionary(config) : null);")
+			  .AppendLine(ParserUtils.ConfigObjectName + " = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);")
 			  .Outdent().AppendLine("}");
 		}
 
-		internal static void WriteClientDependenciesAvailable(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteClientDependenciesAvailable(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("public void DependenciesAvailable() {").Indent()
 			  .AppendLine("if (!Utils.IsNull(" + ParserUtils.ConfigObjectName + ")) {").Indent()
 			  .AppendLine("this.id = (string)" + ParserUtils.ConfigObjectName + "[\"id\"];");
@@ -282,7 +267,7 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}");
 		}
 		
-		internal static void WriteGetConfig(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteGetConfig(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("public object ConfigObject {").Indent()
 			  .AppendLine("get {").Indent()
 			  .AppendLine("Dictionary<string, object> " + ParserUtils.ConfigObjectName + " = new Dictionary<string, object>();")
@@ -296,14 +281,14 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}");
 		}
 		
-		private static void WriteIdProperty(CodeBuilder cb, bool server, ITemplate tpl, MemberList orderedMembers) {
+		private static void WriteIdProperty(CodeBuilder cb, bool server, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("private string id;")
 			  .AppendLine("public string Id {").Indent()
 			  .AppendLine("get { return id; }")
 			  .AppendLine("set {").Indent();
 
-			cb.AppendLine("foreach (" + (server ? "KeyValuePair<string, IControl>" : "DictionaryEntry") + " kvp in controls)").Indent()
-			  .AppendLine((server ? "kvp.Value" : "((IControl)kvp.Value)") + ".Id = value + \"_\" + kvp.Key;").Outdent();
+			cb.AppendLine("foreach (var kvp in controls)").Indent()
+			  .AppendLine("kvp.Value.Id = value + \"_\" + kvp.Key;").Outdent();
 
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, server ? MemberCodePoint.ServerIdChanging : MemberCodePoint.ClientIdChanging, cb);
@@ -318,15 +303,15 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}");
 		}
 		
-		internal static void WriteServerIdProperty(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteServerIdProperty(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			WriteIdProperty(cb, true, tpl, orderedMembers);
 		}
 
-		internal static void WriteClientIdProperty(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteClientIdProperty(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			WriteIdProperty(cb, false, tpl, orderedMembers);
 		}
 
-		internal static void WriteAttach(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteAttach(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("public void Attach() {").Indent()
 			  .AppendLine("if (Script.IsNullOrEmpty(id) || isAttached) throw new Exception(\"Must set id before attach and can only attach once.\");");
 			foreach (var m in orderedMembers)
@@ -335,7 +320,7 @@ namespace Saltarelle {
 			  .AppendLine("}");
 		}
 
-		internal static void WriteAttachSelf(CodeBuilder cb, ITemplate tpl, MemberList orderedMembers) {
+		internal static void WriteAttachSelf(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("private void AttachSelf() {").Indent();
 			foreach (var m in orderedMembers)
 				m.WriteCode(tpl, MemberCodePoint.AttachSelf, cb);
@@ -344,8 +329,8 @@ namespace Saltarelle {
 			  .AppendLine("}");
 		}
 
-		internal static string GetInheritanceList(string inherits, bool enableClientCreate, StringList interfaces) {
-			StringBuilder sb = new StringBuilder();
+		internal static string GetInheritanceList(string inherits, bool enableClientCreate, IList<string> interfaces) {
+			var sb = new StringBuilder();
 			if (!string.IsNullOrEmpty(inherits))
 				sb.Append(inherits);
 			sb.Append((Utils.IsStringBuilderEmpty(sb) ? "" : ", ") + "IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : ""));
@@ -358,7 +343,7 @@ namespace Saltarelle {
 		}
 		
 		public void WriteServerCode(CodeBuilder cb) {
-			MemberList orderedMembers = TopologicalSort(members);
+			var orderedMembers = TopologicalSort(members);
 
 			foreach (var us in serverUsings)
 				cb.AppendLine("using " + us.Key + ";");
@@ -371,6 +356,7 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ServerInheritanceList)
 			  .Append(" {").AppendLine().Indent()
+			  .AppendLine("partial void Constructed();").AppendLine()
 			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();").AppendLine()
 			  .AppendLine("private Position position = PositionHelper.NotPositioned;")
 			  .AppendLine("public Position Position { get { return position; } set { position = value; } }").AppendLine();
@@ -401,7 +387,7 @@ namespace Saltarelle {
 		}
 
 		public void WriteClientCode(CodeBuilder cb) {
-			MemberList orderedMembers = TopologicalSort(members);
+			var orderedMembers = TopologicalSort(members);
 
 			foreach (var us in clientUsings)
 				cb.AppendLine("using " + us.Key + ";");
@@ -414,8 +400,10 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ClientInheritanceList)
 			  .Append(" {").AppendLine().Indent()
-			  .AppendLine("private Dictionary controls = new Dictionary();")
-			  .AppendLine("private Dictionary " + ParserUtils.ConfigObjectName + ";")
+			  .AppendLine("partial void Constructed();")
+			  .AppendLine("partial void Attached();").AppendLine()
+			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();")
+			  .AppendLine("private JsDictionary " + ParserUtils.ConfigObjectName + ";")
 			  .AppendLine()
 			  .AppendLine("private Position position;")
 			  .AppendLine("public Position Position {").Indent()
@@ -427,7 +415,7 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}")
 			  .Outdent().AppendLine("}").AppendLine()
 			  .AppendLine("private bool isAttached = false;")
-			  .AppendLine("public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }").AppendLine();
+			  .AppendLine("public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }").AppendLine();
 
 			WriteIdProperty(cb, false, this, orderedMembers);
 			cb.AppendLine();
@@ -450,7 +438,7 @@ namespace Saltarelle {
 				  .AppendLine("}").Outdent()
 				  .AppendLine("}").AppendLine()
 				  .AppendLine("[AlternateSignature]")
-				  .AppendLine("public extern " + className + "();");
+				  .AppendLine("public " + className + "() {}");
 			}
 			WriteClientConstructor(cb, this);
 			cb.AppendLine();

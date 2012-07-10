@@ -1,13 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using Saltarelle.TypedMarkupParsers;
-#if SERVER
-using System.Text;
-using TypedMarkupParserImplDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.ITypedMarkupParserImpl>;
-using TypedMarkupParserImplEntry      = System.Collections.Generic.KeyValuePair<string, Saltarelle.ITypedMarkupParserImpl>;
-#else
-using TypedMarkupParserImplDictionary = System.Dictionary;
-using TypedMarkupParserImplEntry      = System.DictionaryEntry;
-#endif
 
 namespace Saltarelle {
 	public interface ITypedMarkupParser {
@@ -15,10 +8,10 @@ namespace Saltarelle {
 	}
 
 	public class TypedMarkupParser : ITypedMarkupParser {
-		private static TypedMarkupParserImplDictionary defaultImplementers;
+		private static Dictionary<string, ITypedMarkupParserImpl> defaultImplementers;
 		
 		static TypedMarkupParser() {
-			defaultImplementers = new TypedMarkupParserImplDictionary();
+			defaultImplementers = new Dictionary<string, ITypedMarkupParserImpl>();
 			defaultImplementers["str"]  = new StringMarkupParser();
 			defaultImplementers["int"]  = new IntMarkupParser();
 			defaultImplementers["pos"]  = new PositionMarkupParser();
@@ -26,14 +19,14 @@ namespace Saltarelle {
 			defaultImplementers["code"] = new CodeMarkupParser();
 		}
 
-		private TypedMarkupParserImplDictionary implementers;
+		private Dictionary<string, ITypedMarkupParserImpl> implementers;
 	
-		public TypedMarkupParser(TypedMarkupParserImplDictionary pluginImplementers) {
-			implementers = new TypedMarkupParserImplDictionary();
-			foreach (TypedMarkupParserImplEntry kvp in defaultImplementers)
+		public TypedMarkupParser(IDictionary<string, ITypedMarkupParserImpl> pluginImplementers) {
+			implementers = new Dictionary<string, ITypedMarkupParserImpl>();
+			foreach (var kvp in defaultImplementers)
 				implementers[kvp.Key] = kvp.Value;
 			if (!Utils.IsNull(pluginImplementers)) {
-				foreach (TypedMarkupParserImplEntry kvp in pluginImplementers)
+				foreach (var kvp in pluginImplementers)
 					implementers[kvp.Key] = kvp.Value;
 			}
 		}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Saltarelle.Ioc;
 
 namespace Saltarelle.UI {
@@ -25,7 +26,7 @@ namespace Saltarelle.UI {
 
 #if CLIENT
 		public DefaultSaltarelleUIService(object config) {
-			Dictionary cfg = Dictionary.GetDictionary(config);
+			var cfg = JsDictionary.GetDictionary(config);
 			this.blankImageUrl = (string)cfg["blankImageUrl"];
 		}
 #endif

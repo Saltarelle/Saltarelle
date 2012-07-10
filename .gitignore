@@ -15,7 +15,6 @@ _ReSharper*/
 Client.dll
 Script.js
 Script.min.js
-Saltarelle/TestAssemblies.txt
 build_out
 Saltarelle/SaltarelleLib/SaltarelleLib.Server/Configuration/SaltarelleConfiguration.cs
 Saltarelle/VSIntegrationInstaller/Version.wxi
@@ -25,3 +24,4 @@ Saltarelle/Saltarelle.Mvc/Properties/SaltarelleMvcVersion.cs
 Saltarelle/Saltarelle.UI/SaltarelleUIVersion.cs
 Saltarelle/SaltarelleLib/SaltarelleLibVersion.cs
 Saltarelle/SaltarelleParser/SaltarelleParserVersion.cs
+Saltarelle/Saltarelle.Mvc/Resources/Scripts/mscorlib*.js

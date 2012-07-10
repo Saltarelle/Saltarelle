@@ -4,13 +4,16 @@ properties {
 	$base_dir = Resolve-Path ".."
 	$buildtools_dir = Resolve-Path "."
 	$out_dir = "$(Resolve-Path "".."")\build_out"
-	$configuration = "Debug With Installer"
+	$configuration = "Debug"
 	$release_tag_pattern = "release-(.*)"
 }
 
 $jsonNetVersion = "4.5.7"
 
 Task default -Depends Build
+
+Task Build -Depends Build-NuGetPackages {
+}
 
 Task Clean {
 	if (Test-Path $out_dir) {
@@ -19,114 +22,154 @@ Task Clean {
 	md "$out_dir" >$null
 }
 
-Task Build -Depends Clean, Generate-VersionInfo {
+Task Build-Solution -Depends Clean, Generate-VersionInfo {
 	Exec { msbuild "$base_dir\Saltarelle\Saltarelle.sln" /verbosity:minimal /p:"Configuration=$configuration" }
 }
 
-Task Publish -Depends Determine-Version, Build, Run-Tests {
+Task Build-NuGetPackages -Depends Determine-Version, Build-Solution, Run-Tests {
 	$authors = "Erik Källén"
 
 	If (Test-Path "$out_dir\zip") {
-		rm -Recurse -Force "$out_dir\Publish"
+		rm -Recurse -Force "$out_dir\Publish" | Out-Null
 	}
-	md "$out_dir\Publish"
+	md "$out_dir\Publish" | Out-Null
 	
 	$dependencyVersion = New-Object System.Version($script:ProductVersion.Major, $script:ProductVersion.Minor)
 	
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>SaltarelleCore</id>
-		<version>$script:LibVersion</version>
-		<title>Saltarelle Core Library</title>
-		<description>Saltarelle Core Library</description>
+		<id>Saltarelle.Framework.Client</id>
+		<version>$script:FrameworkVersion</version>
+		<title>Saltarelle Web Framework Client Library</title>
+		<description>Saltarelle Web Framework Client Library</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="Newtonsoft.Json" version="$jsonNetVersion" />
+			<dependency id="Saltarelle.Compiler" version="0.0" />
+			<dependency id="Saltarelle.Runtime" version="0.0" />
+			<dependency id="Saltarelle.Web" version="0.0" />
+			<dependency id="Saltarelle.jQuery" version="0.0" />
 		</dependencies>
 	</metadata>
 	<files>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Client\bin\SaltarelleLib.Client.dll" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Client\bin\SaltarelleLib.Client.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.dll" target="lib"/>
-		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.pdb" target="lib"/>
 		<file src="$base_dir\Saltarelle\VSIntegrationInstaller\bin\SaltarelleVSIntegration.msi" target="tools\SaltarelleVSIntegration-$script:ProductVersion.msi"/>
 		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.SalgenTask.dll" target="tools"/>
 		<file src="$base_dir\Saltarelle\Executables\SalgenTask\bin\Saltarelle.targets" target="tools"/>
 		<file src="$base_dir\Saltarelle\Executables\Salgen.exe\bin\salgen.exe" target="tools"/>
-		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\sscorlib.dll" target="lib"/>
-		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\nStuff.ScriptSharp.dll" target="tools"/>
-		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\nStuff.ScriptSharp.targets" target="tools"/>
-		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\ssc.exe" target="tools"/>
-		<file src="$base_dir\Saltarelle\packages-manual\ScriptSharp\sspp.exe" target="tools"/>
-		<file src="$base_dir\Saltarelle\SaltarelleLib\install.ps1" target="tools"/>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\install-client.ps1" target="tools\install.ps1"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\init.ps1" target="tools"/>
 		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleVSModule.psm1" target="tools"/>
 	</files>
 </package>
-"@ >"$out_dir\SaltarelleCore.nuspec"
-
-	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleCore.nuspec" -OutputDirectory "$out_dir\Publish" }
-	rm "$out_dir\SaltarelleCore.nuspec" > $null
+"@ >"$out_dir\FrameworkClient.nuspec"
 
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>SaltarelleParser</id>
-		<version>$script:ParserVersion</version>
-		<title>Saltarelle Parser</title>
-		<description>Saltarelle Parser</description>
+		<id>Saltarelle.Framework.Server</id>
+		<version>$script:FrameworkVersion</version>
+		<title>Saltarelle Web Framework Server Library</title>
+		<description>Saltarelle Web Framework Server Library</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="SaltarelleCore" version="$dependencyVersion" />
+			<dependency id="Newtonsoft.Json" version="$jsonNetVersion" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleLib.Server\bin\SaltarelleLib.pdb" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\install-server.ps1" target="tools\install.ps1"/>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\init.ps1" target="tools"/>
+		<file src="$base_dir\Saltarelle\SaltarelleLib\SaltarelleVSModule.psm1" target="tools"/>
+	</files>
+</package>
+"@ >"$out_dir\FrameworkServer.nuspec"
+
+@"
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Saltarelle.Parser.Client</id>
+		<version>$script:ParserVersion</version>
+		<title>Saltarelle Parser Client Library</title>
+		<description>Saltarelle Parser Client Library</description>
+		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="Saltarelle.Framework.Client" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
 		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Client\bin\SaltarelleParser.Client.dll" target="lib"/>
 		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Client\bin\SaltarelleParser.Client.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.dll" target="lib"/>
-		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.pdb" target="lib"/>
-		<file src="$base_dir\Saltarelle\SaltarelleParser\install.ps1" target="tools"/>
 	</files>
 </package>
-"@ >"$out_dir\SaltarelleParser.nuspec"
-
-	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleParser.nuspec" -OutputDirectory "$out_dir\Publish" }
-	rm "$out_dir\SaltarelleParser.nuspec" > $null
+"@ >"$out_dir\ParserClient.nuspec"
 
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>SaltarelleUI</id>
-		<version>$script:UIVersion</version>
-		<title>Saltarelle UI</title>
-		<description>Saltarelle UI</description>
+		<id>Saltarelle.Parser.Server</id>
+		<version>$script:ParserVersion</version>
+		<title>Saltarelle Parser Server Library</title>
+		<description>Saltarelle Parser Server Library</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="SaltarelleCore" version="$dependencyVersion" />
-			<dependency id="Newtonsoft.Json" version="$jsonNetVersion" />
+			<dependency id="Saltarelle.Framework.Server" version="$dependencyVersion" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\SaltarelleParser\SaltarelleParser.Server\bin\SaltarelleParser.pdb" target="lib"/>
+	</files>
+</package>
+"@ >"$out_dir\ParserServer.nuspec"
+
+@"
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Saltarelle.UI.Client</id>
+		<version>$script:UIVersion</version>
+		<title>Saltarelle UI Client Library</title>
+		<description>Saltarelle UI Client Library</description>
+		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="Saltarelle.Framework.Client" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
 		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Saltarelle.UI.Client.dll" target="lib"/>
 		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Client\bin\Saltarelle.UI.Client.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.dll" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.xml" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.pdb" target="lib"/>
-		<file src="$base_dir\Saltarelle\Saltarelle.UI\install.ps1" target="tools"/>
 	</files>
 </package>
-"@ >"$out_dir\Saltarelle.UI.nuspec"
-
-	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\Saltarelle.UI.nuspec" -OutputDirectory "$out_dir\Publish" }
-	rm "$out_dir\Saltarelle.UI.nuspec" > $null
+"@ >"$out_dir\UIClient.nuspec"
 
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>SaltarelleMvc</id>
+		<id>Saltarelle.UI.Server</id>
+		<version>$script:UIVersion</version>
+		<title>Saltarelle UI Server Library</title>
+		<description>Saltarelle UI Server Library</description>
+		<authors>$authors</authors>
+		<dependencies>
+			<dependency id="Saltarelle.Framework.Server" version="$dependencyVersion" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.dll" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.xml" target="lib"/>
+		<file src="$base_dir\Saltarelle\Saltarelle.UI\Saltarelle.UI.Server\bin\Saltarelle.UI.pdb" target="lib"/>
+	</files>
+</package>
+"@ >"$out_dir\UIServer.nuspec"
+
+@"
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Saltarelle.Mvc</id>
 		<version>$script:MvcVersion</version>
 		<title>Saltarelle Mvc Libraries</title>
 		<description>Saltarelle Mvc Libraries</description>
@@ -134,7 +177,7 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<dependencies>
 			<dependency id="dotless" version="1.3.0.3" />
 			<dependency id="Mono.Cecil" version="0.9.5.3" />
-			<dependency id="SaltarelleCore" version="$dependencyVersion" />
+			<dependency id="Saltarelle.Framework.Server" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -143,23 +186,20 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\Saltarelle.Mvc\bin\Saltarelle.Mvc.pdb" target="lib"/>
 	</files>
 </package>
-"@ >"$out_dir\SaltarelleMvc.nuspec"
-
-	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleMvc.nuspec" -OutputDirectory "$out_dir\Publish" }
-	rm "$out_dir\SaltarelleMvc.nuspec" > $null
+"@ >"$out_dir\Mvc.nuspec"
 
 @"
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>SaltarelleCastleWindsor</id>
+		<id>Saltarelle.CastleWindsor</id>
 		<version>$script:CastleWindsorVersion</version>
 		<title>Saltarelle Castle Windsor Bindings</title>
 		<description>Saltarelle Castle Windsor Bindings</description>
 		<authors>$authors</authors>
 		<dependencies>
 			<dependency id="Castle.Windsor" version="3.0.0.4001" />
-			<dependency id="SaltarelleCore" version="$dependencyVersion" />
-			<dependency id="SaltarelleParser" version="$dependencyVersion" />
+			<dependency id="Saltarelle.Framework.Server" version="$dependencyVersion" />
+			<dependency id="Saltarelle.Parser.Server" version="$dependencyVersion" />
 		</dependencies>
 	</metadata>
 	<files>
@@ -168,22 +208,20 @@ Task Publish -Depends Determine-Version, Build, Run-Tests {
 		<file src="$base_dir\Saltarelle\Saltarelle.CastleWindsor\bin\Saltarelle.CastleWindsor.pdb" target="lib"/>
 	</files>
 </package>
-"@ >"$out_dir\SaltarelleCastleWindsor.nuspec"
+"@ >"$out_dir\CastleWindsor.nuspec"
 
-	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\SaltarelleCastleWindsor.nuspec" -OutputDirectory "$out_dir\Publish" }
-	rm "$out_dir\SaltarelleCastleWindsor.nuspec" > $null
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\FrameworkClient.nuspec" -OutputDirectory "$out_dir\Publish" }
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\FrameworkServer.nuspec" -OutputDirectory "$out_dir\Publish" }
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\ParserClient.nuspec" -OutputDirectory "$out_dir\Publish" }
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\ParserServer.nuspec" -OutputDirectory "$out_dir\Publish" }
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\UIClient.nuspec" -OutputDirectory "$out_dir\Publish" }
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\UIServer.nuspec" -OutputDirectory "$out_dir\Publish" }
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\Mvc.nuspec" -OutputDirectory "$out_dir\Publish" }
+	Exec { & "$buildtools_dir\nuget.exe" pack "$out_dir\CastleWindsor.nuspec" -OutputDirectory "$out_dir\Publish" }
 }
 
 Task Run-Tests {
-	$test_assemblies_file = "$base_dir\Saltarelle\TestAssemblies.txt"
-
-	if (Test-Path "$test_assemblies_file") {
-		$testasms = @(Get-Content "$test_assemblies_file")
-	}
-	else {
-		$testasms = @()
-	}
-	
+	$testasms = dir -Path "$base_dir" -Recurse -Filter "*.Tests.csproj" | % { """$($_.FullName)""" }
 	if ($testasms.Count -ne 0) {
 		$runner = (dir "$base_dir\Saltarelle\packages" -Recurse -Filter nunit-console.exe | Select -ExpandProperty FullName)
 		Exec { & "$runner" $testasms -nologo -xml "$out_dir\TestResults.xml" }
@@ -223,7 +261,7 @@ Task Determine-Version {
 		$refVersion = New-Object System.Version("0.0.0")
 	}
 	
-	$script:LibVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleLib","$base_dir\Saltarelle\Executables","$base_dir\Saltarelle\SaltarelleParser","$base_dir\Saltarelle\Saltarelle.CastleWindsor"
+	$script:FrameworkVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleLib","$base_dir\Saltarelle\Executables","$base_dir\Saltarelle\SaltarelleParser","$base_dir\Saltarelle\Saltarelle.CastleWindsor"
 	$script:ExecutablesVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Executables","$base_dir\Saltarelle\SaltarelleLib","$base_dir\Saltarelle\SaltarelleParser","$base_dir\Saltarelle\Saltarelle.CastleWindsor"
 	$script:ParserVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleParser"
 	$script:UIVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.UI"
@@ -231,7 +269,7 @@ Task Determine-Version {
 	$script:CastleWindsorVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.CastleWindsor"
 	$script:ProductVersion = New-Object System.Version($script:ExecutablesVersion.Major, $script:ExecutablesVersion.Minor, $script:ExecutablesVersion.Build)
 
-	"Lib version: $script:LibVersion"
+	"Framework version: $script:FrameworkVersion"
 	"Parser version: $script:ParserVersion"
 	"Executables version: $script:ExecutablesVersion"
 	"UI version: $script:UIVersion"
@@ -248,7 +286,7 @@ Function Generate-VersionFile($Path, $Version) {
 }
 
 Task Generate-VersionInfo -Depends Determine-Version {
-	Generate-VersionFile -Path "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLibVersion.cs" -Version $script:LibVersion
+	Generate-VersionFile -Path "$base_dir\Saltarelle\SaltarelleLib\SaltarelleLibVersion.cs" -Version $script:FrameworkVersion
 	Generate-VersionFile -Path "$base_dir\Saltarelle\SaltarelleParser\SaltarelleParserVersion.cs" -Version $script:ParserVersion
 	Generate-VersionFile -Path "$base_dir\Saltarelle\Executables\ExecutablesVersion.cs" -Version $script:ExecutablesVersion
 	Generate-VersionFile -Path "$base_dir\Saltarelle\Saltarelle.UI\SaltarelleUIVersion.cs" -Version $script:UIVersion

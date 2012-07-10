@@ -1,28 +1,19 @@
 ﻿using System;
 using Saltarelle.Members;
-#if CLIENT
-using XmlNode = System.XML.XMLNode;
-using XmlAttribute = System.XML.XMLAttribute;
-using XmlNodeType = System.XML.XMLNodeType;
-#else
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
-#endif
 
 namespace Saltarelle.NodeProcessors {
 	internal class FieldNodeProcessor : INodeProcessor {
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (node.NodeType != XmlNodeType.ProcessingInstruction || Utils.NodeName(node) != "field")
+			if (node.NodeType != XmlNodeType.ProcessingInstruction || node.Name != "field")
 				return false;
 			if (!isRoot)
-				throw ParserUtils.TemplateErrorException(string.Format("The {0} directive can only appear outside of the template.", Utils.NodeName(node)));
+				throw ParserUtils.TemplateErrorException(string.Format("The {0} directive can only appear outside of the template.", node.Name));
 
-			string[] typeArr       = Utils.RegexExec(Utils.NodeValue(node), "type=\"([^\"]*)\"", "");
-			string[] serverTypeArr = Utils.RegexExec(Utils.NodeValue(node), "serverType=\"([^\"]*)\"", "");
-			string[] clientTypeArr = Utils.RegexExec(Utils.NodeValue(node), "clientType=\"([^\"]*)\"", "");
-			string[] nameArr       = Utils.RegexExec(Utils.NodeValue(node), "name=\"([^\"]*)\"", "");
+			string[] typeArr       = Utils.RegexExec(node.Value, "type=\"([^\"]*)\"", "");
+			string[] serverTypeArr = Utils.RegexExec(node.Value, "serverType=\"([^\"]*)\"", "");
+			string[] clientTypeArr = Utils.RegexExec(node.Value, "clientType=\"([^\"]*)\"", "");
+			string[] nameArr       = Utils.RegexExec(node.Value, "name=\"([^\"]*)\"", "");
 
 			string serverType, clientType;
 			if (!Utils.IsNull(typeArr)) {
