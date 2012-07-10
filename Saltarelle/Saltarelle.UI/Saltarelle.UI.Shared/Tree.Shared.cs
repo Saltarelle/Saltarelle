@@ -33,50 +33,64 @@ namespace Saltarelle.UI {
 	{
 		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonProperty]
 		#endif
 		internal int id;
 
 		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonProperty]
 		#endif
 		internal bool expanded;
 
 		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonProperty]
 		#endif
 		internal TreeNodeCheckState checkState;
 
 		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonProperty]
 		#endif
 		internal string text;
 
 		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonProperty]
 		#endif
 		internal string icon;
 
 		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonProperty]
 		#endif
 		internal object data;
 
 		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonProperty]
 		#endif
 		internal List<TreeNode> children;
 
-		#if SERVER
-		[JsonIgnore]
-		#else
+		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonIgnore]
 		#endif
 		public Tree treeIfRoot;
 		
-		#if SERVER
-		[JsonIgnore]
-		#else
+		#if CLIENT
 		[PreserveName]
+		#else
+		[JsonIgnore]
 		#endif
 		public TreeNode parent;
 
