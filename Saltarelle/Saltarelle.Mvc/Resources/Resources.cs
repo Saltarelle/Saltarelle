@@ -39,8 +39,8 @@ using Saltarelle;
 // Scripts
 [assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery-1.7.2.js", Resources.JQueryScriptDebug)]
 [assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery-1.7.2.min.js", Resources.JQueryScriptRelease)]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery-ui-1.8.2.js", Resources.JQueryUIScriptDebug)]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery-ui-1.8.2.min.js", Resources.JQueryUIScriptRelease)]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery-ui-1.8.21.js", Resources.JQueryUIScriptDebug)]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery-ui-1.8.21.min.js", Resources.JQueryUIScriptRelease)]
 [assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery.bgiframe.js", Resources.JQueryBgiframeDebug)]
 [assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery.bgiframe.min.js", Resources.JQueryBgiframeRelease)]
 [assembly: WebResource("Saltarelle.Mvc.Resources.Scripts.jquery.focus.js", Resources.JQueryFocusScript)]
