@@ -356,6 +356,7 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ServerInheritanceList)
 			  .Append(" {").AppendLine().Indent()
+			  .AppendLine("partial void Constructed();").AppendLine()
 			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();").AppendLine()
 			  .AppendLine("private Position position = PositionHelper.NotPositioned;")
 			  .AppendLine("public Position Position { get { return position; } set { position = value; } }").AppendLine();
@@ -399,6 +400,8 @@ namespace Saltarelle {
 			  .Append(" : ")
 			  .Append(ClientInheritanceList)
 			  .Append(" {").AppendLine().Indent()
+			  .AppendLine("partial void Constructed();")
+			  .AppendLine("partial void Attached();").AppendLine()
 			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();")
 			  .AppendLine("private JsDictionary " + ParserUtils.ConfigObjectName + ";")
 			  .AppendLine()

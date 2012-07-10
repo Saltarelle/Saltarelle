@@ -308,6 +308,8 @@ namespace SaltarelleParser.Tests {
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
+			                 + p + "	partial void Constructed();" + Environment.NewLine
+			                 +     Environment.NewLine
 			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position = PositionHelper.NotPositioned;" + Environment.NewLine
@@ -426,6 +428,9 @@ namespace SaltarelleParser.Tests {
 			                 +     Environment.NewLine
 			                 +     (withNamespace ? "namespace TestNamespace {" + Environment.NewLine : "")
 			                 + p + "public partial class TestClass : IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : "") + " {" + Environment.NewLine
+			                 + p + "	partial void Constructed();" + Environment.NewLine
+			                 + p + "	partial void Attached();" + Environment.NewLine
+			                 +     Environment.NewLine
 			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
 			                 + p + "	private JsDictionary __cfg;" + Environment.NewLine
 			                 +     Environment.NewLine
