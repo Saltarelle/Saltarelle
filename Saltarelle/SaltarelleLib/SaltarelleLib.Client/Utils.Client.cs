@@ -202,8 +202,10 @@ namespace Saltarelle {
 			c.Attach();
 		}
 
-		public static jQueryXmlHttpRequest Ajax(JsDictionary data, string url, bool post, AjaxRequestCallback success, AjaxErrorCallback error) {
-			return jQuery.Ajax(new jQueryAjaxOptions { Data = data, DataFilter = (d, _) => EvalJson(d), DataType = "json", Cache = false, Type = post ? "POST" : "GET", Url = url, Success = success, Error = error });
+		public static jQueryXmlHttpRequest Ajax(JsDictionary<string, object> data, string url, bool post, AjaxRequestCallback success, AjaxErrorCallback error) {
+			var converters = new JsDictionary<string, Func<string, object>>();
+			converters["text json"] = EvalJson;
+			return jQuery.Ajax(new jQueryAjaxOptions { Data = data, Converters = converters, DataType = "json", Cache = false, Type = post ? "POST" : "GET", Url = url, Success = success, Error = error });
 		}
 
 		static Utils() {

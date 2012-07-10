@@ -3526,6 +3526,10 @@
             <summary>
             Gets or sets the element that will be the context for the request.
             </summary></member>
+        <member name="P:jQueryApi.jQueryAjaxOptions.Converters">
+            <summary>
+            A map of dataType-to-dataType converters. Each converter's value is a function that returns the transformed value of the response.
+            </summary></member>
         <member name="P:jQueryApi.jQueryAjaxOptions.Data">
             <summary>
             Gets or sets the data to be sent to the server.
