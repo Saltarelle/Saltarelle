@@ -122,8 +122,13 @@ namespace Saltarelle.Ioc {
                 scriptManager.RegisterClientAssembly(asm);
 			}
 
-            foreach (var svc in services.Concat(_createdObjects.Where(t => t.Item2 != null).Select(t => new KeyValuePair<Type, object>(t.Item2, t.Item1))).Distinct())
+            foreach (var svc in services.Concat(_createdObjects.Where(t => t.Item2 != null)
+			                                                   .Select(t => new KeyValuePair<Type, object>(t.Item2, t.Item1)))
+			                            .Where(svc => !scriptManager.IsClientServiceRegistered(svc.Key))
+			                            .Distinct())
+			{
                 scriptManager.RegisterClientService(svc.Key, svc.Value);
+			}
 	    }
 	}
 }

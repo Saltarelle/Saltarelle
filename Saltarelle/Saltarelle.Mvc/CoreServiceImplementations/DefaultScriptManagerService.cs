@@ -119,6 +119,12 @@ namespace Saltarelle {
             registeredServices.Add(serviceType, implementer);
         }
 
+        public bool IsClientServiceRegistered(Type serviceType) {
+            if (!serviceType.IsInterface || serviceType == typeof(IService))
+                throw new InvalidOperationException("Transferred services must be interfaces, and must not be the IService interface (tried to register type " + serviceType.FullName + ").");
+            return registeredServices.ContainsKey(serviceType);
+        }
+
 		public void RegisterClientAssembly(Assembly asm) {
 			registeredAssemblies.Add(asm);
 		}
