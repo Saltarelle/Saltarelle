@@ -67,7 +67,7 @@ namespace Saltarelle {
 		public SaltarelleParser(INodeProcessor[] pluginNodeProcessors, IDictionary<string, ITypedMarkupParserImpl> pluginTypedMarkupParsers, IUntypedMarkupParserImpl[] pluginUntypedMarkupParsers) {
 			#if CLIENT
 				JsDictionary cfg = JsDictionary.GetDictionary(pluginNodeProcessors);
-				if (cfg.ContainsKey("pluginNodeProcessors")) {
+				if (!Script.IsNullOrUndefined(cfg) && cfg.ContainsKey("pluginNodeProcessors")) {
 				    // We have an [AlternateSignature] constructor which can cause us to be called with a config object instead of real parameters
                     configObject = cfg;
                     return;
