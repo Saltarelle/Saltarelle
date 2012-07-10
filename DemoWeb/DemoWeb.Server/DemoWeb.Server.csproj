@@ -80,13 +80,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Saltarelle.Mvc.0.7.3.13\lib\Saltarelle.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.UI, Version=0.7.3.24, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.UI, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.24\lib\Saltarelle.UI.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.UI.Server.0.7.3.25\lib\Saltarelle.UI.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib, Version=0.7.3.47, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleLib, Version=0.7.3.49, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.47\lib\SaltarelleLib.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Framework.Server.0.7.3.49\lib\SaltarelleLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

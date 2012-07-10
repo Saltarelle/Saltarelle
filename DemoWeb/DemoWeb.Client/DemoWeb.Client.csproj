@@ -205,17 +205,17 @@
     <Reference Include="mscorlib">
       <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.98\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.UI.Client, Version=0.7.3.24, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.UI.Client, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.24\lib\Saltarelle.UI.Client.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.25\lib\Saltarelle.UI.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib.Client, Version=0.7.3.47, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleLib.Client, Version=0.7.3.49, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Framework.Client.0.7.3.47\lib\SaltarelleLib.Client.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Framework.Client.0.7.3.49\lib\SaltarelleLib.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleParser.Client, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleParser.Client, Version=0.7.3.27, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Parser.Client.0.7.3.25\lib\SaltarelleParser.Client.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Parser.Client.0.7.3.27\lib\SaltarelleParser.Client.dll</HintPath>
     </Reference>
     <Reference Include="Script.jQuery, Version=0.0.0.42, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -229,6 +229,6 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.64\tools\Saltarelle.Compiler.targets" />
-  <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.47\tools\Saltarelle.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.66\tools\Saltarelle.Compiler.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.49\tools\Saltarelle.targets" />
 </Project>
