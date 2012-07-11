@@ -77,6 +77,10 @@ namespace Saltarelle {
 		public static string JoinStrings(string separator, string[] value) {
 			return value.Join(separator);
 		}
+
+		public static string JoinStrings(string separator, List<string> value) {
+			return value.Join(separator);
+		}
 		
 		public static DateTime ParseDateExact(string value, string format) {
 			return (DateTime)Type.InvokeMethod(typeof(DateTime), "parseExact", value, format);

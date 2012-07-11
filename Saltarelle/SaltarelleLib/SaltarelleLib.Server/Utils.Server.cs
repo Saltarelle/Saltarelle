@@ -89,7 +89,7 @@ namespace Saltarelle {
 			return o == null;
 		}
 
-		public static string JoinStrings(string separator, string[] value) {
+		public static string JoinStrings(string separator, IList<string> value) {
 			return string.Join(separator, value);
 		}
 		
