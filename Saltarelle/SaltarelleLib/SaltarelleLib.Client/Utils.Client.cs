@@ -56,18 +56,33 @@ namespace Saltarelle {
 			return "\"" + s + "\"";
 		}
 		
-#warning TODO: Date handling
+		private static Regex DateRegex = new Regex(@"^\\/Date\((-?\d+)\)\\/$");
+
 		public static string Json(object o) {
-			return System.Serialization.Json.Stringify(o);
+			return System.Serialization.Json.Stringify(o, (_, v) => {
+				if (v is DateTime) {
+					return @"\/Date(" + ((dynamic)v).valueOf + @")\/";
+				}
+				else {
+					return v;
+				}
+			});
 		}
 		
 		public static object EvalJson(string s) {
-			return System.Serialization.Json.Parse(s);
+			return System.Serialization.Json.Parse(s, (_, v) => {
+				if (Type.GetScriptType(v) == "string") {
+					var m = DateRegex.Exec((string)v);
+					if (m != null)
+						return new DateTime(int.Parse(m[1], 10));
+				}
+				return v;
+			});
 		}
 
 		[IgnoreGenericArguments]
 		public static T EvalJson<T>(string s) {
-			return System.Serialization.Json.ParseData<T>(s);
+			return (T)EvalJson(s);
 		}
 
 		public static bool IsNull(object o) {
@@ -83,7 +98,7 @@ namespace Saltarelle {
 		}
 		
 		public static DateTime ParseDateExact(string value, string format) {
-			return (DateTime)Type.InvokeMethod(typeof(DateTime), "parseExact", value, format);
+			return DateTime.ParseExactUtc(value, format);
 		}
 
 		public static string FormatDate(DateTime value, string format) {
