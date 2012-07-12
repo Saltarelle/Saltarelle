@@ -59,14 +59,7 @@ namespace Saltarelle {
 		private static Regex DateRegex = new Regex(@"^\\/Date\((-?\d+)\)\\/$");
 
 		public static string Json(object o) {
-			return System.Serialization.Json.Stringify(o, (_, v) => {
-				if (v is DateTime) {
-					return @"\/Date(" + ((dynamic)v).valueOf + @")\/";
-				}
-				else {
-					return v;
-				}
-			});
+			return System.Serialization.Json.Stringify(o);
 		}
 		
 		public static object EvalJson(string s) {
@@ -227,6 +220,9 @@ namespace Saltarelle {
 			return jQuery.Ajax(new jQueryAjaxOptions { Data = data, Converters = converters, DataType = "json", Cache = false, Type = post ? "POST" : "GET", Url = url, Success = success, Error = error });
 		}
 
+		[ScriptAlias("this")]
+		static DateTime ThisDate { get { return null; } }
+
 		static Utils() {
 			substitutions = new JsDictionary<string, string>();
 			substitutions["\b"] = "\\b";
@@ -236,6 +232,8 @@ namespace Saltarelle {
 			substitutions["\r"] = "\\r";
 			substitutions["\""] = "\\\"";
 			substitutions["\\"] = "\\\\";
+
+			((dynamic)typeof(DateTime).Prototype).toJSON = (Func<string>)(() => { return @"\/Date(" + ToStringInvariantInt(ThisDate.ValueOf()) + @")\/"; });
 		}
 	}
 }
