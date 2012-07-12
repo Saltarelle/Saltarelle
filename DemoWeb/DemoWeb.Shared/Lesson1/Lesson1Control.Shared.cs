@@ -15,7 +15,7 @@ namespace DemoWeb {
 		}
 	
 #if SERVER
-		private void Constructed() {
+		partial void Constructed() {
 		}
 #endif
 
@@ -25,11 +25,11 @@ namespace DemoWeb {
 		public IScriptManagerService ScriptManager { get; set; }
 
 #if CLIENT
-		private void Constructed() {
+		partial void Constructed() {
 			TheText.ValueChanged += TheText_ValueChanged;
 		}
 		
-		private void Attached() {
+		partial void Attached() {
 			jQuery.FromElement(AddMessageButton).Click(AddMessageButton_Click);
 			TheText_ValueChanged(TheText, EventArgs.Empty);	// Since the current message text is not set by the server, we need to set it during initialization.
 		}

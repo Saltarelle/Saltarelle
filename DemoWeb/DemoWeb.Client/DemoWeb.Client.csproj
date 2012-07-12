@@ -33,7 +33,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -42,6 +43,7 @@
     <WarningLevel>4</WarningLevel>
     <NoWarn>0028, 1591</NoWarn>
     <DocumentationFile>bin\Debug\DemoWeb.Client.xml</DocumentationFile>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -203,32 +205,32 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.98\tools\Assemblies\mscorlib.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.102\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.UI.Client, Version=0.7.3.25, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.UI.Client, Version=0.7.3.26, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.25\lib\Saltarelle.UI.Client.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.26\lib\Saltarelle.UI.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleLib.Client, Version=0.7.3.49, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleLib.Client, Version=0.7.3.55, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Framework.Client.0.7.3.49\lib\SaltarelleLib.Client.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Framework.Client.0.7.3.55\lib\SaltarelleLib.Client.dll</HintPath>
     </Reference>
-    <Reference Include="SaltarelleParser.Client, Version=0.7.3.27, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="SaltarelleParser.Client, Version=0.7.3.28, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.Parser.Client.0.7.3.27\lib\SaltarelleParser.Client.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.Parser.Client.0.7.3.28\lib\SaltarelleParser.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Script.jQuery, Version=0.0.0.42, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+    <Reference Include="Script.jQuery, Version=0.0.0.43, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.jQuery.0.0.0.42\lib\Script.jQuery.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.jQuery.0.0.0.43\lib\Script.jQuery.dll</HintPath>
     </Reference>
     <Reference Include="Script.jQuery.UI">
-      <HintPath>..\packages\Saltarelle.jQuery.UI.0.0.0.7\lib\Script.jQuery.UI.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.jQuery.UI.0.0.0.8\lib\Script.jQuery.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Script.Web">
-      <HintPath>..\packages\Saltarelle.Web.0.0.0.55\lib\Script.Web.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Script.Web, Version=0.0.0.57, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Saltarelle.Web.0.0.0.57\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.66\tools\Saltarelle.Compiler.targets" />
-  <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.49\tools\Saltarelle.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.70\tools\Saltarelle.Compiler.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.55\tools\Saltarelle.targets" />
 </Project>

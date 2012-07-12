@@ -13,14 +13,14 @@ namespace DemoWeb {
 		public ISaltarelleUIService UIService { get; set; }
 	
 #if SERVER
-		private void Constructed() {
+		partial void Constructed() {
 		}
 #endif
 #if CLIENT
-		private void Constructed() {
+		partial void Constructed() {
 		}
 
-		private void Attached() {
+		partial void Attached() {
 			PersonDisplay.InnerText = "Hello, " + person.FirstName + " " + person.LastName;
 		}
 #endif

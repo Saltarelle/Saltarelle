@@ -143,7 +143,7 @@ namespace DemoWeb {
 			return n;
 		}
 
-		private void Constructed() {
+		partial void Constructed() {
 			foreach (var d in data) {
 				TreeNode n = CreateTreeNode(d);
 				Tree.AddTreeNodeChild(n, DepartmentsTree.InvisibleRoot);
@@ -154,12 +154,12 @@ namespace DemoWeb {
 #endif
 
 #if CLIENT
-		private void Constructed() {
+		partial void Constructed() {
 			DepartmentsTree.SelectionChanged += new EventHandler(DepartmentsTree_SelectionChanged);
 			EmployeesGrid.CellClicked += EmployeesGrid_CellClicked;
 		}
 		
-		private void Attached() {
+		partial void Attached() {
 			jQuery.FromElement(EditEmployeeOKButton).Click(EditEmployeeOKButton_Click);
 			jQuery.FromElement(EditEmployeeCancelButton).Click(delegate { EditEmployeeDialog.Close(); });
 			DepartmentsTree_SelectionChanged(DepartmentsTree, EventArgs.Empty);

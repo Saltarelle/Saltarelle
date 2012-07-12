@@ -8,6 +8,8 @@ using Saltarelle.Ioc;
 
 namespace DemoWeb {
 	public partial class Lesson7Control : IControl, INotifyCreated {
+		partial void Constructed();
+
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 
 		private Position position = PositionHelper.NotPositioned;
@@ -81,6 +83,9 @@ using Saltarelle.Ioc;
 
 namespace DemoWeb {
 	public partial class Lesson7Control : IControl, INotifyCreated {
+		partial void Constructed();
+		partial void Attached();
+
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 		private JsDictionary __cfg;
 

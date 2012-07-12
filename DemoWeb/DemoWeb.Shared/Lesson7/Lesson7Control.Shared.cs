@@ -11,7 +11,7 @@ using jQueryApi;
 namespace DemoWeb {
 	public partial class Lesson7Control : IControl {
 #if SERVER
-		private void Constructed() {
+		partial void Constructed() {
 		}
 #endif
 
@@ -31,10 +31,10 @@ namespace DemoWeb {
 		public IScriptManagerService ScriptManager { get; set; }
 
 #if CLIENT
-		private void Constructed() {
+		partial void Constructed() {
 		}
 
-		private void Attached() {
+		partial void Attached() {
 			jQuery.FromElement(InsertDynamicControlButton).Click(InsertDynamicControlButton_Click);
 			jQuery.FromElement(AjaxButton).Click(AjaxButton_Click);
 		}
