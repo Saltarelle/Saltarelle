@@ -45,8 +45,19 @@ if ($rootNamespace -eq $project.Name) {
 }
 
 # Import Saltarelle.targets
-$msbuild.Xml.Imports | ? { $_.Project.EndsWith("Saltarelle.targets") } | % { $msbuild.Xml.RemoveChild($_) }
-$msbuild.Xml.AddImport("`$(SolutionDir)$(MakeRelativePath -Origin $project.DTE.Solution.FullName -Target ([System.IO.Path]::Combine($toolsPath, ""Saltarelle.targets"")))")
+$toRemove = $msbuild.Xml.Imports | ? { $_.Project.EndsWith("Saltarelle.targets") }
+$newLocation = $toRemove | Select-Object -First 1
+if (-not $newLocation) {
+	$newLocation = $msbuild.Xml.Imports | Select-Object -First 1
+	if (-not $newLocation) {
+		$newLocation = $msbuild.Xml.Children | Select-Object -Last 1
+	}
+}
+$newImport = $msbuild.Xml.CreateImportElement("`$(SolutionDir)$(MakeRelativePath -Origin $project.DTE.Solution.FullName -Target ([System.IO.Path]::Combine($toolsPath, ""Saltarelle.targets"")))")
+$msbuild.Xml.InsertAfterChild($newImport, $newLocation)
+if ($toRemove) {
+	$toRemove | % { $msbuild.Xml.RemoveChild($_) }
+}
 
 # Add the CLIENT define constant
 $project.ConfigurationManager | % { Add-DefineConstant -Configuration $_ -Constant "CLIENT" }
