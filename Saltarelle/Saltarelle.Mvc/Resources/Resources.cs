@@ -7,19 +7,19 @@ using Saltarelle;
 
 // CSS
 [assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.all.css", Resources.JQueryUICss)]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.accordion.css", "css/ui.accordion.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.autocomplete.css", "css/ui.autocomplete.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.base.css", "css/ui.base.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.button.css", "css/ui.button.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.core.css", "css/ui.core.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.datepicker.css", "css/ui.datepicker.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.dialog.css", "css/ui.dialog.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.progressbar.css", "css/ui.progressbar.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.resizable.css", "css/ui.resizable.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.selectable.css", "css/ui.selectable.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.slider.css", "css/ui.slider.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.tabs.css", "css/ui.tabs.css")]
-[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.theme.css", "css/ui.theme.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.accordion.css", "css/jquery.ui.accordion.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.autocomplete.css", "css/jquery.ui.autocomplete.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.base.css", "css/jquery.ui.base.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.button.css", "css/jquery.ui.button.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.core.css", "css/jquery.ui.core.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.datepicker.css", "css/jquery.ui.datepicker.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.dialog.css", "css/jquery.ui.dialog.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.progressbar.css", "css/jquery.ui.progressbar.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.resizable.css", "css/jquery.ui.resizable.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.selectable.css", "css/jquery.ui.selectable.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.slider.css", "css/jquery.ui.slider.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.tabs.css", "css/jquery.ui.tabs.css")]
+[assembly: WebResource("Saltarelle.Mvc.Resources.Css.jquery.ui.theme.css", "css/jquery.ui.theme.css")]
 [assembly: WebResource("Saltarelle.Mvc.Resources.Css.images.ui-bg_flat_0_aaaaaa_40x100.png", "css/images/ui-bg_flat_0_aaaaaa_40x100.png")]
 [assembly: WebResource("Saltarelle.Mvc.Resources.Css.images.ui-bg_flat_75_ffffff_40x100.png", "css/images/ui-bg_flat_75_ffffff_40x100.png")]
 [assembly: WebResource("Saltarelle.Mvc.Resources.Css.images.ui-bg_glass_55_fbf9ee_1x400.png", "css/images/ui-bg_glass_55_fbf9ee_1x400.png")]
@@ -52,7 +52,7 @@ using Saltarelle;
 
 namespace Saltarelle.Mvc {
 	public static class Resources {
-		public const string JQueryUICss = "css/ui.all.css";
+		public const string JQueryUICss = "css/jquery.ui.all.css";
 		
 		public const string JQueryScriptRelease   = "scripts/jquery-1.7.2.min.js";
 		public const string JQueryScriptDebug     = "scripts/jquery-1.7.2.js";
