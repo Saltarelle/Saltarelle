@@ -205,11 +205,11 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.102\tools\Assemblies\mscorlib.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.0.0.0.103\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
-    <Reference Include="Saltarelle.UI.Client, Version=0.7.3.26, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
+    <Reference Include="Saltarelle.UI.Client, Version=0.7.3.27, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.26\lib\Saltarelle.UI.Client.dll</HintPath>
+      <HintPath>..\packages\Saltarelle.UI.Client.0.7.3.27\lib\Saltarelle.UI.Client.dll</HintPath>
     </Reference>
     <Reference Include="SaltarelleLib.Client, Version=0.7.3.55, Culture=neutral, PublicKeyToken=346e0df1ad23b3c3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -231,6 +231,6 @@
       <HintPath>..\packages\Saltarelle.Web.0.0.0.57\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.70\tools\Saltarelle.Compiler.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.0.0.0.71\tools\Saltarelle.Compiler.targets" />
   <Import Project="$(SolutionDir)packages\Saltarelle.Framework.Client.0.7.3.55\tools\Saltarelle.targets" />
 </Project>

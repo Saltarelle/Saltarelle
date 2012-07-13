@@ -255,7 +255,7 @@ namespace Saltarelle.UI {
 		}
 		
 		public void SetColClass(int col, string cls) {
-			if (col < 0 || col > colClasses.Count)
+			if (col < 0 || col >= colClasses.Count)
 				return;
 			#if CLIENT
 				if (isAttached) {
