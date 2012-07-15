@@ -78,10 +78,6 @@ namespace Saltarelle {
 			return (T)EvalJson(s);
 		}
 
-		public static bool IsNull(object o) {
-			return Script.IsNullOrUndefined(o);
-		}
-		
 		public static string JoinStrings(string separator, string[] value) {
 			return value.Join(separator);
 		}
@@ -89,7 +85,7 @@ namespace Saltarelle {
 		public static string JoinStrings(string separator, List<string> value) {
 			return value.Join(separator);
 		}
-		
+
 		public static DateTime ParseDateExact(string value, string format) {
 			return DateTime.ParseExactUtc(value, format);
 		}

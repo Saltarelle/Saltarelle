@@ -85,10 +85,6 @@ namespace Saltarelle {
 			return JsonConvert.DeserializeObject<T>(s, jsonSerializerSettings);
 		}
 
-		public static bool IsNull(object o) {
-			return o == null;
-		}
-
 		public static string JoinStrings(string separator, IList<string> value) {
 			return string.Join(separator, value);
 		}
@@ -191,7 +187,12 @@ namespace Saltarelle {
 
 		public static void SetPropertyValue(object o, string property, object value) {
 			var p = o.GetType().GetProperty(property);
-			p.SetValue(o, Convert.ChangeType(value, p.PropertyType, CultureInfo.InvariantCulture), null);
+			if (value == null || p.PropertyType.IsInstanceOfType(value)) {
+				p.SetValue(o, value, null);
+			}
+			else {
+				p.SetValue(o, Convert.ChangeType(value, p.PropertyType, CultureInfo.InvariantCulture), null);
+			}
 		}
 
 		public static string IdAndStyle(string id, Position p, int width, int height) {
