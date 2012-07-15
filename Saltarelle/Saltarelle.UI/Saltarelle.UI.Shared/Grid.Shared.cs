@@ -242,7 +242,7 @@ namespace Saltarelle.UI {
 		public IList<int> ColWidths {
 			get {
 				var result = new List<int>();
-				for (int i = 0; i < result.Count; i++)
+				for (int i = 0; i < colWidths.Count; i++)
 					result.Add(GetColWidth(i));
 				return result;
 			}
