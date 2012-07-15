@@ -228,7 +228,7 @@ namespace SaltarelleParser.Tests {
 			                +  "	}" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
-			Template.WriteServerIdProperty(cb, tpl, new List<IMember>() { m1, m2 });
+			new Template().WriteServerIdProperty(cb, tpl, new List<IMember>() { m1, m2 });
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			
@@ -263,14 +263,14 @@ namespace SaltarelleParser.Tests {
 			                +  "	}" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
-			Template.WriteClientIdProperty(cb, tpl, new List<IMember>() { m1, m2 });
+			new Template().WriteClientIdProperty(cb, tpl, new List<IMember>() { m1, m2 });
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			
 			mocks.VerifyAll();
 		}
 		
-		private void TestWriteServerCode_Works(bool withNamespace, bool enableClientCreate) {
+		private void TestWriteServerCode_Works(bool withNamespace, bool enableClientCreate, bool generateImplementationsAsOverride) {
 			CodeBuilder cb = new CodeBuilder();
 			var tpl = new Template();
 			tpl.ClassName = "TestClass";
@@ -278,6 +278,7 @@ namespace SaltarelleParser.Tests {
 			tpl.EnableClientCreate = enableClientCreate;
 			tpl.AddClientUsingDirective("AddedNamespace.Client");
 			tpl.AddServerUsingDirective("AddedNamespace.Server");
+			tpl.GenerateImplementationsAsOverrides = generateImplementationsAsOverride;
 
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
@@ -297,6 +298,7 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
+			string maybeOverride = generateImplementationsAsOverride ? "override " : "";
 			string p = (withNamespace ? "\t" : "");
 
 			string expected  =     "using System;" + Environment.NewLine
@@ -313,10 +315,10 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position = PositionHelper.NotPositioned;" + Environment.NewLine
-			                 + p + "	public Position Position { get { return position; } set { position = value; } }" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "Position Position { get { return position; } set { position = value; } }" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private string id;" + Environment.NewLine
-			                 + p + "	public string Id {" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "string Id {" + Environment.NewLine
 			                 + p + "		get { return id; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
 			                 + p + "			foreach (var kvp in controls)" + Environment.NewLine
@@ -325,7 +327,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "		}" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 +     Environment.NewLine
-			                 + p + "	public object ConfigObject {" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "object ConfigObject {" + Environment.NewLine
 			                 + p + "		get {" + Environment.NewLine
 			                 + p + "			Dictionary<string, object> __cfg = new Dictionary<string, object>();" + Environment.NewLine
 			                 + p + "			__cfg[\"id\"] = id;" + Environment.NewLine
@@ -340,7 +342,7 @@ namespace SaltarelleParser.Tests {
 			                 + Environment.NewLine
 			                 + p + "	[a]" + Environment.NewLine
 			                 + p + "	[b]" + Environment.NewLine
-			                 + p + "	public string Html {" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "string Html {" + Environment.NewLine
 			                 + p + "		get {" + Environment.NewLine
 			                 + p + "			if (string.IsNullOrEmpty(id))" + Environment.NewLine
 			                 + p + "				throw new InvalidOperationException(\"Must assign Id before rendering.\");" + Environment.NewLine
@@ -369,20 +371,25 @@ namespace SaltarelleParser.Tests {
 
 		[Test]
 		public void TestWriteServerCode_WorksWithNamespace() {
-			TestWriteServerCode_Works(true, false);
+			TestWriteServerCode_Works(true, false, false);
 		}
 
 		[Test]
 		public void TestWriteServerCode_WorksWithoutNamespace() {
-			TestWriteServerCode_Works(false, false);
+			TestWriteServerCode_Works(false, false, false);
 		}
 
 		[Test]
 		public void TestWriteServerCode_WorksWithClientCreate() {
-			TestWriteServerCode_Works(true, true);
+			TestWriteServerCode_Works(true, true, false);
 		}
 
-		private void TestWriteClientCode_Works(bool withNamespace, bool enableClientCreate) {
+		[Test]
+		public void TestWriteServerCode_WorksWithGenerateImplementationsAsOverrides() {
+			TestWriteServerCode_Works(true, false, true);
+		}
+
+		private void TestWriteClientCode_Works(bool withNamespace, bool enableClientCreate, bool generateImplementationsAsOverride) {
 			CodeBuilder cb = new CodeBuilder();
 			var tpl = new Template();
 			tpl.ClassName = "TestClass";
@@ -390,6 +397,7 @@ namespace SaltarelleParser.Tests {
 			tpl.EnableClientCreate = enableClientCreate;
 			tpl.AddClientUsingDirective("AddedNamespace.Client");
 			tpl.AddServerUsingDirective("AddedNamespace.Server");
+			tpl.GenerateImplementationsAsOverrides = generateImplementationsAsOverride;
 
 			var m1 = mocks.StrictMock<IMember>();
 			var m2 = mocks.StrictMock<IMember>();
@@ -415,7 +423,7 @@ namespace SaltarelleParser.Tests {
 
 			mocks.ReplayAll();
 			
-			
+			string maybeOverride = generateImplementationsAsOverride ? "override " : "";
 			string p = (withNamespace ? "\t" : "");
 
 			string expected  =     "using System;" + Environment.NewLine
@@ -435,7 +443,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	private JsDictionary __cfg;" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private Position position;" + Environment.NewLine
-			                 + p + "	public Position Position {" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "Position Position {" + Environment.NewLine
 			                 + p + "		get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
 			                 + p + "			position = value;" + Environment.NewLine
@@ -445,10 +453,10 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	}" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private bool isAttached = false;" + Environment.NewLine
-			                 + p + "	public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }" + Environment.NewLine
 			                 +     Environment.NewLine
 			                 + p + "	private string id;" + Environment.NewLine
-			                 + p + "	public string Id {" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "string Id {" + Environment.NewLine
 			                 + p + "		get { return id; }" + Environment.NewLine
 			                 + p + "		set {" + Environment.NewLine
 			                 + p + "			foreach (var kvp in controls)" + Environment.NewLine
@@ -479,7 +487,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "		AttachSelf();" + Environment.NewLine
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
-			                 + p + "	public string Html {" + Environment.NewLine
+			                 + p + "	public " + maybeOverride + "string Html {" + Environment.NewLine
 			                 + p + "		get {" + Environment.NewLine
 			                 + p + "			if (string.IsNullOrEmpty(id))" + Environment.NewLine
 			                 + p + "				throw new InvalidOperationException(\"Must assign Id before rendering.\");" + Environment.NewLine
@@ -523,19 +531,24 @@ namespace SaltarelleParser.Tests {
 
 		[Test]
 		public void TestWriteClientCode_WorksWithNamespace() {
-			TestWriteClientCode_Works(true, true);
+			TestWriteClientCode_Works(true, true, false);
 		}
 
 		[Test]
 		public void TestWriteClientCode_WorksWithoutNamespace() {
-			TestWriteClientCode_Works(false, true);
+			TestWriteClientCode_Works(false, true, false);
 		}
 
 		[Test]
 		public void TestWriteClientCode_WorksWithoutClientCreate() {
-			TestWriteClientCode_Works(true, false);
+			TestWriteClientCode_Works(true, false, false);
 		}
-		
+
+		[Test]
+		public void TestWriteClientCode_WorksWithGenerateImplementationsAsOverrides() {
+			TestWriteClientCode_Works(true, false, true);
+		}
+
 		[Test]
 		public void TestWriteGetConfig() {
 			CodeBuilder cb = new CodeBuilder();
@@ -559,7 +572,7 @@ namespace SaltarelleParser.Tests {
 			                +  "	}" + Environment.NewLine
 			                +  "}" + Environment.NewLine;
 
-			Template.WriteGetConfig(cb, tpl, new List<IMember>() { m1, m2 });
+			new Template().WriteGetConfig(cb, tpl, new List<IMember>() { m1, m2 });
 
 			Assert.AreEqual(expected, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);

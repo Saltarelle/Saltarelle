@@ -16,6 +16,7 @@ namespace Saltarelle {
 		string ClientInherits { get; set; }
 		
 		bool EnableClientCreate { get; set; }
+		bool GenerateImplementationsAsOverrides { get; set; }
 		
 		string Nmspace {get; set; }
 		string ClassName { get; set; }
@@ -57,6 +58,7 @@ namespace Saltarelle {
 		private string className;
 		private string nmspace;
 		private bool enableClientCreate;
+		private bool generateImplementationsAsOverrides;
 		
 		private int nextUniqueId = 1;
 		
@@ -79,6 +81,8 @@ namespace Saltarelle {
 		}
 		
 		public bool EnableClientCreate { get { return enableClientCreate; } set { enableClientCreate = value; } }
+
+		public bool GenerateImplementationsAsOverrides { get { return generateImplementationsAsOverrides; } set { generateImplementationsAsOverrides = value; } }
 		
 		public string ClassName {
 			get { return className; }
@@ -267,8 +271,8 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}");
 		}
 		
-		internal static void WriteGetConfig(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
-			cb.AppendLine("public object ConfigObject {").Indent()
+		internal void WriteGetConfig(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
+			cb.AppendLine("public " + (GenerateImplementationsAsOverrides ? "override " : "") + "object ConfigObject {").Indent()
 			  .AppendLine("get {").Indent()
 			  .AppendLine("Dictionary<string, object> " + ParserUtils.ConfigObjectName + " = new Dictionary<string, object>();")
 			  .AppendLine(ParserUtils.ConfigObjectName + "[\"id\"] = id;");
@@ -281,9 +285,9 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}");
 		}
 		
-		private static void WriteIdProperty(CodeBuilder cb, bool server, ITemplate tpl, IList<IMember> orderedMembers) {
+		private void WriteIdProperty(CodeBuilder cb, bool server, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("private string id;")
-			  .AppendLine("public string Id {").Indent()
+			  .AppendLine("public " + (generateImplementationsAsOverrides ? "override " : "") + "string Id {").Indent()
 			  .AppendLine("get { return id; }")
 			  .AppendLine("set {").Indent();
 
@@ -303,11 +307,11 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}");
 		}
 		
-		internal static void WriteServerIdProperty(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
+		internal void WriteServerIdProperty(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			WriteIdProperty(cb, true, tpl, orderedMembers);
 		}
 
-		internal static void WriteClientIdProperty(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
+		internal void WriteClientIdProperty(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			WriteIdProperty(cb, false, tpl, orderedMembers);
 		}
 
@@ -359,7 +363,7 @@ namespace Saltarelle {
 			  .AppendLine("partial void Constructed();").AppendLine()
 			  .AppendLine("private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();").AppendLine()
 			  .AppendLine("private Position position = PositionHelper.NotPositioned;")
-			  .AppendLine("public Position Position { get { return position; } set { position = value; } }").AppendLine();
+			  .AppendLine("public " + (generateImplementationsAsOverrides ? "override " : "") + "Position Position { get { return position; } set { position = value; } }").AppendLine();
 
 			WriteIdProperty(cb, true, this, orderedMembers);
 			cb.AppendLine();
@@ -369,7 +373,7 @@ namespace Saltarelle {
 			foreach (var m in orderedMembers)
 				m.WriteCode(this, MemberCodePoint.ServerDefinition, cb);
 
-			cb.AppendLine("public string Html {").Indent()
+			cb.AppendLine("public " + (generateImplementationsAsOverrides ? "override " : "") + "string Html {").Indent()
 			  .AppendLine("get {").Indent()
 			  .AppendLine("if (string.IsNullOrEmpty(id))").Indent()
 			  .AppendLine("throw new InvalidOperationException(\"Must assign Id before rendering.\");").Outdent()
@@ -406,7 +410,7 @@ namespace Saltarelle {
 			  .AppendLine("private JsDictionary " + ParserUtils.ConfigObjectName + ";")
 			  .AppendLine()
 			  .AppendLine("private Position position;")
-			  .AppendLine("public Position Position {").Indent()
+			  .AppendLine("public " + (generateImplementationsAsOverrides ? "override " : "") + "Position Position {").Indent()
 			  .AppendLine("get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }")
 			  .AppendLine("set {").Indent()
 			  .AppendLine("position = value;")
@@ -415,7 +419,7 @@ namespace Saltarelle {
 			  .Outdent().AppendLine("}")
 			  .Outdent().AppendLine("}").AppendLine()
 			  .AppendLine("private bool isAttached = false;")
-			  .AppendLine("public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }").AppendLine();
+			  .AppendLine("public " + (generateImplementationsAsOverrides ? "override " : "") + "Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }").AppendLine();
 
 			WriteIdProperty(cb, false, this, orderedMembers);
 			cb.AppendLine();
@@ -430,7 +434,7 @@ namespace Saltarelle {
 				WriteAttach(cb, this, orderedMembers);
 
 				cb.AppendLine()
-				  .AppendLine("public string Html {").Indent()
+				  .AppendLine("public " + (generateImplementationsAsOverrides ? "override " : "") + "string Html {").Indent()
 				  .AppendLine("get {").Indent()
 				  .AppendLine("if (string.IsNullOrEmpty(id))").Indent()
 				  .AppendLine("throw new InvalidOperationException(\"Must assign Id before rendering.\");").Outdent()
