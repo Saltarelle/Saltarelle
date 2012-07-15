@@ -55,7 +55,7 @@ namespace Saltarelle {
 							throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' could not be loaded.", ex);
 						}
 						var res = asm.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == elem.Resource);
-						if (Utils.IsNull(res))
+						if (res == null)
 							throw new ConfigurationErrorsException("Saltarelle configuration: The assembly '" + elem.Assembly + "' does not contain a resource named '" + elem.Resource + "'.");
 						url = routes.GetAssemblyResourceUrl(asm, res.PublicResourceName);
 					}

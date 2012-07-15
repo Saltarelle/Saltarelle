@@ -37,7 +37,7 @@ namespace Saltarelle.Fragments {
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = obj as InstantiatedControlFragment;
-			return !Utils.IsNull(other) && other.Id == Id && other.NumInnerFragments == NumInnerFragments;
+			return other != null && other.Id == Id && other.NumInnerFragments == NumInnerFragments;
 		}
 		
 		public override int GetHashCode() {
@@ -50,7 +50,7 @@ namespace Saltarelle.Fragments {
 
 		public void WriteCode(ITemplate tpl, FragmentCodePoint point, CodeBuilder cb) {
 			if (CustomInstantiate)
-				cb.AppendLine("if (Utils.IsNull(" + Id + ")) throw new InvalidOperationException(\"The control instance " + Id + " must be assigned before the control can be rendered.\");");
+				cb.AppendLine("if (" + Id + " == null) throw new InvalidOperationException(\"The control instance " + Id + " must be assigned before the control can be rendered.\");");
 			
 			if (NumInnerFragments > 0) {
 				cb.Append("((IControlHost)" + Id + ").SetInnerFragments(new string[] { ");

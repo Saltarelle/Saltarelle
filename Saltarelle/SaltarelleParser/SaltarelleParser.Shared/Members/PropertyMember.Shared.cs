@@ -22,7 +22,7 @@ namespace Saltarelle.Members {
 			if (!hasGetter && !hasSetter) throw Utils.ArgumentException("Must have getter or setter.");
 			if (string.IsNullOrEmpty(serverType) != string.IsNullOrEmpty(backingFieldServerType)) throw Utils.ArgumentException("serverType and backingFieldServerType must both be either null or non-null.");
 			if (string.IsNullOrEmpty(clientType) != string.IsNullOrEmpty(backingFieldClientType)) throw Utils.ArgumentException("clientType and backingFieldClientType must both be either null or non-null.");
-			if (!Utils.IsNull(valueChangedHookName) && !ParserUtils.IsValidUnqualifiedName(valueChangedHookName)) throw Utils.ArgumentException("valueChangedHookName");
+			if (valueChangedHookName != null && !ParserUtils.IsValidUnqualifiedName(valueChangedHookName)) throw Utils.ArgumentException("valueChangedHookName");
 			
 			this.name = name;
 			this.serverType = serverType;
@@ -64,11 +64,11 @@ namespace Saltarelle.Members {
 		public void WriteCode(ITemplate tpl, MemberCodePoint point, CodeBuilder cb) {
 			switch (point) {
 				case MemberCodePoint.ClientDefinition:
-					if (!Utils.IsNull(clientType))
+					if (clientType != null)
 						WriteDefinition(cb, clientType, backingFieldClientType, false);
 					break;
 				case MemberCodePoint.ServerDefinition:
-					if (!Utils.IsNull(serverType))
+					if (serverType != null)
 						WriteDefinition(cb, serverType, backingFieldServerType, true);
 					break;
 			}
@@ -76,12 +76,12 @@ namespace Saltarelle.Members {
 
 		public override bool Equals(object obj) {
 			var other = (obj as PropertyMember);
-			return !Utils.IsNull(other) && other.name == name && other.serverType == serverType && other.clientType == clientType && other.accessModifier == accessModifier && other.backingFieldName == backingFieldName && other.backingFieldServerType == backingFieldServerType && other.backingFieldClientType == backingFieldClientType &&  other.hasGetter == hasGetter && other.hasSetter == hasSetter && other.valueChangedHookName == valueChangedHookName;
+			return other != null && other.name == name && other.serverType == serverType && other.clientType == clientType && other.accessModifier == accessModifier && other.backingFieldName == backingFieldName && other.backingFieldServerType == backingFieldServerType && other.backingFieldClientType == backingFieldClientType &&  other.hasGetter == hasGetter && other.hasSetter == hasSetter && other.valueChangedHookName == valueChangedHookName;
 		}
 
 		public override int GetHashCode() {
 			// I can't be bothered to do all members. Means a few more collitions but who cares?
-			return name.GetHashCode() ^ (!Utils.IsNull(serverType) ? serverType.GetHashCode() : 0x80000) ^ (!Utils.IsNull(clientType) ? clientType.GetHashCode() << 1 : 0x4000) ^ backingFieldName.GetHashCode() ^ ((int)accessModifier << 16) ^ (hasGetter ? 2 : 0) ^ (hasSetter ? 1 : 0);
+			return name.GetHashCode() ^ (serverType != null ? serverType.GetHashCode() : 0x80000) ^ (clientType != null ? clientType.GetHashCode() << 1 : 0x4000) ^ backingFieldName.GetHashCode() ^ ((int)accessModifier << 16) ^ (hasGetter ? 2 : 0) ^ (hasSetter ? 1 : 0);
 		}
 
 		public override string ToString() {

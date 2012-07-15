@@ -134,7 +134,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void Attach() {
-			if (Utils.IsNull(id) || isAttached)
+			if (id == null || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
 

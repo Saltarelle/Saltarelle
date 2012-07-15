@@ -35,7 +35,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			CodeBuilder cb = new CodeBuilder();
 			new InstantiatedControlFragment("CtlId", true, 0).WriteCode(tpl, point, cb);
-			Assert.AreEqual("if (Utils.IsNull(CtlId)) throw new InvalidOperationException(\"The control instance CtlId must be assigned before the control can be rendered.\");" + Environment.NewLine
+			Assert.AreEqual("if (CtlId == null) throw new InvalidOperationException(\"The control instance CtlId must be assigned before the control can be rendered.\");" + Environment.NewLine
 			              + "sb.Append(((IControl)CtlId).Html);" + Environment.NewLine, cb.ToString());
 			Assert.AreEqual(0, cb.IndentLevel);
 			mocks.VerifyAll();

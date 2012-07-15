@@ -40,7 +40,7 @@ namespace Saltarelle.Configuration {
 
         public IEnumerable<Assembly> LoadPluginsInLoadFromContext(string rootPath) {
             var result = new List<Assembly>();
-            if (!Utils.IsNull(Plugins)) {
+            if (Plugins != null) {
 				foreach (PluginElement p in Plugins) {
                     var asm = HandleTypeLoadException(() => Assembly.LoadFrom(MakeFullPath(p.Assembly, rootPath)));
                     result.Add(asm);
@@ -51,7 +51,7 @@ namespace Saltarelle.Configuration {
 
         public IList<Assembly> LoadPluginsInNoContext(string rootPath) {
             var result = new List<Assembly>();
-            if (!Utils.IsNull(Plugins)) {
+            if (Plugins != null) {
 				foreach (PluginElement p in Plugins) {
                     byte[] content = File.ReadAllBytes(MakeFullPath(p.Assembly, rootPath));
                     var asm = HandleTypeLoadException(() => Assembly.Load(content));
@@ -93,7 +93,7 @@ namespace Saltarelle.Configuration {
         }
 
 		public static SaltarelleConfig LoadFile(string fileName) {
-			if (Utils.IsNull(fileName)) throw new ArgumentException("fileName");
+			if (fileName == null) throw new ArgumentException("fileName");
 
             var doc = new XmlDocument();
             doc.Load(fileName);

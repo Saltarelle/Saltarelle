@@ -337,7 +337,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void Attach() {
-			if (Utils.IsNull(id) || isAttached)
+			if (id == null || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
 
@@ -375,13 +375,13 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void OnSelectedTabChanging(TabControlSelectedTabChangingEventArgs e) {
-			if (!Utils.IsNull(SelectedTabChanging))
+			if (SelectedTabChanging != null)
 				SelectedTabChanging(this, e);
 		}
 
 		protected virtual void OnSelectedTabChanged(EventArgs e) {
 			UIUtils.FixStrangeIE7SelectIssue(GetElement().Children[SelectedTab + 1]);
-			if (!Utils.IsNull(SelectedTabChanged))
+			if (SelectedTabChanged != null)
 				SelectedTabChanged(this, e);
 		}
 #endif

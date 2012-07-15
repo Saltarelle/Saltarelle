@@ -31,7 +31,7 @@ namespace Saltarelle {
 		public ImportCssResourceAttribute(Type typeInAssembly, string publicResourceName, string cssVariableName) {
 			this.ResourceAssembly = typeInAssembly.Assembly;
 			WebResourceAttribute attr = this.ResourceAssembly.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == publicResourceName);
-			if (Utils.IsNull(attr))
+			if (attr == null)
 				throw new ArgumentException("The assembly " + this.ResourceAssembly.GetName().Name + " does not export a resource with the name " + publicResourceName);
 
 			this.PublicResourceName = attr.PublicResourceName;

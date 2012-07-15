@@ -9,7 +9,7 @@ namespace Saltarelle.Fragments {
 
 		public IFragment TryMergeWithNext(IFragment nextFragment) {
 			LiteralFragment lf = nextFragment as LiteralFragment;
-			if (Utils.IsNull(lf) || lf.IsCData || IsCData)
+			if (lf == null || lf.IsCData || IsCData)
 				return null;
 			if (lf.Text == "")
 				return this;
@@ -33,14 +33,14 @@ namespace Saltarelle.Fragments {
 		}
 
 		public LiteralFragment(string text, bool isCData) {
-			if (Utils.IsNull(text)) throw Utils.ArgumentNullException("text");
+			if (text == null) throw Utils.ArgumentNullException("text");
 			this.Text = text;
 			this.IsCData = isCData;
 		}
 
 		public override bool Equals(object obj) {
 			var other = obj as LiteralFragment;
-			if (Utils.IsNull(other))
+			if (other == null)
 				return false;
 			return Text == other.Text && IsCData == other.IsCData;
 		}
@@ -62,7 +62,7 @@ namespace Saltarelle.Fragments {
 		[AlternateSignature]
 		public LiteralFragment(string text) {}
 		public LiteralFragment(string text, bool isCData) {
-			if (Utils.IsNull(text)) throw Utils.ArgumentNullException("text");
+			if (text == null) throw Utils.ArgumentNullException("text");
 			this.Text = text;
 			this.IsCData = (bool)((object)isCData ?? false);
 		}

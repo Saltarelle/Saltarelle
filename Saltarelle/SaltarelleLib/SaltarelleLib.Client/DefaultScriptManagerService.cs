@@ -17,7 +17,7 @@ namespace Saltarelle {
 			includedScripts = new List<string>();
 			jQuery.Select("script").Each(delegate(int _, Element el) {
 				string s = ((ScriptElement)el).Src;
-				if (!Utils.IsNull(s)) {
+				if (s != null) {
 					int ix = s.IndexOf("://");
 					includedScripts.Add(ix != -1 ? s.Substr(s.IndexOf("/", ix + 3)) : s); // IE6 seems to return script paths relative, others return it as absolute
 				}

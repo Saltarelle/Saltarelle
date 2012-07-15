@@ -23,7 +23,7 @@ namespace Saltarelle.Fragments {
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = (obj as CodeFragment);
-			return !Utils.IsNull(other) && other.code == code && other.indentEffect == indentEffect;
+			return other != null && other.code == code && other.indentEffect == indentEffect;
 		}
 
 		public override int GetHashCode() {

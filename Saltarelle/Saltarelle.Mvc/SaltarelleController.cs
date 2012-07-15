@@ -83,7 +83,7 @@ namespace Saltarelle.Mvc
 				InitializeDelegateData(filterContext);
 				foreach (var f in methodFilters.AuthorizationFilters) {
 					f.OnAuthorization(filterContext);
-					if (!Utils.IsNull(filterContext.Result))
+					if (filterContext.Result != null)
 						return;
 				}
 			}
@@ -95,7 +95,7 @@ namespace Saltarelle.Mvc
 		protected override void OnActionExecuting(ActionExecutingContext filterContext) {
 			foreach (var f in methodFilters.ActionFilters) {
 				f.OnActionExecuting(filterContext);
-				if (!Utils.IsNull(filterContext.Result))
+				if (filterContext.Result != null)
 					return;
 			}
 			base.OnActionExecuting(filterContext);
@@ -104,7 +104,7 @@ namespace Saltarelle.Mvc
 		protected override void OnActionExecuted(ActionExecutedContext filterContext) {
 			foreach (var f in methodFilters.ActionFilters) {
 				f.OnActionExecuted(filterContext);
-				if (!Utils.IsNull(filterContext.Result))
+				if (filterContext.Result != null)
 					return;
 			}
 			base.OnActionExecuted(filterContext);
@@ -113,7 +113,7 @@ namespace Saltarelle.Mvc
 		protected override void OnResultExecuting(ResultExecutingContext filterContext) {
 			foreach (var f in methodFilters.ResultFilters) {
 				f.OnResultExecuting(filterContext);
-				if (!Utils.IsNull(filterContext.Result))
+				if (filterContext.Result != null)
 					return;
 			}
 			base.OnResultExecuting(filterContext);
@@ -122,7 +122,7 @@ namespace Saltarelle.Mvc
 		protected override void OnResultExecuted(ResultExecutedContext filterContext) {
 			foreach (var f in methodFilters.ResultFilters) {
 				f.OnResultExecuted(filterContext);
-				if (!Utils.IsNull(filterContext.Result))
+				if (filterContext.Result != null)
 					return;
 			}
 			base.OnResultExecuted(filterContext);
@@ -132,7 +132,7 @@ namespace Saltarelle.Mvc
 			if (methodFilters != null) {	// If we are unlucky, we get the exception before we initialize the methodFilters member.
 				foreach (var f in methodFilters.ExceptionFilters) {
 					f.OnException(filterContext);
-					if (!Utils.IsNull(filterContext.Result))
+					if (filterContext.Result != null)
 						return;
 				}
 			}
@@ -185,7 +185,7 @@ namespace Saltarelle.Mvc
 				result = methodInfo.Invoke(instance, parms);
 			}
 
-			if (Utils.IsNull(result) || !typeof(ActionResult).IsAssignableFrom(result.GetType()))
+			if (result == null || !typeof(ActionResult).IsAssignableFrom(result.GetType()))
 				result = JavaScript(Utils.Json(result));
 
 			return (ActionResult)result;
@@ -196,7 +196,7 @@ namespace Saltarelle.Mvc
 			Assembly asm;
 			if (Utils.TryFindAssembly(assemblyName, out asm)) {
 				string s = moduleUtils.GetAssemblyScriptContent(asm, !string.IsNullOrEmpty(debug));
-				if (!Utils.IsNull(s))
+				if (s != null)
 					return JavaScript(s);
 			}
 			throw new HttpException(404, "File not found");
@@ -207,7 +207,7 @@ namespace Saltarelle.Mvc
 			Assembly asm;
 			if (Utils.TryFindAssembly(assemblyName, out asm)) {
 				string s = moduleUtils.GetAssemblyCss(asm);
-				if (!Utils.IsNull(s))
+				if (s != null)
 					return Content(s, "text/css");
 			}
 			throw new HttpException(404, "File not found");
@@ -218,7 +218,7 @@ namespace Saltarelle.Mvc
 			Assembly asm;
 			if (Utils.TryFindAssembly(assemblyName, out asm)) {
 				WebResourceAttribute attr = asm.GetCustomAttributes(typeof(WebResourceAttribute), false).Cast<WebResourceAttribute>().SingleOrDefault(x => x.PublicResourceName == resourceName);
-				if (!Utils.IsNull(attr)) {
+				if (attr != null) {
 					string mime;
 					mimeMap.TryGetValue(Path.GetExtension(resourceName).ToLowerInvariant(), out mime);
 

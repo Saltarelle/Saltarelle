@@ -12,22 +12,22 @@ namespace Saltarelle {
 		private static readonly Regex QualifiedNameRegex = new Regex("^(?:[a-z_][a-z_0-9]*\\.)*[a-z_][a-z_0-9]*$", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
 
 		public static bool IsValidUnqualifiedName(string id) {
-			return !Utils.IsNull(id) && UnqualifiedNameRegex.IsMatch(id);
+			return id != null && UnqualifiedNameRegex.IsMatch(id);
 		}
 
 		public static bool IsValidQualifiedName(string id) {
-			return !Utils.IsNull(id) && QualifiedNameRegex.IsMatch(id);
+			return id != null && QualifiedNameRegex.IsMatch(id);
 		}
 #else
 		private static readonly Regex UnqualifiedNameRegex = new Regex("^[a-z_][a-z_0-9]*$", "i");
 		private static readonly Regex QualifiedNameRegex = new Regex("^(?:[a-z_][a-z_0-9]*\\.)*[a-z_][a-z_0-9]*$", "i");
 
 		public static bool IsValidUnqualifiedName(string id) {
-			return !Utils.IsNull(id) && UnqualifiedNameRegex.Exec(id) != null;
+			return id != null && UnqualifiedNameRegex.Exec(id) != null;
 		}
 
 		public static bool IsValidQualifiedName(string id) {
-			return !Utils.IsNull(id) && QualifiedNameRegex.Exec(id) != null;
+			return id != null && QualifiedNameRegex.Exec(id) != null;
 		}
 #endif
 
@@ -43,7 +43,7 @@ namespace Saltarelle {
 					while (enumerator.MoveNext()) {
 						var item = enumerator.Current;
 						var merged = current.TryMergeWithNext(item);
-						if (Utils.IsNull(merged)) {
+						if (merged == null) {
 							result.Add(current);
 							current = item;
 						}

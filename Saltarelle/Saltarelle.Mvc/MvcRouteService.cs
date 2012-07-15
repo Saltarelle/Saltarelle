@@ -22,7 +22,7 @@ namespace Saltarelle.Mvc {
 			vals => {
 				Assembly asm;
 				string name = (string)vals[SaltarelleController.AssemblyNameParam];
-				if (!Utils.IsNull(name) && Utils.TryFindAssembly(name, out asm)) {
+				if (name != null && Utils.TryFindAssembly(name, out asm)) {
 					var v = asm.GetName().Version;
 					return (v.Major > 0 || v.Minor > 0 || v.Build > 0 || v.Revision > 0) ? v.ToString() : null;
 				}
@@ -34,7 +34,7 @@ namespace Saltarelle.Mvc {
 		}
 		
 		private static string RemoveControllerSuffix(string s) {
-			return Utils.IsNull(s) || !s.EndsWith("Controller") ? s : s.Substring(0, s.Length - "Controller".Length);
+			return s == null || !s.EndsWith("Controller") ? s : s.Substring(0, s.Length - "Controller".Length);
 		}
 		
 		private static void RegisterSingle<T1, T2>(RouteCollection routes, string routeName, string routeUrl, Expression<Func<T1, T2>> action, IDictionary<string, Func<RouteValueDictionary, string>> dependencies) {
@@ -42,7 +42,7 @@ namespace Saltarelle.Mvc {
 			var defaults   = new RouteValueDictionary() { { "controller", RemoveControllerSuffix(mi.DeclaringType.Name) }, { "action", mi.Name } };
 			var dataTokens = new RouteValueDictionary() { { "Namespaces", mi.DeclaringType.Namespace } };
 
-			if (!Utils.IsNull(dependencies) && dependencies.Count > 0)
+			if (dependencies != null && dependencies.Count > 0)
 				routes.Add(routeName, new VersionedRoute(routeUrl, defaults, new RouteValueDictionary(), dataTokens, dependencies, new MvcRouteHandler()));
 			else
 				routes.Add(routeName, new Route(routeUrl, defaults, new RouteValueDictionary(), dataTokens, new MvcRouteHandler()));
@@ -50,7 +50,7 @@ namespace Saltarelle.Mvc {
 
 		public static void RegisterRoutes(RouteCollection routes) {
 			var config = SaltarelleConfig.GetFromWebConfig();
-			if (Utils.IsNull(config))
+			if (config == null)
 				throw new ConfigurationErrorsException("The <saltarelle> section is missing from web.config.");
 			bool debugScripts = config.Scripts.Debug;
 

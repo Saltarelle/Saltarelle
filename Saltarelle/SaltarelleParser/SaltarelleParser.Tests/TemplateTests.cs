@@ -111,7 +111,7 @@ namespace SaltarelleParser.Tests {
 			mocks.ReplayAll();
 			
 			string expected =  "public void DependenciesAvailable() {" + Environment.NewLine
-			                +  "	if (!Utils.IsNull(__cfg)) {" + Environment.NewLine
+			                +  "	if (__cfg != null) {" + Environment.NewLine
 			                +  "		this.id = (string)__cfg[\"id\"];" + Environment.NewLine
 			                +  "		m1 = f2();" + Environment.NewLine
 			                +  "		m2 = g2();" + Environment.NewLine
@@ -496,7 +496,7 @@ namespace SaltarelleParser.Tests {
 			                 + p + "	}" + Environment.NewLine
 			                 + Environment.NewLine
 			                 + p + "	public void DependenciesAvailable() {" + Environment.NewLine
-			                 + p + "		if (!Utils.IsNull(__cfg)) {" + Environment.NewLine
+			                 + p + "		if (__cfg != null) {" + Environment.NewLine
 			                 + p + "			this.id = (string)__cfg[\"id\"];" + Environment.NewLine
 			                 + p + "			Constructed();" + Environment.NewLine
 			                 + p + "			AttachSelf();" + Environment.NewLine

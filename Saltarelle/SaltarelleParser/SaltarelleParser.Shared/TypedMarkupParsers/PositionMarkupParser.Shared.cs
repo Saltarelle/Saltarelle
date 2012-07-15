@@ -43,7 +43,7 @@ namespace Saltarelle.TypedMarkupParsers {
 					positions = new Position[split.Length];
 					for (int i = 0; i < split.Length; i++) {
 						StringPositionPair v = ParseSingle(split[i]);
-						if (Utils.IsNull(v))
+						if (v == null)
 							throw ParserUtils.TemplateErrorException(ParserUtils.MakeTypedMarkupErrorMessage(registeredPrefix, isArray, value));
 						sb.Append(i > 0 ? ", " : " ");
 						positions[i] = v.p;
@@ -58,7 +58,7 @@ namespace Saltarelle.TypedMarkupParsers {
 			}
 			else {
 				StringPositionPair v = ParseSingle(value);
-				if (Utils.IsNull(v))
+				if (v == null)
 					throw ParserUtils.TemplateErrorException(ParserUtils.MakeTypedMarkupErrorMessage(registeredPrefix, isArray, value));
 				return new TypedMarkupData(v.s, delegate { return v.p; });
 			}

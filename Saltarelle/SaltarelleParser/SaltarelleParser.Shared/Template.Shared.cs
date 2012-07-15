@@ -242,7 +242,7 @@ namespace Saltarelle {
 
 		internal static void WriteClientDependenciesAvailable(CodeBuilder cb, ITemplate tpl, IList<IMember> orderedMembers) {
 			cb.AppendLine("public void DependenciesAvailable() {").Indent()
-			  .AppendLine("if (!Utils.IsNull(" + ParserUtils.ConfigObjectName + ")) {").Indent()
+			  .AppendLine("if (" + ParserUtils.ConfigObjectName + " != null) {").Indent()
 			  .AppendLine("this.id = (string)" + ParserUtils.ConfigObjectName + "[\"id\"];");
 
 			foreach (var m in orderedMembers)
@@ -334,7 +334,7 @@ namespace Saltarelle {
 			if (!string.IsNullOrEmpty(inherits))
 				sb.Append(inherits);
 			sb.Append((Utils.IsStringBuilderEmpty(sb) ? "" : ", ") + "IControl, INotifyCreated" + (enableClientCreate ? ", IClientCreateControl" : ""));
-			if (!Utils.IsNull(interfaces)) {
+			if (interfaces != null) {
 				for (int i = 0; i < interfaces.Count; i++) {
 					sb.Append(", " + interfaces[i]);
 				}

@@ -238,7 +238,7 @@ namespace Saltarelle.UI {
 		}
 
 		public virtual void DependenciesAvailable() {
-			if (!Utils.IsNull(config)) {
+			if (config != null) {
 				InitConfig(JsDictionary.GetDictionary(config));
 			}
 			else
@@ -264,7 +264,7 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void AttachSelf() {
-			if (Utils.IsNull(id) || isAttached)
+			if (id == null || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
 
@@ -388,22 +388,22 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void OnOpening(CancelEventArgs e) {
-			if (!Utils.IsNull(Opening))
+			if (Opening != null)
 				Opening(this, e);
 		}
 		
 		protected virtual void OnOpened(EventArgs e) {
-			if (!Utils.IsNull(Opened))
+			if (Opened != null)
 				Opened(this, e);
 		}
 
 		protected virtual void OnClosing(CancelEventArgs e) {
-			if (!Utils.IsNull(Closing))
+			if (Closing != null)
 				Closing(this, e);
 		}
 
 		protected virtual void OnClosed(EventArgs e) {
-			if (!Utils.IsNull(Closed))
+			if (Closed != null)
 				Closed(this, e);
 
 			if (removeOnClose) {
@@ -516,7 +516,7 @@ namespace Saltarelle.UI {
 			get { return base.Id; }
 			set {
 				base.Id = value;
-				if (!Utils.IsNull(containedControl))
+				if (containedControl != null)
 					containedControl.Id = value + "_control";
 			}
 		}
@@ -552,7 +552,7 @@ namespace Saltarelle.UI {
 		protected override string InnerHtml { get { return ((IClientCreateControl)containedControl).Html; } }
 		
 		protected void SetContainedControlBase(IClientCreateControl control) {
-			if (!Utils.IsNull(((IControl)control).GetElement()))
+			if (control.GetElement() != null)
 				throw new Exception("The control must not be rendered.");
 			containedControl = (IControl)control;
 			if (!string.IsNullOrEmpty(Id))

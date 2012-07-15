@@ -946,7 +946,7 @@ namespace Saltarelle.UI {
 		}
 		
 		public void Attach() {
-			if (Utils.IsNull(id) || isAttached)
+			if (id == null || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
 			var elem = GetElement();
@@ -994,32 +994,32 @@ namespace Saltarelle.UI {
 		}
 
 		protected virtual void OnSelectionChanging(GridSelectionChangingEventArgs e) {
-			if (!Utils.IsNull(SelectionChanging))
+			if (SelectionChanging != null)
 				SelectionChanging(this, e);
 		}
 		
 		protected virtual void OnSelectionChanged(EventArgs e) {
-			if (!Utils.IsNull(SelectionChanged))
+			if (SelectionChanged != null)
 				SelectionChanged(this, e);
 		}
 
 		protected virtual void OnCellClicked(GridCellClickedEventArgs e) {
-			if (!Utils.IsNull(CellClicked))
+			if (CellClicked != null)
 				CellClicked(this, e);
 		}
 		
 		protected virtual void OnKeyPress(GridKeyPressEventArgs e) {
-			if (!Utils.IsNull(KeyPress))
+			if (KeyPress != null)
 				KeyPress(this, e);
 		}
 		
 		protected virtual void OnDragDropCompleting(GridDragDropCompletingEventArgs e) {
-			if (!Utils.IsNull(DragDropCompleting))
+			if (DragDropCompleting != null)
 				DragDropCompleting(this, e);
 		}
 
 		protected virtual void OnDragDropCompleted(GridDragDropCompletedEventArgs e) {
-			if (!Utils.IsNull(DragDropCompleted))
+			if (DragDropCompleted != null)
 				DragDropCompleted(this, e);
 		}
 

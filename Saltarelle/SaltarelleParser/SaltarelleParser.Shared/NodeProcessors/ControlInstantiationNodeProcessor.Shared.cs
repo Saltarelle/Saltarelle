@@ -41,9 +41,9 @@ namespace Saltarelle.NodeProcessors {
 			if (customInstantiate && additionalProperties.Count > 0)
 				throw ParserUtils.TemplateErrorException("There can not be any property assignments when customInstantiate is true.");
 
-			if (Utils.IsNull(type))
+			if (type == null)
 				throw ParserUtils.TemplateErrorException("The control '" + id + "' does not have a type specified.");
-			if (Utils.IsNull(id))
+			if (id == null)
 				id = template.GetUniqueId();
 			if (template.HasMember(id))
 				throw ParserUtils.TemplateErrorException("Duplicate definition of member " + id);

@@ -13,7 +13,7 @@ namespace Saltarelle {
 		public static string FloatRegex = "^\\s*([+-]?(?:(?:\\d+\\.?\\d*)|(?:\\.\\d+))(?:[eE][+-]?\\d+)?)\\s*$";
 		
 		public static string ScriptStr(string s) {
-			return IsNull(s) ? "null" : ("'" + ScriptEncode(s) + "'");
+			return s == null ? "null" : ("'" + ScriptEncode(s) + "'");
 		}
 
 		public static string ScriptBool(bool b) {
@@ -25,7 +25,7 @@ namespace Saltarelle {
 		}
 
 		public static string HtmlEncode(string s) {
-			return !Utils.IsNull(s)
+			return s != null
 			     ? s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\xa0", "&nbsp;").Replace("\"", "&quot;")
 				 : null;
 		}

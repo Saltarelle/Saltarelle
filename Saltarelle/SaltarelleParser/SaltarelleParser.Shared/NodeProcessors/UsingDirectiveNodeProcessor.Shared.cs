@@ -13,7 +13,7 @@ namespace Saltarelle.NodeProcessors {
 			string[] sideArr      = Utils.RegexExec(node.Value, "side=\"([^\"]*)\"", "");
 			string[] namespaceArr = Utils.RegexExec(node.Value, "namespace=\"([^\"]*)\"", "");
 	
-			if (Utils.IsNull(namespaceArr))
+			if (namespaceArr == null)
 				throw ParserUtils.TemplateErrorException("Using directive must have the namespace specified.");
 
 			string nmspace = namespaceArr[1].Trim(), side = (sideArr != null ? sideArr[1].Trim() : "both");

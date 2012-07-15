@@ -20,8 +20,8 @@ namespace Saltarelle.Members {
 		public InstantiatedControlMember(string name, string typeName, bool customInstantiate, IDictionary<string, TypedMarkupData> additionalProperties, IList<IMember> dependencies) {
 			if (!ParserUtils.IsValidUnqualifiedName(name)) throw Utils.ArgumentException("id");
 			if (string.IsNullOrEmpty(typeName)) throw Utils.ArgumentException("type");
-			if (Utils.IsNull(additionalProperties)) throw Utils.ArgumentNullException("additionalProperties");
-			if (Utils.IsNull(dependencies)) throw Utils.ArgumentNullException("dependencies");
+			if (additionalProperties == null) throw Utils.ArgumentNullException("additionalProperties");
+			if (dependencies == null) throw Utils.ArgumentNullException("dependencies");
 			this.name = name;
 			this.typeName = typeName;
 			this.customInstantiate = customInstantiate;
@@ -48,7 +48,7 @@ namespace Saltarelle.Members {
 #if SERVER
 		public override bool Equals(object obj) {
 			var other = obj as InstantiatedControlMember;
-			if (Utils.IsNull(other) || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Count != dependencies.Count)
+			if (other == null || other.name != name || other.typeName != typeName || other.customInstantiate != customInstantiate || additionalProperties.Count != other.additionalProperties.Count || other.dependencies.Count != dependencies.Count)
 				return false;
 			foreach (var kvp in additionalProperties) {
 				if (!other.additionalProperties.ContainsKey(kvp.Key) || other.additionalProperties[kvp.Key].InitializerString != kvp.Value.InitializerString)
@@ -143,7 +143,7 @@ namespace Saltarelle.Members {
 		
 		private void WriteAttachCode(CodeBuilder cb) {
 			if (customInstantiate)
-				cb.AppendLine("if (Utils.IsNull(this." + name + ")) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");");
+				cb.AppendLine("if (this." + name + " == null) throw new Exception(\"Must instantiate the control 'CtlName' before attach.\");");
 			cb.AppendLine("this." + name + ".Attach();");
 		}
 #endif

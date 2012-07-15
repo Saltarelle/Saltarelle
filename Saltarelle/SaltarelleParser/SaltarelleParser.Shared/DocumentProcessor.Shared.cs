@@ -46,15 +46,15 @@ namespace Saltarelle {
 		}
 		
 		public void ProcessRecursive(XmlNode node, ITemplate template, IRenderFunction currentRenderFunction) {
-			if (Utils.IsNull(template)) throw Utils.ArgumentException("template");
-			if (Utils.IsNull(currentRenderFunction)) throw Utils.ArgumentException("currentRenderFunction");
-			if (Utils.IsNull(node)) throw Utils.ArgumentNullException("node");
+			if (template == null) throw Utils.ArgumentException("template");
+			if (currentRenderFunction == null) throw Utils.ArgumentException("currentRenderFunction");
+			if (node == null) throw Utils.ArgumentNullException("node");
 
 			ActualProcess(node, false, template, currentRenderFunction);
 		}
 
 		public ITemplate Process(XmlNode node) {
-			if (Utils.IsNull(node)) throw Utils.ArgumentNullException("node");
+			if (node == null) throw Utils.ArgumentNullException("node");
 			
 			ITemplate result = new Template();
 			Utils.DoForEachChild(node, delegate(XmlNode child) {

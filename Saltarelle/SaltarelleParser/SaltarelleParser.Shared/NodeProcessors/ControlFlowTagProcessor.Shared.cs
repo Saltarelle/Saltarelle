@@ -8,25 +8,25 @@ namespace Saltarelle.NodeProcessors {
 			switch (node.Name) {
 				case "for": {
 					XmlAttribute eachAttr = (XmlAttribute)node.Attributes.GetNamedItem("each"), stmtAttr = (XmlAttribute)node.Attributes.GetNamedItem("stmt");
-					if ((!Utils.IsNull(eachAttr)) == (!Utils.IsNull(stmtAttr)))
+					if ((eachAttr != null) == (stmtAttr != null))
 						throw ParserUtils.TemplateErrorException("In the <for> element, exactly one of the each and stmt attributes must be defined.");
-					return !Utils.IsNull(eachAttr) ? ("foreach (" + eachAttr.Value + ")") : ("for (" + stmtAttr.Value + ")");
+					return eachAttr != null ? ("foreach (" + eachAttr.Value + ")") : ("for (" + stmtAttr.Value + ")");
 				}
 				case "if": {
 					XmlAttribute testAttr = (XmlAttribute)node.Attributes.GetNamedItem("test");
-					if (Utils.IsNull(testAttr))
+					if (testAttr == null)
 						throw ParserUtils.TemplateErrorException("The <if> element must have the test attribute specified.");
 					return "if (" + testAttr.Value + ")";
 				}
 				case "while": {
 					XmlAttribute testAttr = (XmlAttribute)node.Attributes.GetNamedItem("test");
-					if (Utils.IsNull(testAttr))
+					if (testAttr == null)
 						throw ParserUtils.TemplateErrorException("The <while> element must have the test attribute specified.");
 					return "while (" + testAttr.Value + ")";
 				}
 				case "switch": {
 					XmlAttribute exprAttr = (XmlAttribute)node.Attributes.GetNamedItem("expr");
-					if (Utils.IsNull(exprAttr))
+					if (exprAttr == null)
 						throw ParserUtils.TemplateErrorException("The <switch> element must have the expr attribute specified.");
 					return "switch (" + exprAttr.Value + ")";
 				}
@@ -49,7 +49,7 @@ namespace Saltarelle.NodeProcessors {
 
 				if (child.NodeType == XmlNodeType.Element && child.Name == "case") {
 					XmlAttribute valueAttr = (XmlAttribute)child.Attributes.GetNamedItem("value");
-					if (Utils.IsNull(valueAttr))
+					if (valueAttr == null)
 						throw ParserUtils.TemplateErrorException("The <case> element must have the value attribute specified.");
 					currentRenderFunction.AddFragment(new CodeFragment("case " + valueAttr.Value + ": {", 1));
 				}
@@ -84,7 +84,7 @@ namespace Saltarelle.NodeProcessors {
 				throw ParserUtils.TemplateErrorException("<else-if> and <else> can only occur inside <if>");
 
 			string statement = GetStatement(node);
-			if (Utils.IsNull(statement))
+			if (statement == null)
 				return false;
 
 			if (isRoot)
@@ -106,7 +106,7 @@ namespace Saltarelle.NodeProcessors {
 						string possibleTest;
 						if (child.Name == "else-if") {
 							XmlAttribute testAttr = (XmlAttribute)child.Attributes.GetNamedItem("test");
-							if (Utils.IsNull(testAttr))
+							if (testAttr == null)
 								throw ParserUtils.TemplateErrorException("The <else-if> elements must have the test attribute specified.");
 							possibleTest = "if (" + testAttr.Value + ") ";
 						}

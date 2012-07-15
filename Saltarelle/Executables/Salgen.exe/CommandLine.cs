@@ -28,7 +28,7 @@ namespace Saltarelle {
 				switch (parts.Length) {
 					case 1:	// Found a value (for the last parameter found (space separator))
 						parts[0] = remover.Replace(parts[0], "$1");
-						if (!Utils.IsNull(currentParam)) {
+						if (currentParam != null) {
 							if (!parameters.ContainsKey(currentParam))
 								parameters.Add(currentParam, parts[0]);
 							currentParam = null;
@@ -39,14 +39,14 @@ namespace Saltarelle {
 						break;
 
 					case 2:	// Found just a parameter
-						if (!Utils.IsNull(currentParam) && !parameters.ContainsKey(currentParam))
+						if (currentParam != null && !parameters.ContainsKey(currentParam))
 							parameters.Add(currentParam, "");
 
 						currentParam = parts[1];
 						break;
 
 					case 3:	// Parameter with enclosed value
-						if(!Utils.IsNull(currentParam) && !parameters.ContainsKey(currentParam)) 
+						if(currentParam != null && !parameters.ContainsKey(currentParam)) 
 							parameters.Add(currentParam, "");
 
 						currentParam = parts[1];
@@ -63,7 +63,7 @@ namespace Saltarelle {
 			}
 
 			// In case a parameter is still waiting
-			if (!Utils.IsNull(currentParam) && !parameters.ContainsKey(currentParam)) 
+			if (currentParam != null && !parameters.ContainsKey(currentParam)) 
 				parameters.Add(currentParam, "");
 				
 			this.fileList = fileList.AsReadOnly();

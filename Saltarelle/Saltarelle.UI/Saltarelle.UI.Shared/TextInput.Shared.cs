@@ -165,7 +165,7 @@ namespace Saltarelle.UI {
 		}
 		
 		protected virtual void OnValueChanged(EventArgs e) {
-			if (!Utils.IsNull(ValueChanged))
+			if (ValueChanged != null)
 				ValueChanged(this, e);
 		}
 #endif

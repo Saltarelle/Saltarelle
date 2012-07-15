@@ -24,11 +24,11 @@ namespace Saltarelle {
 				InputFile = Path.GetFullPath(cmdLine.FileList[0]);
 
 				Nmspace = cmdLine["namespace"];
-				if (!Utils.IsNull(Nmspace) && !ParserUtils.IsValidQualifiedName(Nmspace))
+				if (Nmspace != null && !ParserUtils.IsValidQualifiedName(Nmspace))
 					IsValid = false;
 				
 				ClassName = cmdLine["class"];
-				if (Utils.IsNull(ClassName)) {
+				if (ClassName == null) {
 					ClassName = new Regex("[^0-9a-zA-Z_]", RegexOptions.IgnoreCase).Replace(Path.GetFileNameWithoutExtension(InputFile), "_");
 					if (ClassName.Length == 0 || ClassName.IndexOfAny(new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' }) == 0)
 						ClassName = "_" + ClassName;
@@ -39,13 +39,13 @@ namespace Saltarelle {
 				OutputFile = cmdLine["out"];
 				if (OutputFile == "")
 					return;
-				if (Utils.IsNull(OutputFile))
+				if (OutputFile == null)
 					OutputFile = Path.ChangeExtension(InputFile, ExecutablesCommon.GeneratedFileExtension);
 
 				ConfigFile = cmdLine["config"];
 				if (ConfigFile == "")
 					return;
-				else if (Utils.IsNull(ConfigFile))
+				else if (ConfigFile == null)
 					ConfigFile = ExecutablesCommon.FindConfigFilePath(InputFile);
 
 				IsValid = true;

@@ -16,14 +16,14 @@ namespace Saltarelle.NodeProcessors {
 			string[] nameArr       = Utils.RegexExec(node.Value, "name=\"([^\"]*)\"", "");
 
 			string serverType, clientType;
-			if (!Utils.IsNull(typeArr)) {
+			if (typeArr != null) {
 				if (string.IsNullOrEmpty(typeArr[1].Trim()))
 					throw ParserUtils.TemplateErrorException("No type was specified for the field");
-				if (!Utils.IsNull(serverTypeArr) || !Utils.IsNull(clientTypeArr))
+				if (serverTypeArr != null || clientTypeArr != null)
 					throw ParserUtils.TemplateErrorException("field elements cannot have both server/client type and type specified.");
 				serverType = clientType = typeArr[1].Trim();
 			}
-			else if (!Utils.IsNull(serverTypeArr) && !Utils.IsNull(clientTypeArr)) {
+			else if (serverTypeArr != null && clientTypeArr != null) {
 				if (string.IsNullOrEmpty(serverTypeArr[1].Trim()))
 					throw ParserUtils.TemplateErrorException("No server type was specified for the field");
 				if (string.IsNullOrEmpty(clientTypeArr[1].Trim()))
@@ -34,7 +34,7 @@ namespace Saltarelle.NodeProcessors {
 			else
 				throw ParserUtils.TemplateErrorException("field elements must have the type specified (either 'type' or 'serverType' and 'clientType').");
 
-			string name = !Utils.IsNull(nameArr) ? nameArr[1].Trim() : null;
+			string name = nameArr != null ? nameArr[1].Trim() : null;
 			if (string.IsNullOrEmpty(name))
 				throw ParserUtils.TemplateErrorException("field elements must have a name specified.");
 

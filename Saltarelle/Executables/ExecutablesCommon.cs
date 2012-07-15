@@ -99,7 +99,7 @@ namespace Saltarelle {
 		
 		public static string FindConfigFilePath(string inputFilePath) {
 			string currentDir = Path.GetDirectoryName(inputFilePath);
-			while (!Utils.IsNull(currentDir)) {
+			while (currentDir != null) {
 				string s = Path.Combine(currentDir, ConfigFileName);
 				if (File.Exists(s))
 					return s;

@@ -9,7 +9,7 @@ namespace Saltarelle.NodeProcessors {
 			XmlAttribute nameAttr   = (XmlAttribute)node.Attributes.GetNamedItem("name");
 			XmlAttribute paramsAttr = (XmlAttribute)node.Attributes.GetNamedItem("params");
 			
-			if (Utils.IsNull(nameAttr))
+			if (nameAttr == null)
 				throw ParserUtils.TemplateErrorException("The <def-fragment> element must have the name attribute specified.");
 			string name = nameAttr.Value;
 			if (!ParserUtils.IsValidUnqualifiedName(name))
@@ -17,7 +17,7 @@ namespace Saltarelle.NodeProcessors {
 			if (template.HasMember(name))
 				throw ParserUtils.TemplateErrorException("Duplicate definition of member " + name + ".");
 
-			RenderFunctionMember m = new RenderFunctionMember(nameAttr.Value, !Utils.IsNull(paramsAttr) ? paramsAttr.Value : "");
+			RenderFunctionMember m = new RenderFunctionMember(nameAttr.Value, paramsAttr != null ? paramsAttr.Value : "");
 
 			Utils.DoForEachChild(node, delegate(XmlNode n) {
 				docProcessor.ProcessRecursive(n, template, m);
@@ -32,7 +32,7 @@ namespace Saltarelle.NodeProcessors {
 			XmlAttribute nameAttr   = (XmlAttribute)node.Attributes.GetNamedItem("name");
 			XmlAttribute paramsAttr = (XmlAttribute)node.Attributes.GetNamedItem("params");
 			
-			if (Utils.IsNull(nameAttr))
+			if (nameAttr == null)
 				throw ParserUtils.TemplateErrorException("The <call-fragment> element must have the name attribute specified.");
 			string name = nameAttr.Value;
 			if (!ParserUtils.IsValidUnqualifiedName(name))
@@ -40,7 +40,7 @@ namespace Saltarelle.NodeProcessors {
 			if (Utils.GetNumChildNodes(node) != 0)
 				throw ParserUtils.TemplateErrorException("The <call-fragment> element cannot have children.");
 
-			return new CodeExpressionFragment(name + "(" + (!Utils.IsNull(paramsAttr) ? paramsAttr.Value : "") + ")");
+			return new CodeExpressionFragment(name + "(" + (paramsAttr != null ? paramsAttr.Value : "") + ")");
 		}
 
 		public bool TryProcess(IDocumentProcessor docProcessor, XmlNode node, bool isRoot, ITemplate template, IRenderFunction currentRenderFunction) {

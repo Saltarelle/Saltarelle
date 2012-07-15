@@ -162,7 +162,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void AddControl(string controlId, IControl control, object data) {
-			if (!Utils.IsNull(id))
+			if (id != null)
 				control.Id = id + "_" + Utils.ToStringInvariantInt(controls.Count);
 			controlIds.Add(controlId);
 			controls.Add(control);
@@ -200,15 +200,15 @@ namespace Saltarelle.UI {
 		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		public void Attach() {
-			if (Utils.IsNull(id) || isAttached)
+			if (id == null || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
 		}
 
 		public void AddControl(string controlId, IClientCreateControl control, object data) {
-			if (!Utils.IsNull(((IControl)control).GetElement()))
+			if (control.GetElement() != null)
 				throw new Exception("The control must not be rendered.");
-			if (!Utils.IsNull(id))
+			if (id != null)
 				control.Id = id + "_" + Utils.ToStringInvariantInt(controls.Count);
 			if (isAttached) {
 				Utils.RenderControl(control, GetElement());
@@ -219,7 +219,7 @@ namespace Saltarelle.UI {
 		}
 
 		public void DependenciesAvailable() {
-			if (!Utils.IsNull(config))
+			if (config != null)
 				InitConfig(config);
 			else
 				InitDefault();

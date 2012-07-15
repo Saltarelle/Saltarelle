@@ -13,9 +13,9 @@ namespace Saltarelle.NodeProcessors {
 			string[] sideArr = Utils.RegexExec(node.Value, "side=\"([^\"]*)\"", "");
 			string[] typeArr = Utils.RegexExec(node.Value, "type=\"([^\"]*)\"", "");
 	
-			if (Utils.IsNull(typeArr))
+			if (typeArr == null)
 				throw ParserUtils.TemplateErrorException(node.Name + " elements must have the type specified.");
-			if (Utils.IsNull(sideArr))
+			if (sideArr == null)
 				throw ParserUtils.TemplateErrorException(node.Name + " elements must have the side specified.");
 
 			string side = sideArr[1].Trim(), type = typeArr[1].Trim();
@@ -52,12 +52,12 @@ namespace Saltarelle.NodeProcessors {
 			}
 			else {
 				if (serverSide) {
-					if (!Utils.IsNull(template.ServerInherits))
+					if (template.ServerInherits != null)
 						throw ParserUtils.TemplateErrorException("Cannot inherit from more than one class on the server side.");
 					template.ServerInherits = type;
 				}
 				if (clientSide) {
-					if (!Utils.IsNull(template.ClientInherits))
+					if (template.ClientInherits != null)
 						throw ParserUtils.TemplateErrorException("Cannot inherit from more than one class on the client side.");
 					template.ClientInherits = type;
 				}
