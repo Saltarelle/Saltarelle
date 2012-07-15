@@ -265,7 +265,7 @@ Task Determine-Version {
 	$script:ExecutablesVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Executables","$base_dir\Saltarelle\SaltarelleLib","$base_dir\Saltarelle\SaltarelleParser","$base_dir\Saltarelle\Saltarelle.CastleWindsor"
 	$script:ParserVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\SaltarelleParser"
 	$script:UIVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.UI"
-	$script:MvcVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.Mvc"
+	$script:MvcVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.Mvc","$base_dir\Saltarelle\packages"
 	$script:CastleWindsorVersion = Determine-PathVersion -RefCommit $refCommit -RefVersion $refVersion -Path "$base_dir\Saltarelle\Saltarelle.CastleWindsor"
 	$script:ProductVersion = New-Object System.Version($script:ExecutablesVersion.Major, $script:ExecutablesVersion.Minor, $script:ExecutablesVersion.Build)
 
