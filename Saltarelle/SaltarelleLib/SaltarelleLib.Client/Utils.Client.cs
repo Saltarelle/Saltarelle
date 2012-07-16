@@ -56,7 +56,7 @@ namespace Saltarelle {
 			return "\"" + s + "\"";
 		}
 		
-		private static Regex DateRegex = new Regex(@"^\\/Date\((-?\d+)\)\\/$");
+		private static Regex DateRegex = new Regex(@"^/Date\((-?\d+)\)/$");
 
 		public static string Json(object o) {
 			return System.Serialization.Json.Stringify(o);
