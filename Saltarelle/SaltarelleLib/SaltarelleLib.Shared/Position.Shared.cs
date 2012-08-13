@@ -13,10 +13,7 @@ namespace Saltarelle
 		Fixed         = 2
 	}
 
-	[Record]
-#if SERVER
 	[Serializable]
-#endif
 	public sealed class Position {
 		public readonly AnchoringEnum anchor;
 		public readonly int left;

@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+using System;
 #if SERVER
 using ServiceDictionary = System.Collections.Generic.Dictionary<string, Saltarelle.ScriptManagerConfigServiceEntry>;
 using InjectionDictionary = System.Collections.Generic.Dictionary<string, System.Collections.Generic.IList<Saltarelle.ScriptManagerConfigInjectedPropertyRow>>;
@@ -8,25 +8,25 @@ using InjectionDictionary = System.Collections.Generic.JsDictionary<string, Syst
 #endif
 
 namespace Saltarelle {
-    [Record]
+    [Serializable]
     public sealed class ScriptManagerConfigControlRow {
         public string type;
         public object config;
     }
 
-    [Record]
+    [Serializable]
     public sealed class ScriptManagerConfigServiceEntry {
         public string type;
         public object config;
     }
 
-    [Record]
+    [Serializable]
     public sealed class ScriptManagerConfigInjectedPropertyRow {
         public string propertyName;
         public string typeName;
     }
 
-    [Record]
+    [Serializable]
     public sealed class ScriptManagerConfig {
         public int nextUniqueId;
         public ServiceDictionary services;

@@ -28,7 +28,7 @@ namespace Saltarelle.UI {
 	/// Represents a tree node. Instances of this class are manipulated using static methods on the <see cref="Tree"/> class.
 	/// Instances are created by the <see cref="Tree.CreateTreeNode"/> method.
 	/// </summary>
-	[Record]
+	[Serializable]
 	public sealed class TreeNode
 	{
 		#if CLIENT
@@ -157,7 +157,7 @@ namespace Saltarelle.UI {
 
 	internal delegate TreeNode TreeNodeMapperDelegate(TreeNode arg);
 
-	[Record]
+	[Serializable]
 	internal sealed class TreeDropTarget {
 		public readonly TreeNode node;
 		public readonly bool above;

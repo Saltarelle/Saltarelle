@@ -7,7 +7,7 @@ using System.Text;
 namespace Saltarelle {
 	public delegate object TypedMarkupDataValueRetriever();
 
-	[Record]
+	[Serializable]
 	public sealed class TypedMarkupData {
 		public readonly string InitializerString;
 		public readonly TypedMarkupDataValueRetriever ValueRetriever;

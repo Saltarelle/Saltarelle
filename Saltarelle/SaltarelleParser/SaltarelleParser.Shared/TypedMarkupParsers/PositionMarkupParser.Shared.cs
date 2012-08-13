@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Saltarelle.TypedMarkupParsers {
-	[Record]
+	[Serializable]
 	internal sealed class StringPositionPair {
 		public string s;
 		public Position p;

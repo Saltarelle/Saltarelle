@@ -7,14 +7,10 @@ using System.Linq;
 #if CLIENT
 using System.Html;
 using jQueryApi;
-
 #endif
 
 namespace Saltarelle {
-	[Record]
-#if SERVER
 	[Serializable]
-#endif
 	public sealed class ControlDocumentFragment {
 		public string[] scriptReferences;
 		public ScriptManagerConfig scriptManagerConfig;

@@ -11,12 +11,6 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace System.Runtime.CompilerServices {
-	// to make it possible to use these Script# attibutes in shared files
-	public sealed class RecordAttribute : Attribute {}
-	public sealed class PreserveCaseAttribute : Attribute {}
-}
-
 namespace Saltarelle {
 	public static partial class Utils {
 		private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.MicrosoftDateFormat };
@@ -38,6 +32,10 @@ namespace Saltarelle {
 		}
 
 		public static string ToStringInvariantInt(int i) {
+			return Convert.ToString(i, System.Globalization.NumberFormatInfo.InvariantInfo);
+		}
+
+		public static string ToStringInvariantLong(long i) {
 			return Convert.ToString(i, System.Globalization.NumberFormatInfo.InvariantInfo);
 		}
 

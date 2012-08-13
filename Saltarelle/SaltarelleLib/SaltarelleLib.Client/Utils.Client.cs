@@ -20,10 +20,14 @@ namespace Saltarelle {
 
 		public static string[] RegexExec(string toTest, string pattern, string options) {
 			var x = new Regex(pattern, options);
-			return x.Exec(toTest);
+			return (string[])(object)x.Exec(toTest);
 		}
 		
 		public static string ToStringInvariantInt(int i) {
+			return i.ToString();
+		}
+
+		public static string ToStringInvariantLong(long i) {
 			return i.ToString();
 		}
 
@@ -91,7 +95,7 @@ namespace Saltarelle {
 		}
 
 		public static string FormatDate(DateTime value, string format) {
-			return new DateTime(value.GetUTCFullYear(), value.GetUTCMonth(), value.GetUTCDate(), value.GetUTCHours(), value.GetUTCMinutes(), value.GetUTCSeconds(), value.GetUTCMilliseconds()).Format(format);
+			return new DateTime(value.GetUtcFullYear(), value.GetUtcMonth(), value.GetUtcDate(), value.GetUtcHours(), value.GetUtcMinutes(), value.GetUtcSeconds(), value.GetUtcMilliseconds()).Format(format);
 		}
 		
 		public static string FormatNumber(double number, int decimals) {
@@ -229,7 +233,7 @@ namespace Saltarelle {
 			substitutions["\""] = "\\\"";
 			substitutions["\\"] = "\\\\";
 
-			((dynamic)typeof(DateTime).Prototype).toJSON = (Func<string>)(() => { return @"\/Date(" + ToStringInvariantInt(ThisDate.ValueOf()) + @")\/"; });
+			((dynamic)typeof(DateTime).Prototype).toJSON = (Func<string>)(() => { return @"\/Date(" + ToStringInvariantLong(ThisDate.ValueOf()) + @")\/"; });
 		}
 	}
 }
