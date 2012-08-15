@@ -224,18 +224,18 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">
-      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.1.1.1\tools\Assemblies\mscorlib.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.1.1.2\tools\Assemblies\mscorlib.dll</HintPath>
     </Reference>
     <Reference Include="Script.jQuery, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Saltarelle.jQuery.1.1.1\lib\Script.jQuery.dll</HintPath>
+      <HintPath>..\..\packages\Saltarelle.jQuery.1.1.2\lib\Script.jQuery.dll</HintPath>
     </Reference>
     <Reference Include="Script.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Saltarelle.Web.1.1.1\lib\Script.Web.dll</HintPath>
+      <HintPath>..\..\packages\Saltarelle.Web.1.1.2\lib\Script.Web.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.1.1.1\tools\Saltarelle.Compiler.targets" />
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.1.1.2\tools\Saltarelle.Compiler.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />

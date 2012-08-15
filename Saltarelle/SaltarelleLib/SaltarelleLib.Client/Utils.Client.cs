@@ -90,7 +90,7 @@ namespace Saltarelle {
 			return value.Join(separator);
 		}
 
-		public static DateTime ParseDateExact(string value, string format) {
+		public static DateTime? ParseDateExact(string value, string format) {
 			return DateTime.ParseExactUtc(value, format);
 		}
 

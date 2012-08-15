@@ -1,0 +1,20 @@
+1.1.2
+Fixed issue causing incorrect code to be generated when duplicate using directives were specified. Also added code to ensure an internal error is raised under similar circumstances.
+RegexMatch has a Length property and is convertible to string[]
+DateTime.ParseExact and ParseExactUtc metadata updated to return DateTime? (which they always actually have in script)
+
+1.1.1
+Added type NotSupportedException (required for the iterator blocks feature).
+
+1.1.0
+Use !! for dynamic conversions to bool.
+Fixed internal error when implementing properties/events that are [NonScriptable]
+Implemented support for iterator blocks (yield)
+Minification improvements
+DateTime is now an immutable struct, MutableDateTime is a mutable date class.
+
+1.0.1
+Fixed project URL and included history in NuGet packages.
+
+1.0.0
+Initial version
