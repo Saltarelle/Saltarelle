@@ -233,7 +233,7 @@ namespace Saltarelle {
 			substitutions["\""] = "\\\"";
 			substitutions["\\"] = "\\\\";
 
-			((dynamic)typeof(DateTime).Prototype).toJSON = (Func<string>)(() => { return @"\/Date(" + ToStringInvariantLong(ThisDate.ValueOf()) + @")\/"; });
+			((dynamic)typeof(DateTime).Prototype).toJSON = (Func<string>)(() => { return "/Date(" + ToStringInvariantLong(ThisDate.ValueOf()) + ")/"; });
 		}
 	}
 }

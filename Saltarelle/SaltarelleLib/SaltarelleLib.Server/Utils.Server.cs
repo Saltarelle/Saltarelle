@@ -75,12 +75,14 @@ namespace Saltarelle {
 			return JsonConvert.SerializeObject(o, jsonSerializerSettings);
 		}
 
+		private static Regex DateRegex = new Regex(@"""(/Date\((?:-?\d+)\))/""");
 		public static object EvalJson(string s, Type objectType) {
-			return JsonConvert.DeserializeObject(s, objectType, jsonSerializerSettings);
+			// Json.net's Microsoft date format requires \/ around the date, but our client serialization only produces /, so we need to patch this.
+			return JsonConvert.DeserializeObject(DateRegex.Replace(s, "\"\\$1\\/\""), objectType, jsonSerializerSettings);
 		}
 		
 		public static T EvalJson<T>(string s) {
-			return JsonConvert.DeserializeObject<T>(s, jsonSerializerSettings);
+			return (T)EvalJson(s, typeof(T));
 		}
 
 		public static string JoinStrings(string separator, IList<string> value) {
