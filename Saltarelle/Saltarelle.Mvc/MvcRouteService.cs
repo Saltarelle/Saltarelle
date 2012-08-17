@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web.Routing;
@@ -23,8 +24,22 @@ namespace Saltarelle.Mvc {
 				Assembly asm;
 				string name = (string)vals[SaltarelleController.AssemblyNameParam];
 				if (name != null && Utils.TryFindAssembly(name, out asm)) {
-					var v = asm.GetName().Version;
-					return (v.Major > 0 || v.Minor > 0 || v.Build > 0 || v.Revision > 0) ? v.ToString() : null;
+					try {
+						var v = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
+						if (v.Major > 0 || v.Minor > 0 || v.Build > 0 || v.Revision > 0)
+							return v.ToString();
+					}
+					catch (Exception) {	// Assembly methods have a habit of failing randomly (eg. if the assembly is dynamic).
+					}
+
+					try {
+						var v = asm.GetName().Version;
+						if (v != null && v.Major > 0 || v.Minor > 0 || v.Build > 0 || v.Revision > 0)
+							return v.ToString();
+					}
+					catch (Exception) {
+					}
+					return null;
 				}
 				return null;
 			};
