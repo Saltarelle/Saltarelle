@@ -25,7 +25,7 @@ namespace Saltarelle.Mvc {
 				string name = (string)vals[SaltarelleController.AssemblyNameParam];
 				if (name != null && Utils.TryFindAssembly(name, out asm)) {
 					try {
-						var v = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
+						var v = new Version(FileVersionInfo.GetVersionInfo(asm.Location).ProductVersion);
 						if (v.Major > 0 || v.Minor > 0 || v.Build > 0 || v.Revision > 0)
 							return v.ToString();
 					}
