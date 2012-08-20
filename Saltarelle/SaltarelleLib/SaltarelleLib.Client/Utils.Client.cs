@@ -48,7 +48,7 @@ namespace Saltarelle {
 
 		public static string ScriptEncode(string s) {
 			if (escapeable.Test(s)) {
-				return "\"" + s.ReplaceRegex(escapeable, a => {
+				return "\"" + s.Replace(escapeable, a => {
 					var c = substitutions[a];
 					if (Type.GetScriptType(c) == "string") {
 					    return c;
@@ -107,11 +107,11 @@ namespace Saltarelle {
 		}
 
 		public static string Escape(string s) {
-			return s.Escape();
+			return string.Escape(s);
 		}
 
 		public static string Unescape(string s) {
-			return s.Unescape();
+			return string.Unescape(s);
 		}
 
 		public static void DoForEachAttribute(XmlNode node, Action<XmlAttribute> a) {

@@ -8,7 +8,7 @@ namespace Saltarelle.NodeProcessors {
 	internal class LeafNodeProcessor : INodeProcessor {
 		private static string NormalizeSpaces(string s) {
 			#if CLIENT
-				return s.ReplaceRegex(new Regex("\\s+", "g"), " ");
+				return s.Replace(new Regex("\\s+", "g"), " ");
 			#else
 				StringBuilder sb = new StringBuilder();
 				bool atSpace = false;
