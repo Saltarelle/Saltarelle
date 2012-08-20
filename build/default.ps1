@@ -6,9 +6,9 @@ properties {
 	$out_dir = "$(Resolve-Path "".."")\build_out"
 	$configuration = "Debug"
 	$release_tag_pattern = "release-(.*)"
+	$compilerVersion = "1.2"
+	$jsonNetVersion = "4.5.8"
 }
-
-$jsonNetVersion = "4.5.7"
 
 Task default -Depends Build
 
@@ -45,10 +45,10 @@ Task Build-NuGetPackages -Depends Determine-Version, Build-Solution, Run-Tests {
 		<description>Saltarelle Web Framework Client Library</description>
 		<authors>$authors</authors>
 		<dependencies>
-			<dependency id="Saltarelle.Compiler" version="0.0" />
-			<dependency id="Saltarelle.Runtime" version="0.0" />
-			<dependency id="Saltarelle.Web" version="0.0" />
-			<dependency id="Saltarelle.jQuery" version="0.0" />
+			<dependency id="Saltarelle.Compiler" version="$compilerVersion" />
+			<dependency id="Saltarelle.Runtime" version="$compilerVersion" />
+			<dependency id="Saltarelle.Web" version="$compilerVersion" />
+			<dependency id="Saltarelle.jQuery" version="$compilerVersion" />
 		</dependencies>
 	</metadata>
 	<files>
