@@ -1,13 +1,18 @@
 using System;
-#if SERVER
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+#if SERVER
+using System.Text;
 using System.Linq;
 using Newtonsoft.Json;
+using Saltarelle.Ioc;
 #endif
 #if CLIENT
-using System.DHTML;
+using System.Html;
+using System.Text;
+using jQueryApi;
+using jQueryApi.UI.Interactions;
 #endif
 
 namespace Saltarelle.UI {
@@ -17,38 +22,74 @@ namespace Saltarelle.UI {
 		indeterminate = 2
 	}
 
-	public delegate bool TreeNodeFindPredicate(ITreeNode node);
+	public delegate bool TreeNodeFindPredicate(TreeNode node);
 
 	/// <summary>
 	/// Represents a tree node. Instances of this class are manipulated using static methods on the <see cref="Tree"/> class.
 	/// Instances are created by the <see cref="Tree.CreateTreeNode"/> method.
-	/// The reasons for this interface are:
-	/// 1) Script# does not support methods on [Record] types, and
-	/// 2) If we make the TreeNode class (whose members we don't want others to modify) public and its fields internal, Script# will minimize the field names, which is bad for JSON. [PreserveName] does not seem to work.
 	/// </summary>
-	public interface ITreeNode {
-	}
-
-	[Record]
-	internal sealed class TreeNode
-	#if SERVER
-	: ITreeNode
-	#endif
+	[Serializable]
+	public sealed class TreeNode
 	{
-		public int id;
-		public bool expanded;
-		public TreeNodeCheckState checkState;
-		public string text;
-		public string icon;
-		public object data;
-		public ArrayList children;
+		#if CLIENT
+		[PreserveName]
+		#else
+		[JsonProperty]
+		#endif
+		internal int id;
 
-		#if SERVER
+		#if CLIENT
+		[PreserveName]
+		#else
+		[JsonProperty]
+		#endif
+		internal bool expanded;
+
+		#if CLIENT
+		[PreserveName]
+		#else
+		[JsonProperty]
+		#endif
+		internal TreeNodeCheckState checkState;
+
+		#if CLIENT
+		[PreserveName]
+		#else
+		[JsonProperty]
+		#endif
+		internal string text;
+
+		#if CLIENT
+		[PreserveName]
+		#else
+		[JsonProperty]
+		#endif
+		internal string icon;
+
+		#if CLIENT
+		[PreserveName]
+		#else
+		[JsonProperty]
+		#endif
+		internal object data;
+
+		#if CLIENT
+		[PreserveName]
+		#else
+		[JsonProperty]
+		#endif
+		internal List<TreeNode> children;
+
+		#if CLIENT
+		[PreserveName]
+		#else
 		[JsonIgnore]
 		#endif
 		public Tree treeIfRoot;
 		
-		#if SERVER
+		#if CLIENT
+		[PreserveName]
+		#else
 		[JsonIgnore]
 		#endif
 		public TreeNode parent;
@@ -58,7 +99,7 @@ namespace Saltarelle.UI {
 			this.text       = null;
 			this.data       = null;
 			this.icon       = Tree.DefaultIcon;
-			this.children   = new ArrayList();
+			this.children   = new List<TreeNode>();
 			this.expanded   = false;
 			this.checkState = TreeNodeCheckState.no;
 			this.treeIfRoot = null;
@@ -69,13 +110,13 @@ namespace Saltarelle.UI {
 #if CLIENT
 	public class TreeSelectionChangingEventArgs : EventArgs {
 		public bool Cancel;
-		public ITreeNode NewSelection;
+		public TreeNode NewSelection;
 	}
 	public delegate void TreeSelectionChangingEventHandler(object sender, TreeSelectionChangingEventArgs e);
 	
 	public class TreeNodeEventArgs : EventArgs {
-		public ITreeNode Node;
-		public TreeNodeEventArgs(ITreeNode node) {
+		public TreeNode Node;
+		public TreeNodeEventArgs(TreeNode node) {
 			this.Node = node;
 		}
 	}
@@ -88,11 +129,11 @@ namespace Saltarelle.UI {
 	public delegate void TreeKeyPressEventHandlerDelegate(object sender, TreeKeyPressEventArgs e);
 
 	public class TreeDragDropCompletingEventArgs : CancelEventArgs {
-		public ITreeNode DraggedNode;
-		public ITreeNode NewParent;
+		public TreeNode DraggedNode;
+		public TreeNode NewParent;
 		public int PositionWithinNewParent;
 
-		public TreeDragDropCompletingEventArgs(ITreeNode draggedNode, ITreeNode newParent, int positionWithinNewParent) {
+		public TreeDragDropCompletingEventArgs(TreeNode draggedNode, TreeNode newParent, int positionWithinNewParent) {
 			this.DraggedNode             = draggedNode;
 			this.NewParent               = newParent;
 			this.PositionWithinNewParent = positionWithinNewParent;
@@ -102,11 +143,11 @@ namespace Saltarelle.UI {
 	public delegate void TreeDragDropCompletingEventHandler(object sender, TreeDragDropCompletingEventArgs e);
 
 	public class TreeDragDropCompletedEventArgs : EventArgs {
-		public ITreeNode DraggedNode;
-		public ITreeNode NewParent;
+		public TreeNode DraggedNode;
+		public TreeNode NewParent;
 		public int PositionWithinNewParent;
 
-		public TreeDragDropCompletedEventArgs(ITreeNode draggedNode, ITreeNode newParent, int positionWithinNewParent) {
+		public TreeDragDropCompletedEventArgs(TreeNode draggedNode, TreeNode newParent, int positionWithinNewParent) {
 			this.DraggedNode             = draggedNode;
 			this.NewParent               = newParent;
 			this.PositionWithinNewParent = positionWithinNewParent;
@@ -116,7 +157,7 @@ namespace Saltarelle.UI {
 
 	internal delegate TreeNode TreeNodeMapperDelegate(TreeNode arg);
 
-	[Record]
+	[Serializable]
 	internal sealed class TreeDropTarget {
 		public readonly TreeNode node;
 		public readonly bool above;
@@ -127,13 +168,7 @@ namespace Saltarelle.UI {
 	}
 #endif
 
-	#if SERVER
-	[RequiresClientService(typeof(ISaltarelleUIService))]
-	#endif
 	public class Tree : IControl, IClientCreateControl, IResizableX, IResizableY {
-		private static TreeNode N(ITreeNode i) { return (TreeNode)(object)i; }
-		private static ITreeNode I(TreeNode n) { return (ITreeNode)(object)n; }
-
 		public const string DefaultIcon = "default-tree-icon";
 
 		public const string NestedListClass      = "tree-nested-list";
@@ -159,19 +194,28 @@ namespace Saltarelle.UI {
 		internal static int nextNodeId = 0;
 		private TreeNode invisibleRoot;
 
-		public ITreeNode InvisibleRoot { get { return I(invisibleRoot); } }
+		public TreeNode InvisibleRoot { get { return invisibleRoot; } }
 
 		private string   id;
 		private Position position = PositionHelper.NotPositioned;
 		private int      width;
 		private int      height;
 		private int      tabIndex;
-		private string   blankImageUrl;
 		private bool     hasChecks;
 		private bool     enabled;
 		private TreeNode selectedNode;
 		private bool     enableDragDrop;
 		private bool     autoCheckHierarchy;
+
+        private ISaltarelleUIService uiService;
+
+        #if SERVER
+        [ClientInject]
+        #endif
+        public ISaltarelleUIService UIService {
+            get { return uiService; }
+            set { uiService = value; }
+        }
 
 		#if CLIENT
 			// Drag-drop fields
@@ -179,7 +223,7 @@ namespace Saltarelle.UI {
 			private int            itemHeight;
 			private TreeDropTarget currentDropTarget;
 
-			private JQueryEventHandlerDelegate dragFeedbackHandler;
+			private jQueryEventHandler dragFeedbackHandler;
 
 			public event TreeSelectionChangingEventHandler SelectionChanging;
 			public event TreeNodeEventHandler NodeChecked;
@@ -235,7 +279,7 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (isAttached) {
-						JQueryProxy.jQuery(GetElement()).width(value - HorzBorderSize);
+						jQuery.FromElement(GetElement()).Width(value - HorzBorderSize);
 					}
 				#endif
 				width = value;
@@ -249,7 +293,7 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (isAttached) {
-						JQueryProxy.jQuery(GetElement()).height(value - VertBorderSize);
+						jQuery.FromElement(GetElement()).Height(value - VertBorderSize);
 					}
 				#endif
 				height = value;
@@ -262,7 +306,7 @@ namespace Saltarelle.UI {
 				hasChecks = value;
 				#if CLIENT
 					if (isAttached)
-						JQueryProxy.jQuery(GetElement()).html(InnerHtml);
+						jQuery.FromElement(GetElement()).Html(InnerHtml);
 				#endif
 			}
 		}
@@ -272,16 +316,16 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (isAttached && value != enabled) {
-						DOMElement elem = GetElement();
+						Element elem = GetElement();
 						elem.TabIndex = enabled ? tabIndex : -1;
 						elem.ClassName = TreeClasses + (value ? "" : (" " + DisabledTreeClass));
 						if (value && enableDragDrop) {
-							if (!Utils.IsNull(selectedNode))
+							if (selectedNode != null)
 								MakeDraggable(selectedNode, true);
 							EnableDroppable(true);
 						}
 						else {
-							if (!Utils.IsNull(selectedNode))
+							if (selectedNode != null)
 								MakeDraggable(selectedNode, false);
 							EnableDroppable(true);
 						}
@@ -297,12 +341,12 @@ namespace Saltarelle.UI {
 				#if CLIENT
 					if (isAttached && value != enableDragDrop) {
 						if (enabled && value) {
-							if (!Utils.IsNull(selectedNode))
+							if (selectedNode != null)
 								MakeDraggable(selectedNode, true);
 							EnableDroppable(true);
 						}
 						else {
-							if (!Utils.IsNull(selectedNode))
+							if (selectedNode != null)
 								MakeDraggable(selectedNode, false);
 							EnableDroppable(true);
 						}
@@ -317,24 +361,23 @@ namespace Saltarelle.UI {
 			set { autoCheckHierarchy = value; }
 		}
 		
-		public ITreeNode SelectedNode {
+		public TreeNode SelectedNode {
 			get {
-				return I(selectedNode);
+				return selectedNode;
 			}
 			set {
-				TreeNode n = N(value);
-				if (!Utils.IsNull(value)) {
-					Tree t = GetTree(n);
+				if (value != null) {
+					Tree t = GetTree(value);
 					if (t != this)
 						throw new Exception("Node is not in tree");
 				}
-				SetSelection(n, true, true);
+				SetSelection(value, true, true);
 			}
 		}
 		
 		private bool SetSelection(TreeNode newSelection, bool raiseSelectionChanging, bool raiseSelectionChanged) {
-			if (!Utils.IsNull(newSelection))
-				EnsureExpandedTo(I(newSelection));
+			if (newSelection != null)
+				EnsureExpandedTo(newSelection);
 
 			#if CLIENT
 				if (raiseSelectionChanging) {
@@ -343,18 +386,18 @@ namespace Saltarelle.UI {
 				}
 
 				if (isAttached) {
-					if (!Utils.IsNull(selectedNode)) {
+					if (selectedNode != null) {
 						// Remove the previous selection
-						jQuery jq = JQueryProxy.jQuery(GetNodeElement(selectedNode).Children[0]);
-						DOMElement d = jq.children("." + ItemTextClass).get(0);
+						var jq = jQuery.FromElement(GetNodeElement(selectedNode).Children[0]);
+						Element d = jq.Children("." + ItemTextClass).GetElement(0);
 						d.ClassName = ItemTextClass;
 						if (enableDragDrop)
 							MakeDraggable(selectedNode, false);
 					}
 
-					if (!Utils.IsNull(newSelection)) {
-						jQuery jq = JQueryProxy.jQuery(GetNodeElement(newSelection).Children[0]);
-						DOMElement d = jq.children("." + ItemTextClass).get(0);
+					if (newSelection != null) {
+						var jq = jQuery.FromElement(GetNodeElement(newSelection).Children[0]);
+						Element d = jq.Children("." + ItemTextClass).GetElement(0);
 						d.ClassName = ItemTextClass + " " + SelectedNodeClass;
 						if (enableDragDrop)
 							MakeDraggable(newSelection, true);
@@ -372,16 +415,17 @@ namespace Saltarelle.UI {
 			return true;
 		}
 		
-		private void AppendNestedListHtml(ArrayList children, StringBuilder sb) {
+		private void AppendNestedListHtml(List<TreeNode> children, StringBuilder sb) {
 			sb.Append("<div class=\"" + NestedListClass + "\"" + ">");
-			for (int i = 0; i < Utils.ArrayLength(children); i++)
+			for (int i = 0; i < children.Count; i++)
 				AppendNodeHtml((TreeNode)children[i], sb);
 			sb.Append("</div>");
 		}
 
 		private void AppendNodeHtml(TreeNode n, StringBuilder sb) {
-			bool hasChildren = !Utils.IsNull(n.children) && Utils.ArrayLength(n.children) > 0;
+			bool hasChildren = n.children != null && n.children.Count > 0;
 			string suffix = (hasChildren ? (n.expanded ? ExpandedSuffix : CollapsedSuffix) : LeafSuffix);
+            string blankImageUrl = uiService.BlankImageUrl;
 
 			sb.Append("<div class=\"" + ContainerClass + " " + ContainerClass + suffix + "\" id=\"" + NodeIdPrefix + Utils.ToStringInvariantInt(n.id) + "\">"
 			        +     "<div class=\"" + NodeClass + " " + NodeClass + suffix + "\">"
@@ -421,7 +465,6 @@ namespace Saltarelle.UI {
 			invisibleRoot = new TreeNode();
 			invisibleRoot.treeIfRoot = this;
 			invisibleRoot.expanded   = true;
-			blankImageUrl = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 			selectedNode  = null;
 			enabled       = true;
 			width         = 300;
@@ -431,7 +474,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public Tree() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 
@@ -446,7 +488,7 @@ namespace Saltarelle.UI {
 			config["enableDragDrop"]     = enableDragDrop;
 			config["autoCheckHierarchy"] = autoCheckHierarchy;
 			config["nextNodeId"]         = nextNodeId;	// Yes, it is static, but the worst thing that can happen is that we assign the member more than once during startup.
-			config["selectionPath"]      = (selectedNode != null ? GetTreeNodePath(I(selectedNode), I(invisibleRoot)) : null);
+			config["selectionPath"]      = (selectedNode != null ? GetTreeNodePath(selectedNode, invisibleRoot) : null);
 		}
 
 		public object ConfigObject {
@@ -460,17 +502,17 @@ namespace Saltarelle.UI {
 		
 #if CLIENT
 		[AlternateSignature]
-		public extern Tree();
+		public Tree() {}
 		public Tree(object config) {
-			dragFeedbackHandler = new JQueryEventHandlerDelegate(Element_DragFeedback);
+			dragFeedbackHandler = new jQueryEventHandler(Element_DragFeedback);
 			if (!Script.IsUndefined(config)) {
-				InitConfig(Dictionary.GetDictionary(config));
+				InitConfig(JsDictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 		
-		protected virtual void InitConfig(Dictionary config) {
+		protected virtual void InitConfig(JsDictionary config) {
 			id                 = (string)config["id"];
 			width              = (int)config["width"];
 			height             = (int)config["height"];
@@ -481,70 +523,70 @@ namespace Saltarelle.UI {
 			enableDragDrop     = (bool)config["enableDragDrop"];
 			autoCheckHierarchy = (bool)config["autoCheckHierarchy"];
 			nextNodeId         = (int)config["nextNodeId"];
-			blankImageUrl      = ((ISaltarelleUIService)GlobalServices.Provider.GetService(typeof(ISaltarelleUIService))).BlankImageUrl;
 
-			FixTreeAfterDeserialize(I(invisibleRoot));
+			FixTreeAfterDeserialize(invisibleRoot);
 			invisibleRoot.treeIfRoot = this;
 			invisibleRoot.parent     = null;
 			
 			int[] selectionPath = (int[])config["selectionPath"];
-			selectedNode = N(!Utils.IsNull(selectionPath) ? FollowTreeNodePath(I(invisibleRoot), selectionPath) : null);
+			selectedNode = selectionPath != null ? FollowTreeNodePath(invisibleRoot, selectionPath) : null;
 
 			Attach();
 		}
 		
-		private DOMElement GetNodeElement(TreeNode node) { return Document.GetElementById(NodeIdPrefix + Utils.ToStringInvariantInt(node.id)); }
+		private Element GetNodeElement(TreeNode node) { return Document.GetElementById(NodeIdPrefix + Utils.ToStringInvariantInt(node.id)); }
 		
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		public void Attach() {
-			if (Utils.IsNull(id) || isAttached)
+			if (id == null || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
-			DOMElement elem = GetElement();
+			Element elem = GetElement();
 
 			UIUtils.AttachKeyPressHandler(elem, Element_KeyPress);
-			JQueryProxy.jQuery(elem).click(Element_Click);
-			if (!Utils.IsNull(selectedNode))
+			jQuery.FromElement(elem).Click(Element_Click);
+			if (selectedNode != null)
 				EnsureVisible(selectedNode);
 			
 			if (enableDragDrop && enabled) {
-				if (!Utils.IsNull(selectedNode))
+				if (selectedNode != null)
 					MakeDraggable(selectedNode, true);
 				EnableDroppable(true);
 			}
 		}
 		
 		private void EnsureVisible(TreeNode n) {
-			DOMElement treeEl = GetElement(), nodeEl = GetNodeElement(n);
-			jQuery treeJq = JQueryProxy.jQuery(treeEl), nodeJq = JQueryProxy.jQuery(nodeEl);
-			double offsetTop = nodeJq.offset().top - treeJq.offset().top, scrollTop = treeJq.scrollTop(), nHeight = nodeJq.children(":eq(0)").outerHeight(), treeHeight = treeEl.ClientHeight;
+			Element treeEl = GetElement(), nodeEl = GetNodeElement(n);
+			var treeJq = jQuery.FromElement(treeEl);
+			var nodeJq = jQuery.FromElement(nodeEl);
+			int offsetTop = nodeJq.GetOffset().Top - treeJq.GetOffset().Top, scrollTop = treeJq.GetScrollTop(), nHeight = nodeJq.Children(":eq(0)").GetOuterHeight(), treeHeight = treeEl.ClientHeight;
 
 			if (offsetTop < 0) {
-				treeJq.scrollTop(Math.Round(scrollTop + offsetTop));
+				treeJq.ScrollTop(scrollTop + offsetTop);
 			}
 			else if (offsetTop + nHeight > treeHeight) {
-				treeJq.scrollTop(Math.Round(scrollTop + offsetTop + nHeight - treeHeight));
+				treeJq.ScrollTop(scrollTop + offsetTop + nHeight - treeHeight);
 			}
 		}
 		
 		private void MakeDraggable(TreeNode node, bool enable) {
-			jQuery el = JQueryProxy.jQuery(GetNodeElement(node).Children[0]).children("." + ItemTextClass);
+			var el = jQuery.FromElement(GetNodeElement(node).Children[0]).Children("." + ItemTextClass);
 			if (enable) {
-				el.draggable(new Dictionary("helper", "clone",
-				                            "appendTo", JQueryProxy.jQuery(GetElement()),
-				                            "scroll", true,
-				                            "containment", "parent"));
+				el.Draggable(new DraggableOptions { Helper      = "clone",
+				                                    AppendTo    = GetElement(),
+				                                    Scroll      = true,
+				                                    Containment = "parent" });
 			}
 			else
-				el.draggable("destroy");
+				((DraggableObject)el).Destroy();
 		}
 
-		private void Element_DragFeedback(JQueryEvent evt) {
-			DOMElement elem = GetElement();
+		private void Element_DragFeedback(jQueryEvent evt) {
+			Element elem = GetElement();
 
-			int elemTop = (int)JQueryProxy.jQuery(elem).offset().top;
-			int offset = evt.pageY - elemTop + elem.ScrollTop;
+			int elemTop = jQuery.FromElement(elem).GetOffset().Top;
+			int offset = evt.PageY - elemTop + elem.ScrollTop;
 
 			int itemIndex  = Math.Truncate(offset / (float)itemHeight) + 1;	// Add one because of the invisible root. Need truncate because Script# doesn't do integer division correctly.
 			int posRelItem = offset % itemHeight;
@@ -570,9 +612,9 @@ namespace Saltarelle.UI {
 						return n;
 					itemIndex--;
 					if (n.expanded) {
-						for (int i = 0; i < n.children.Length; i++) {
-							TreeNode x = countDown((TreeNode)n.children[i]);
-							if (!Utils.IsNull(x))
+						for (int i = 0; i < n.children.Count; i++) {
+							TreeNode x = countDown(n.children[i]);
+							if (x != null)
 								return x;
 						}
 					}
@@ -583,9 +625,9 @@ namespace Saltarelle.UI {
 			else
 				newTarget = null;
 
-			if (!Utils.IsNull(newTarget)) {
+			if (newTarget != null) {
 				// Determine if we try to drop into the current dragging node or a child of it.
-				for (TreeNode n = newTarget; !Utils.IsNull(n); n = n.parent) {
+				for (TreeNode n = newTarget; n != null; n = n.parent) {
 					if (n == selectedNode) {
 						newTarget = null;
 						break;
@@ -593,11 +635,11 @@ namespace Saltarelle.UI {
 				}
 			}
 
-			ChangeDropTarget(!Utils.IsNull(newTarget) ? new TreeDropTarget(newTarget, dropAbove) : null);
+			ChangeDropTarget(newTarget != null ? new TreeDropTarget(newTarget, dropAbove) : null);
 		}
 
-		private void Element_Drop(JQueryEvent evt, DroppableEventObject ui) {
-			if (Utils.IsNull(currentDropTarget)) {
+		private void Element_Drop(jQueryEvent evt, DropEvent ui) {
+			if (currentDropTarget == null) {
 				DragEnded();
 				return;
 			}
@@ -612,10 +654,10 @@ namespace Saltarelle.UI {
 			else {
 				// Drop into the active node.
 				dropParent = currentDropTarget.node;
-				dropIndex  = dropParent.children.Length;
+				dropIndex  = dropParent.children.Count;
 			}
 
-			TreeDragDropCompletingEventArgs completingArgs = new TreeDragDropCompletingEventArgs(I(draggedNode), I(dropParent), dropIndex);
+			TreeDragDropCompletingEventArgs completingArgs = new TreeDragDropCompletingEventArgs(draggedNode, dropParent, dropIndex);
 			OnDragDropCompleting(completingArgs);
 			if (completingArgs.Cancel) {
 				DragEnded();
@@ -625,22 +667,22 @@ namespace Saltarelle.UI {
 			SetSelection(null, false, false);	// Temporarily remove the selection.
 			
 			// Remove the node from its current position.
-			DOMElement draggedElem = RemoveTreeNodeDOM(draggedNode);
+			Element draggedElem = RemoveTreeNodeDOM(draggedNode);
 			draggedNode.parent.children.RemoveAt(GetTreeNodeChildIndex(draggedNode));
-			if (draggedNode.parent.children.Length == 0)
+			if (draggedNode.parent.children.Count == 0)
 				UpdateExpansionClasses(GetNodeElement(draggedNode.parent), draggedNode.parent.icon, false, draggedNode.parent.expanded);	// Need to fix the classes to say that this node is now a leaf.
 
 			// Add the node to its new position.
-			if (Utils.IsNull(dropParent.treeIfRoot)) {
+			if (dropParent.treeIfRoot == null) {
 				DoSetTreeNodeExpanded(dropParent, true, true);
-				DOMElement dropParentN = GetNodeElement(dropParent);
+				Element dropParentN = GetNodeElement(dropParent);
 				if (dropIndex == dropParentN.Children[1].Children.Length)
 					dropParentN.Children[1].AppendChild(draggedElem);
 				else
 					dropParentN.Children[1].InsertBefore(draggedElem, dropParentN.Children[1].Children[dropIndex]);
 			}
 			else {
-				DOMElement elem = GetElement();
+				Element elem = GetElement();
 				if (dropIndex == elem.Children.Length)
 					elem.AppendChild(draggedElem);
 				else
@@ -653,67 +695,67 @@ namespace Saltarelle.UI {
 			// Restore the selection to the new node.
 			SetSelection(draggedNode, false, false);
 
-			TreeDragDropCompletedEventArgs completedArgs = new TreeDragDropCompletedEventArgs(I(draggedNode), I(dropParent), dropIndex);
+			var completedArgs = new TreeDragDropCompletedEventArgs(draggedNode, dropParent, dropIndex);
 			OnDragDropCompleted(completedArgs);
 
 			DragEnded();
 		}
 
 		private void ChangeDropTarget(TreeDropTarget newTarget) {
-			if ((Utils.IsNull(newTarget) && Utils.IsNull(currentDropTarget)) || (!Utils.IsNull(newTarget) && !Utils.IsNull(currentDropTarget) && newTarget.node == currentDropTarget.node && newTarget.above == currentDropTarget.above))
+			if ((newTarget == null && currentDropTarget == null) || (newTarget != null && currentDropTarget != null && newTarget.node == currentDropTarget.node && newTarget.above == currentDropTarget.above))
 				return;
-			if (!Utils.IsNull(currentDropTarget))
-				JQueryProxy.jQuery(GetNodeElement(currentDropTarget.node).Children[0]).removeClass(DropIntoClass).removeClass(DropAboveClass);
-			if (!Utils.IsNull(newTarget))
-				JQueryProxy.jQuery(GetNodeElement(newTarget.node).Children[0]).addClass(newTarget.above ? DropAboveClass : DropIntoClass);
+			if (currentDropTarget != null)
+				jQuery.FromElement(GetNodeElement(currentDropTarget.node).Children[0]).RemoveClass(DropIntoClass).RemoveClass(DropAboveClass);
+			if (newTarget != null)
+				jQuery.FromElement(GetNodeElement(newTarget.node).Children[0]).AddClass(newTarget.above ? DropAboveClass : DropIntoClass);
 			currentDropTarget = newTarget;
 		}
 		
 		private void DragEnded() {
 			ChangeDropTarget(null);
-			JQueryProxy.jQuery(Window.Document).unbind("mousemove", dragFeedbackHandler);
+			jQuery.Document.Unbind("mousemove", dragFeedbackHandler);
 		}
 
 		private void EnableDroppable(bool enable) {
-			jQuery el = JQueryProxy.jQuery(GetElement());
+			var el = jQuery.FromElement(GetElement());
 			if (enable) {
-				el.droppable(new Dictionary("tolerance", "pointer",
-				                            "greedy",    true,
-				                            "over",      (Callback)delegate() {
-				                                             itemHeight = (invisibleRoot.children.Length > 0 ? (int)JQueryProxy.jQuery(GetNodeElement((TreeNode)invisibleRoot.children[0]).Children[0]).outerHeight() : 1);
-				                                             currentDropTarget = null;
-				                                             JQueryProxy.jQuery(Window.Document).mousemove(dragFeedbackHandler);
-				                                         },
-				                            "out",       (Callback)DragEnded, 
-				                            "drop",      new DroppableEventHandlerDelegate(Element_Drop)));
+				el.Droppable(new DroppableOptions { Tolerance = "pointer",
+                                                    Greedy    = true,
+                                                    OnOver    = (_1, _2) => {
+				                                                          itemHeight = (invisibleRoot.children.Count > 0 ? jQuery.FromElement(GetNodeElement(invisibleRoot.children[0]).Children[0]).GetOuterHeight() : 1);
+				                                                          currentDropTarget = null;
+				                                                          jQuery.Document.MouseMove(dragFeedbackHandler);
+				                                                      },
+				                                    OnOut     = (_1, _2) => DragEnded(),
+                                                    OnDrop    = Element_Drop });
 			}
 			else
-				el.droppable("destroy");
+				((DroppableObject)el).Destroy();
 		}
 		
-		private TreeNode FindTreeNode(DOMElement nodeElem) {
+		private TreeNode FindTreeNode(Element nodeElem) {
 			// Ugly (but works). We need to find the node, which is done by investigating the ID and walking the tree from the root down.
 			// It works, though, and it performs well even on IE6.
 			string idStr = nodeElem.ID;
 			int id = Utils.ParseInt(Utils.Substring(idStr, NodeIdPrefix.Length, idStr.Length - NodeIdPrefix.Length));
-			ITreeNode[] result = FindTreeNodes(I(invisibleRoot), delegate(ITreeNode n) { return N(n).id == id; });
-			return result.Length > 0 ? N(result[0]) : null;
+			var result = FindTreeNodes(invisibleRoot, n => n.id == id);
+			return result.Count > 0 ? result[0] : null;
 		}
 		
-		private void Element_Click(JQueryEvent evt) {
+		private void Element_Click(jQueryEvent evt) {
 			if (!enabled)
 				return;
 
-			DOMElement elem = GetElement();
-			for (DOMElement target = evt.target; target != elem; target = target.ParentNode) {
+			Element elem = GetElement();
+			for (Element target = evt.Target; target != elem; target = target.ParentNode) {
 				string cls = " " + target.ClassName + " ";
 				if (target.TagName.ToLowerCase() == "input") {
 					TreeNode n = FindTreeNode(target.ParentNode.ParentNode);
 					n.checkState = ((CheckBoxElement)target).Checked ? TreeNodeCheckState.yes : TreeNodeCheckState.no;
-					Type.SetField(target, "defaultChecked", ((CheckBoxElement)target).Checked);
+					((CheckBoxElement)target).DefaultChecked = ((CheckBoxElement)target).Checked;
 					if (autoCheckHierarchy)
 						ApplyCheckHierarchy(n);
-					OnNodeChecked(new TreeNodeEventArgs(I(n)));
+					OnNodeChecked(new TreeNodeEventArgs(n));
 					return;
 				}
 				if (cls.IndexOf(" " + ItemTextClass + " ") != -1) {
@@ -730,42 +772,41 @@ namespace Saltarelle.UI {
 			}
 		}
 		
-		private void Element_KeyPress(JQueryEvent e) {
-			if (!RaiseKeyPress(e.keyCode)) {
-				e.preventDefault();
+		private void Element_KeyPress(jQueryEvent e) {
+			if (!RaiseKeyPress(e.Which)) {
+				e.PreventDefault();
 				return;
 			}
 
-			switch (e.keyCode) {
+			switch (e.Which) {
 				case 32: {
 					// Space - used to toggle checkmark if there is one.
 					if (hasChecks) {
 						if (selectedNode != null) {
-							CheckBoxElement cb = (CheckBoxElement)JQueryProxy.jQuery(GetNodeElement(selectedNode).Children[0]).find("input").get(0);
-							SetTreeNodeCheckState(I(selectedNode), selectedNode.checkState == TreeNodeCheckState.yes ? TreeNodeCheckState.no : TreeNodeCheckState.yes);
+							SetTreeNodeCheckState(selectedNode, selectedNode.checkState == TreeNodeCheckState.yes ? TreeNodeCheckState.no : TreeNodeCheckState.yes);
 						}
-						e.preventDefault();
+						e.PreventDefault();
 					}
 					break;
 				}
 			
 				case 37: {
 					// key left - if current node exists and is expanded: collapse it, otherwise navigate to its parent
-					if (!Utils.IsNull(selectedNode)) {
-						if (selectedNode.children.Length > 0 && selectedNode.expanded)
+					if (selectedNode != null) {
+						if (selectedNode.children.Count > 0 && selectedNode.expanded)
 							DoSetTreeNodeExpanded(selectedNode, false, false);
 						else if (selectedNode.parent != invisibleRoot)
 							SetSelection(selectedNode.parent, true, true);
 					}
-					else if (invisibleRoot.children.Length > 0)
-						SetSelection((TreeNode)invisibleRoot.children[0], true, true);
-					e.preventDefault();
+					else if (invisibleRoot.children.Count > 0)
+						SetSelection(invisibleRoot.children[0], true, true);
+					e.PreventDefault();
 					break;
 				}
 
 				case 38:
 					// key up - navigate to the parent or to the most expanded node in the tree of the previous sibling
-					if (!Utils.IsNull(selectedNode)) {
+					if (selectedNode != null) {
 						int index = GetTreeNodeChildIndex(selectedNode);
 						if (index == 0) {
 							if (selectedNode.parent != invisibleRoot)
@@ -773,21 +814,21 @@ namespace Saltarelle.UI {
 						}
 						else {
 							TreeNode n = (TreeNode)selectedNode.parent.children[index - 1];
-							while (n.children.Length > 0 && n.expanded)
-								n = (TreeNode)n.children[n.children.Length - 1];
+							while (n.children.Count > 0 && n.expanded)
+								n = (TreeNode)n.children[n.children.Count - 1];
 							SetSelection(n, true, true);
 						}
 					}
-					else if (invisibleRoot.children.Length > 0)
-						SetSelection((TreeNode)invisibleRoot.children[0], true, true);
+					else if (invisibleRoot.children.Count > 0)
+						SetSelection(invisibleRoot.children[0], true, true);
 
-					e.preventDefault();
+					e.PreventDefault();
 					break;
 					
 				case 39:
 					// key right - if current node has children: expand if collapsed, navigate to first child if expanded
-					if (!Utils.IsNull(selectedNode)) {
-						if (selectedNode.children.Length > 0) {
+					if (selectedNode != null) {
+						if (selectedNode.children.Count > 0) {
 							if (selectedNode.expanded) {
 								SetSelection((TreeNode)selectedNode.children[0], true, true);
 							}
@@ -796,25 +837,25 @@ namespace Saltarelle.UI {
 							}
 						}
 					}
-					else if (invisibleRoot.children.Length > 0)
+					else if (invisibleRoot.children.Count > 0)
 						SetSelection((TreeNode)invisibleRoot.children[0], true, true);
 
-					e.preventDefault();
+					e.PreventDefault();
 					break;
 					
 				case 40: {
 					// key down - navigate to the first child if the selected node is expanded, otherwise navigate to the next sibling of the closest node which has a next sibling.
-					if (!Utils.IsNull(selectedNode)) {
-						if (selectedNode.children.Length > 0 && selectedNode.expanded) {
+					if (selectedNode != null) {
+						if (selectedNode.children.Count > 0 && selectedNode.expanded) {
 							SetSelection((TreeNode)selectedNode.children[0], true, true);
 						}
 						else {
 							TreeNode n = selectedNode;
 							for (;;) {
-								if (Utils.IsNull(n.parent))
+								if (n.parent == null)
 									break;	// Obviously we are already at the last position.
 								int index = GetTreeNodeChildIndex(n);
-								if (index < n.parent.children.Length - 1) {
+								if (index < n.parent.children.Count - 1) {
 									SetSelection((TreeNode)n.parent.children[index + 1], true, true);
 									break;
 								}
@@ -822,10 +863,10 @@ namespace Saltarelle.UI {
 							}
 						}
 					}
-					else if (invisibleRoot.children.Length > 0)
-						SetSelection((TreeNode)invisibleRoot.children[0], true, true);
+					else if (invisibleRoot.children.Count > 0)
+						SetSelection(invisibleRoot.children[0], true, true);
 
-					e.preventDefault();
+					e.PreventDefault();
 					break;
 				}
 			}
@@ -834,16 +875,16 @@ namespace Saltarelle.UI {
 		/// <summary>
 		/// Removes a node from the tree, which must be attached. Does not fix the node's parent's child list. Returns the removed element, or null if there was no physical node (eg. if the node has never been expanded to).
 		/// </summary>
-		private DOMElement RemoveTreeNodeDOM(TreeNode node) {
-			if (!Utils.IsNull(selectedNode) && (selectedNode == node || TreeNodeIsChildOf(I(selectedNode), I(node)))) {
+		private Element RemoveTreeNodeDOM(TreeNode node) {
+			if (selectedNode != null && (selectedNode == node || TreeNodeIsChildOf(selectedNode, node))) {
 				TreeNode newSelection;
 
 				int childIndex = GetTreeNodeChildIndex(node);
-				if (childIndex < node.parent.children.Length - 1)
+				if (childIndex < node.parent.children.Count - 1)
 					newSelection = (TreeNode)node.parent.children[childIndex + 1];
-				else if (node.parent.children.Length > 1)
-					newSelection = (TreeNode)node.parent.children[node.parent.children.Length - 2];	// - 2 because our caller will remove the last node.
-				else if (Utils.IsNull(node.parent.treeIfRoot))
+				else if (node.parent.children.Count > 1)
+					newSelection = (TreeNode)node.parent.children[node.parent.children.Count - 2];	// - 2 because our caller will remove the last node.
+				else if (node.parent.treeIfRoot == null)
 					newSelection = node.parent;
 				else
 					newSelection = null;
@@ -851,27 +892,27 @@ namespace Saltarelle.UI {
 				SetSelection(newSelection, false, true);
 			}
 		
-			DOMElement elem = GetNodeElement(node);
-			if (Utils.IsNull(elem))
+			Element elem = GetNodeElement(node);
+			if (elem == null)
 				return null;
-			DOMElement list = elem.ParentNode;
+			Element list = elem.ParentNode;
 			elem.ParentNode.RemoveChild(elem);
-			if (node.parent.children.Length == 1 && Utils.IsNull(node.parent.treeIfRoot))	// In case we are removing the last child, also remove the child list.
+			if (node.parent.children.Count == 1 && node.parent.treeIfRoot == null)	// In case we are removing the last child, also remove the child list.
 				list.ParentNode.RemoveChild(list);
 			return elem;
 		}
 		
 		private void SetNodeTextDOM(TreeNode node, string text) {
-			DOMElement elem = GetNodeElement(node);
-			if (!Utils.IsNull(elem))
-				JQueryProxy.jQuery(elem.Children[0]).children("." + ItemTextClass).text(text);
+			Element elem = GetNodeElement(node);
+			if (elem != null)
+				jQuery.FromElement(elem.Children[0]).Children("." + ItemTextClass).Text(text);
 		}
 
 		private void SetNodeIconDOM(TreeNode node, string text) {
-			DOMElement elem = GetNodeElement(node);
-			if (!Utils.IsNull(elem)) {
-				string suffix = (node.children.Length > 0 ? (node.expanded ? ExpandedSuffix : CollapsedSuffix) : LeafSuffix);
-				DOMElement iconEl = JQueryProxy.jQuery(elem.Children[0]).children("." + IconClass).get(0);
+			Element elem = GetNodeElement(node);
+			if (elem != null) {
+				string suffix = (node.children.Count > 0 ? (node.expanded ? ExpandedSuffix : CollapsedSuffix) : LeafSuffix);
+				Element iconEl = jQuery.FromElement(elem.Children[0]).Children("." + IconClass).GetElement(0);
 				iconEl.ClassName = (IconClass + " " + IconClass + suffix + " " + node.icon + " " + node.icon + suffix);
 			}
 		}
@@ -879,38 +920,38 @@ namespace Saltarelle.UI {
 		/// <summary>
 		/// Inserts a node into the tree, which must be attached. The parent's child list should not include the new node, and the list is fixed by this method. Returns the inserted element, or null if there was no physical node (eg. if the parent has never been expanded to).
 		/// </summary>
-		private DOMElement InsertTreeNodeDOM(TreeNode parent, TreeNode toInsert, int position) {
-			DOMElement result = null;
-			if (!Utils.IsNull(parent.treeIfRoot)) {
+		private Element InsertTreeNodeDOM(TreeNode parent, TreeNode toInsert, int position) {
+			Element result = null;
+			if (parent.treeIfRoot != null) {
 				// Modifying the root.
-				DOMElement elem = GetElement();
+				Element elem = GetElement();
 				StringBuilder sb = new StringBuilder();
-				AppendNodeHtml((TreeNode)toInsert, sb);
-				result = JQueryProxy.jQuery(sb.ToString()).get(0);
-				if (position == parent.children.Length)
+				AppendNodeHtml(toInsert, sb);
+				result = jQuery.FromHtml(sb.ToString()).GetElement(0);
+				if (position == parent.children.Count)
 					elem.AppendChild(result);
 				else
 					elem.InsertBefore(result, elem.Children[position]);
 			}
 			else {
 				// Not inserting at the root.
-				DOMElement parentEl = GetNodeElement(parent);
-				if (Utils.IsNull(parentEl))
+				Element parentEl = GetNodeElement(parent);
+				if (parentEl == null)
 					return null;
 
 				if (parentEl.Children.Length > 1) {
 					// We need to insert the new element into the parent's child list.
-					DOMElement listEl = parentEl.Children[1];
+					Element listEl = parentEl.Children[1];
 					StringBuilder sb = new StringBuilder();
 					AppendNodeHtml((TreeNode)toInsert, sb);
-					result = JQueryProxy.jQuery(sb.ToString()).get(0);
-					if (position == parent.children.Length)
+					result = jQuery.FromHtml(sb.ToString()).GetElement(0);
+					if (position == parent.children.Count)
 						listEl.AppendChild(result);
 					else
 						listEl.InsertBefore(result, listEl.Children[position]);
 				}
 
-				if (parent.children.Length == 0)
+				if (parent.children.Count == 0)
 					UpdateExpansionClasses(parentEl, parent.icon, true, parent.expanded);	// This was the first child we added.
 			}
 
@@ -918,16 +959,16 @@ namespace Saltarelle.UI {
 		}
 		
 		private void SetTreeNodeCheckStateDOM(TreeNode node, TreeNodeCheckState checkState) {
-			DOMElement nodeElem = GetNodeElement(node);
+			Element nodeElem = GetNodeElement(node);
 			if (nodeElem != null) {
-				CheckBoxElement cb = (CheckBoxElement)JQueryProxy.jQuery(nodeElem.Children[0]).children("input").get(0);
-				Type.SetField(cb, "indeterminate", checkState == TreeNodeCheckState.indeterminate);
+				CheckBoxElement cb = (CheckBoxElement)jQuery.FromElement(nodeElem.Children[0]).Children("input").GetElement(0);
+				cb.Indeterminate = (checkState == TreeNodeCheckState.indeterminate);
 				cb.Checked = (checkState == TreeNodeCheckState.yes);
-				Type.SetField(cb, "defaultChecked", cb.Checked);
+				cb.DefaultChecked = cb.Checked;
 			}
 		}
 		
-		private void UpdateExpansionClasses(DOMElement nodeElem, string icon, bool hasChildren, bool expanded) {
+		private void UpdateExpansionClasses(Element nodeElem, string icon, bool hasChildren, bool expanded) {
 			string suffix = (hasChildren ? (expanded ? ExpandedSuffix : CollapsedSuffix) : LeafSuffix);
 			nodeElem.ClassName = ContainerClass + " " + ContainerClass + suffix;
 			nodeElem.Children[0].ClassName = NodeClass + " " + NodeClass + suffix;
@@ -937,9 +978,9 @@ namespace Saltarelle.UI {
 		
 		private void DoSetTreeNodeExpanded(TreeNode node, bool expanded, bool doItEvenIfNoChildren) {
 			node.expanded = expanded;
-			if (doItEvenIfNoChildren || node.children.Length > 0) {
-				DOMElement elem = GetNodeElement(node);
-				if (!Utils.IsNull(elem)) {
+			if (doItEvenIfNoChildren || node.children.Count > 0) {
+				Element elem = GetNodeElement(node);
+				if (elem != null) {
 					if (elem.Children.Length > 1) {
 						// The list exists - update its display state.
 						elem.Children[1].Style.Display = expanded ? "" : "none";
@@ -949,15 +990,15 @@ namespace Saltarelle.UI {
 							// Expanding and the list does not exist - add it
 							StringBuilder sb = new StringBuilder();
 							AppendNestedListHtml(node.children, sb);
-							JQueryProxy.jQuery(sb.ToString()).appendTo(JQueryProxy.jQuery(elem));
+							jQuery.FromHtml(sb.ToString()).AppendTo(jQuery.FromElement(elem));
 						}
 					}
 
-					UpdateExpansionClasses(elem, node.icon, node.children.Length > 0, expanded);
+					UpdateExpansionClasses(elem, node.icon, node.children.Count > 0, expanded);
 				}
 			}
 
-			if (!Utils.IsNull(selectedNode) && !expanded && TreeNodeIsChildOf(I(selectedNode), I(node))) {
+			if (selectedNode != null && !expanded && TreeNodeIsChildOf(selectedNode, node)) {
 				SetSelection(node, false, true);
 			}
 		}
@@ -975,47 +1016,44 @@ namespace Saltarelle.UI {
 		#region Event raisers
 
 		private bool RaiseSelectionChanging(TreeNode newSelection) {
-			TreeSelectionChangingEventArgs e = new TreeSelectionChangingEventArgs();
-			e.Cancel = false;
-			e.NewSelection = I(newSelection);
+			var e = new TreeSelectionChangingEventArgs { Cancel = false, NewSelection = newSelection };
 			OnSelectionChanging(e);
 			return !e.Cancel;
 		}
 		
 		private bool RaiseKeyPress(int keyCode) {
-			TreeKeyPressEventArgs e = new TreeKeyPressEventArgs();
-			e.KeyCode = keyCode;
+			var e = new TreeKeyPressEventArgs { KeyCode = keyCode };
 			OnKeyPress(e);
 			return !e.PreventDefault;
 		}
 
 		protected virtual void OnSelectionChanging(TreeSelectionChangingEventArgs e) {
-			if (!Utils.IsNull(SelectionChanging))
+			if (SelectionChanging != null)
 				SelectionChanging(this, e);
 		}
 		
 		protected virtual void OnSelectionChanged(EventArgs e) {
-			if (!Utils.IsNull(SelectionChanged))
+			if (SelectionChanged != null)
 				SelectionChanged(this, e);
 		}
 
 		protected virtual void OnNodeChecked(TreeNodeEventArgs e) {
-			if (!Utils.IsNull(NodeChecked))
+			if (NodeChecked != null)
 				NodeChecked(this, e);
 		}
 
 		protected virtual void OnKeyPress(TreeKeyPressEventArgs e) {
-			if (!Utils.IsNull(KeyPress))
+			if (KeyPress != null)
 				KeyPress(this, e);
 		}
 		
 		protected virtual void OnDragDropCompleting(TreeDragDropCompletingEventArgs e) {
-			if (!Utils.IsNull(DragDropCompleting))
+			if (DragDropCompleting != null)
 				DragDropCompleting(this, e);
 		}
 
 		protected virtual void OnDragDropCompleted(TreeDragDropCompletedEventArgs e) {
-			if (!Utils.IsNull(DragDropCompleted))
+			if (DragDropCompleted != null)
 				DragDropCompleted(this, e);
 		}
 		#endregion
@@ -1024,26 +1062,26 @@ namespace Saltarelle.UI {
 		#region TreeNode manipulators
 
 		private static void FixTreeAfterDeserializeInt(TreeNode n) {
-			for (int i = 0; i < Utils.ArrayLength(n.children); i++) {
-				FixTreeAfterDeserializeInt((TreeNode)n.children[i]);
+			for (int i = 0; i < n.children.Count; i++) {
+				FixTreeAfterDeserializeInt(n.children[i]);
 				((TreeNode)n.children[i]).parent = n;
 			}
 			n.treeIfRoot = null;
 		}
 
-		public static void FixTreeAfterDeserialize(ITreeNode rootNode) {
-			FixTreeAfterDeserializeInt(N(rootNode));
+		public static void FixTreeAfterDeserialize(TreeNode rootNode) {
+			FixTreeAfterDeserializeInt(rootNode);
 		}
 
 		private static Tree GetTree(TreeNode n) {
-			while (!Utils.IsNull(n.parent))
+			while (n.parent != null)
 				n = n.parent;
 			return n.treeIfRoot;
 		}
 		
 		private static int GetTreeNodeChildIndex(TreeNode n) {
 			TreeNode parent = n.parent;
-			for (int i = 0; i < Utils.ArrayLength(parent.children); i++) {
+			for (int i = 0; i < parent.children.Count; i++) {
 				if (parent.children[i] == n)
 					return i;
 			}
@@ -1053,129 +1091,112 @@ namespace Saltarelle.UI {
 		/// <summary>
 		/// Determines is a node is a child of another. Returns false if the nodes are the same.
 		/// </summary>
-		public static bool TreeNodeIsChildOf(ITreeNode potentialChild, ITreeNode potentialParent) {
-			TreeNode p = N(potentialParent);
-			for (TreeNode c = N(potentialChild).parent; ; c = c.parent) {
-				if (c == p)
+		public static bool TreeNodeIsChildOf(TreeNode potentialChild, TreeNode potentialParent) {
+			for (var c = potentialChild.parent; ; c = c.parent) {
+				if (c == potentialParent)
 					return true;
-				else if (Utils.IsNull(c))
+				else if (c == null)
 					return false;
 			}
 		}
 
-		private int[] GetTreeNodePath(ITreeNode child, ITreeNode parent) {
-			#if SERVER
-			List<int> path = new List<int>();
-			#else
-			ArrayList path = new ArrayList();
-			#endif
+		private List<int> GetTreeNodePath(TreeNode child, TreeNode parent) {
+			var path = new List<int>();
 
-			TreeNode parentN = N(parent);
-			for (TreeNode n = N(child); n != parentN; n = n.parent) {
+			for (TreeNode n = child; n != parent; n = n.parent) {
 				path.Insert(0, GetTreeNodeChildIndex(n));
-				if (Utils.IsNull(n.parent))
+				if (n.parent == null)
 					throw new Exception("Nodes are not related");
 			}
-			
-			#if SERVER
-			return path.ToArray();
-			#else
-			return (int[])path;
-			#endif
+
+			return path;
 		}
 		
-		public static ITreeNode FollowTreeNodePath(ITreeNode parent, int[] path) {
-			TreeNode n = N(parent);
+		public static TreeNode FollowTreeNodePath(TreeNode parent, int[] path) {
+			TreeNode n = parent;
 			for (int i = 0; i < path.Length; i++) {
-				if (path[i] < 0 || path[i] >= Utils.ArrayLength(n.children))
+				if (path[i] < 0 || path[i] >= n.children.Count)
 					throw new Exception("Invalid path");
-				n = (TreeNode)n.children[path[i]];
+				n = n.children[path[i]];
 			}
-			return I(n);
+			return n;
 		}
 
-		public static ITreeNode CreateTreeNode() {
-			return I(new TreeNode());
+		public static TreeNode CreateTreeNode() {
+			return new TreeNode();
 		}
 
-		public static void EnsureExpandedTo(ITreeNode node) {
-			TreeNode n = N(node);
-			for (n = n.parent; !Utils.IsNull(n); n = n.parent)
-				SetTreeNodeExpanded(I(n), true, false);
+		public static void EnsureExpandedTo(TreeNode node) {
+			for (var n = node.parent; n != null; n = n.parent)
+				SetTreeNodeExpanded(n, true, false);
 		}
 
-		public static void SetTreeNodeText(ITreeNode node, string text) {
-			TreeNode n = N(node);
-			if (!Utils.IsNull(n.treeIfRoot))
+		public static void SetTreeNodeText(TreeNode node, string text) {
+			if (node.treeIfRoot != null)
 				throw new Exception("Cannot change tree root node text");
 			#if CLIENT
-				Tree tree = GetTree(n);
-				if (!Utils.IsNull(tree) && tree.isAttached)
-					tree.SetNodeTextDOM(n, text);
+				Tree tree = GetTree(node);
+				if (tree != null && tree.isAttached)
+					tree.SetNodeTextDOM(node, text);
 			#endif
-			n.text = text;
+			node.text = text;
 		}
 
-		public static void SetTreeNodeData(ITreeNode node, object data) {
-			TreeNode n = N(node);
-			n.data = data;
+		public static void SetTreeNodeData(TreeNode node, object data) {
+			node.data = data;
 		}
 		
-		public static void SetTreeNodeIcon(ITreeNode node, string icon) {
-			TreeNode n = N(node);
-			if (!Utils.IsNull(n.treeIfRoot))
+		public static void SetTreeNodeIcon(TreeNode node, string icon) {
+			if (node.treeIfRoot != null)
 				throw new Exception("Cannot change tree root node text");
 			#if CLIENT
-				Tree tree = GetTree(n);
-				if (!Utils.IsNull(tree) && tree.isAttached)
-					tree.SetNodeIconDOM(n, icon);
+				Tree tree = GetTree(node);
+				if (tree != null && tree.isAttached)
+					tree.SetNodeIconDOM(node, icon);
 			#endif
-			n.icon = icon;
+			node.icon = icon;
 		}
 
-		public static void InsertTreeNodeChild(ITreeNode toInsert, ITreeNode parent, int position) {
-			TreeNode toInsertN = N(toInsert), parentN = N(parent);
-
-			if (position < 0 || position > Utils.ArrayLength(parentN.children)) throw new Exception("Bad position");
-			if (!Utils.IsNull(toInsertN.parent)) throw new Exception("Inserted node is not root.");
-			Tree it = GetTree(toInsertN), pt = GetTree(parentN);
-			if (!Utils.IsNull(it)) throw new Exception("Node is already in a tree");
+		public static void InsertTreeNodeChild(TreeNode toInsert, TreeNode parent, int position) {
+			if (position < 0 || position > parent.children.Count) throw new Exception("Bad position");
+			if (toInsert.parent != null) throw new Exception("Inserted node is not root.");
+			Tree it = GetTree(toInsert), pt = GetTree(parent);
+			if (it != null) throw new Exception("Node is already in a tree");
 			#if CLIENT
-				if (!Utils.IsNull(pt) && pt.isAttached)
-					pt.InsertTreeNodeDOM(parentN, toInsertN, position);
+				if (pt != null && pt.isAttached)
+					pt.InsertTreeNodeDOM(parent, toInsert, position);
 			#endif
-			parentN.children.Insert(position, toInsert);
-			toInsertN.parent = parentN;
+			parent.children.Insert(position, toInsert);
+			toInsert.parent = parent;
 		}
 
-		public static void AddTreeNodeChild(ITreeNode toAdd, ITreeNode parent) {
-			InsertTreeNodeChild(toAdd, parent, Utils.ArrayLength(N(parent).children));
+		public static void AddTreeNodeChild(TreeNode toAdd, TreeNode parent) {
+			InsertTreeNodeChild(toAdd, parent, parent.children.Count);
 		}
 		
-		public static void RemoveTreeNode(ITreeNode node) {
-			TreeNode n = N(node);
-			if (Utils.IsNull(n.parent))
+		public static void RemoveTreeNode(TreeNode node) {
+			if (node.parent == null)
 				throw new Exception("Node is root");
 			#if CLIENT
-				Tree tree = GetTree(n);
-				if (!Utils.IsNull(tree)) {
-					tree.RemoveTreeNodeDOM(n);
+				Tree tree = GetTree(node);
+				if (tree != null) {
+					tree.RemoveTreeNodeDOM(node);
 				}
 			#endif
-			n.parent.children.RemoveAt(GetTreeNodeChildIndex(n));
-			n.parent = null;
+			node.parent.children.RemoveAt(GetTreeNodeChildIndex(node));
+			node.parent = null;
 		}
 		
 		private void ApplyCheckHierarchyToChildren(TreeNode node) {
 			if (node.checkState != TreeNodeCheckState.indeterminate) {
-				for (int i = 0; i < Utils.ArrayLength(node.children); i++) {
-					TreeNode c   = (TreeNode)node.children[i];
+				for (int i = 0; i < node.children.Count; i++) {
+					TreeNode c   = node.children[i];
 					c.checkState = node.checkState;
 					ApplyCheckHierarchyToChildren(c);
 					#if CLIENT
 						if (isAttached)
 							SetTreeNodeCheckStateDOM(c, c.checkState);
-						OnNodeChecked(new TreeNodeEventArgs(I(c)));
+						OnNodeChecked(new TreeNodeEventArgs(c));
 					#endif
 				}
 			}
@@ -1183,7 +1204,7 @@ namespace Saltarelle.UI {
 		
 		private TreeNodeCheckState FindCheckStateFromChildren(TreeNode node) {
 			bool hasChecked = false, hasUnchecked = false, hasIndeterminate = false;
-			for (int i = 0; i < Utils.ArrayLength(node.children); i++) {
+			for (int i = 0; i < node.children.Count; i++) {
 				TreeNode c = (TreeNode)node.children[i];
 				switch (c.checkState) {
 					case TreeNodeCheckState.yes:           hasChecked       = true; break;
@@ -1201,12 +1222,12 @@ namespace Saltarelle.UI {
 		}
 		
 		private void ApplyCheckHierarchyToParents(TreeNode node) {
-			for (TreeNode n = node.parent; !Utils.IsNull(n) && Utils.IsNull(n.treeIfRoot); n = n.parent) {
+			for (TreeNode n = node.parent; n != null && n.treeIfRoot == null; n = n.parent) {
 				n.checkState = FindCheckStateFromChildren(n);
 				#if CLIENT
 					if (isAttached)
 						SetTreeNodeCheckStateDOM(n, n.checkState);
-					OnNodeChecked(new TreeNodeEventArgs(I(n)));
+					OnNodeChecked(new TreeNodeEventArgs(n));
 				#endif
 			}
 		}
@@ -1216,104 +1237,97 @@ namespace Saltarelle.UI {
 			ApplyCheckHierarchyToParents(n);
 		}
 
-		public static void SetTreeNodeCheckState(ITreeNode node, TreeNodeCheckState check) {
-			TreeNode n = N(node);
-			Tree tree = GetTree(n);
+		public static void SetTreeNodeCheckState(TreeNode node, TreeNodeCheckState check) {
+			Tree tree = GetTree(node);
 			#if CLIENT
-				if (!Utils.IsNull(tree) && tree.isAttached && tree.hasChecks)
-					tree.SetTreeNodeCheckStateDOM(n, check);
+				if (tree != null && tree.isAttached && tree.hasChecks)
+					tree.SetTreeNodeCheckStateDOM(node, check);
 			#endif
 
-			n.checkState = check;
+			node.checkState = check;
 			if (tree != null && tree.autoCheckHierarchy)
-				tree.ApplyCheckHierarchy(n);
+				tree.ApplyCheckHierarchy(node);
 
 			#if CLIENT
-				if (!Utils.IsNull(tree))
+				if (tree != null)
 					tree.OnNodeChecked(new TreeNodeEventArgs(node));
 			#endif
 		}
 
-		public static void SetTreeNodeExpanded(ITreeNode node, bool expanded, bool applyToAllChildren) {
-			TreeNode n = N(node);
-			if (Utils.ArrayLength(n.children) > 0) {
+		public static void SetTreeNodeExpanded(TreeNode node, bool expanded, bool applyToAllChildren) {
+			if (node.children.Count > 0) {
 				if (applyToAllChildren) {
-					for (int i = 0; i < Utils.ArrayLength(n.children); i++)
-						SetTreeNodeExpanded(I((TreeNode)n.children[i]), expanded, true);
+					for (int i = 0; i < node.children.Count; i++)
+						SetTreeNodeExpanded(node.children[i], expanded, true);
 				}
 
-				if (Utils.IsNull(n.treeIfRoot)) {
+				if (node.treeIfRoot == null) {
 					#if CLIENT
 						// Don't do this for the invisible root (it is always expanded).
-						Tree tree = GetTree(n);
-						if (!Utils.IsNull(tree) && tree.isAttached)
-							tree.DoSetTreeNodeExpanded(n, expanded, false);
+						Tree tree = GetTree(node);
+						if (tree != null && tree.isAttached)
+							tree.DoSetTreeNodeExpanded(node, expanded, false);
 						else
-							n.expanded = expanded;
+							node.expanded = expanded;
 					#else
-						n.expanded = expanded;
+						node.expanded = expanded;
 					#endif
 				}
 			}
 			else {
-				if (Utils.IsNull(n.treeIfRoot))
-					n.expanded = expanded;
+				if (node.treeIfRoot == null)
+					node.expanded = expanded;
 			}
 		}
 		
-		public static bool IsTreeNodeExpanded(ITreeNode node) {
-			return N(node).expanded;
+		public static bool IsTreeNodeExpanded(TreeNode node) {
+			return node.expanded;
 		}
 		
-		public static TreeNodeCheckState GetTreeNodeCheckState(ITreeNode node) {
-			return N(node).checkState;
+		public static TreeNodeCheckState GetTreeNodeCheckState(TreeNode node) {
+			return node.checkState;
 		}
 		
-		public static string GetTreeNodeText(ITreeNode node) {
-			return N(node).text;
+		public static string GetTreeNodeText(TreeNode node) {
+			return node.text;
 		}
 		
-		public static string GetTreeNodeIcon(ITreeNode node) {
-			return N(node).icon;
+		public static string GetTreeNodeIcon(TreeNode node) {
+			return node.icon;
 		}
 		
-		public static object GetTreeNodeData(ITreeNode node) {
-			return N(node).data;
+		public static object GetTreeNodeData(TreeNode node) {
+			return node.data;
 		}
 		
-		public static ITreeNode[] GetTreeNodeChildren(ITreeNode node) {
+		public static List<TreeNode> GetTreeNodeChildren(TreeNode node) {
 			#if SERVER
-				return (ITreeNode[])N(node).children.ToArray(typeof(ITreeNode));
+				return node.children.ToList();
 			#endif
 			#if CLIENT
-				return (ITreeNode[])N(node).children.Clone();
+				return node.children.Clone();
 			#endif
 		}
 
-		public static bool HasChildren(ITreeNode node) {
-			return Utils.ArrayLength(N(node).children) > 0;
+		public static bool HasChildren(TreeNode node) {
+			return node.children.Count > 0;
 		}
 
-		public static ITreeNode GetTreeNodeParent(ITreeNode node) {
-			return I(N(node).parent);
+		public static TreeNode GetTreeNodeParent(TreeNode node) {
+			return node.parent;
 		}
 		
-		private static void FindTreeNodesRecursive(TreeNode n, TreeNodeFindPredicate predicate, ArrayList arr) {
-			if (predicate(I(n)))
+		private static void FindTreeNodesRecursive(TreeNode n, TreeNodeFindPredicate predicate, List<TreeNode> arr) {
+			if (predicate(n))
 				arr.Add(n);
-			for (int i = 0; i < Utils.ArrayLength(n.children); i++)
-				FindTreeNodesRecursive((TreeNode)n.children[i], predicate, arr);
+			for (int i = 0; i < n.children.Count; i++)
+				FindTreeNodesRecursive(n.children[i], predicate, arr);
 		}
 		
-		public static ITreeNode[] FindTreeNodes(ITreeNode root, TreeNodeFindPredicate predicate) {
-			ArrayList result = new ArrayList();
-			FindTreeNodesRecursive(N(root), predicate, result);
-			#if SERVER
-				return (ITreeNode[])result.ToArray(typeof(ITreeNode));
-			#endif
-			#if CLIENT
-				return (ITreeNode[])result;
-			#endif
+		public static List<TreeNode> FindTreeNodes(TreeNode root, TreeNodeFindPredicate predicate) {
+			List<TreeNode> result = new List<TreeNode>();
+			FindTreeNodesRecursive(root, predicate, result);
+			return result;
 		}
 		
 		#endregion

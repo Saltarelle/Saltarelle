@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Saltarelle.Mvc;
-using Saltarelle.UI;
+﻿using Saltarelle;
 
-[assembly: CssResource("Saltarelle.UI.Resources.blank.gif", Resources.BlankImage, "blank-image")]
-[assembly: CssResource("Saltarelle.UI.Resources.folder_closed.gif", Resources.FolderClosedImage, "folder_closed-image")]
-[assembly: CssResource("Saltarelle.UI.Resources.folder_open.gif", Resources.FolderOpenImage, "folder_open-image")]
-[assembly: CssResource("Saltarelle.UI.Resources.item.gif", Resources.ItemImage, "item-image")]
-[assembly: CssResource("Saltarelle.UI.Resources.minus.gif", Resources.MinusImage, "minus-image")]
-[assembly: CssResource("Saltarelle.UI.Resources.plus.gif", Resources.PlusImage, "plus-image")]
+[assembly: CssResource("Saltarelle.UI.Resources.blank.gif", Saltarelle.UI.Resources.BlankImage, "blank-image")]
+[assembly: CssResource("Saltarelle.UI.Resources.folder_closed.gif", Saltarelle.UI.Resources.FolderClosedImage, "folder_closed-image")]
+[assembly: CssResource("Saltarelle.UI.Resources.folder_open.gif", Saltarelle.UI.Resources.FolderOpenImage, "folder_open-image")]
+[assembly: CssResource("Saltarelle.UI.Resources.item.gif", Saltarelle.UI.Resources.ItemImage, "item-image")]
+[assembly: CssResource("Saltarelle.UI.Resources.minus.gif", Saltarelle.UI.Resources.MinusImage, "minus-image")]
+[assembly: CssResource("Saltarelle.UI.Resources.plus.gif", Saltarelle.UI.Resources.PlusImage, "plus-image")]
 
 namespace Saltarelle.UI {
 	public static class Resources {

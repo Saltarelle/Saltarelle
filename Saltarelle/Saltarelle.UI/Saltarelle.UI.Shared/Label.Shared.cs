@@ -1,10 +1,11 @@
 using System;
-using Saltarelle;
-#if SERVER
+using System.Collections;
 using System.Collections.Generic;
-#endif
+using System.Runtime.CompilerServices;
+using Saltarelle;
 #if CLIENT
-using System.DHTML;
+using System.Html;
+using jQueryApi;
 #endif
 
 namespace Saltarelle.UI {
@@ -53,11 +54,11 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (isAttached) {
-						jQuery element = JQueryProxy.jQuery(GetElement());
+						var element = jQuery.FromElement(GetElement());
 						if (!string.IsNullOrEmpty(additionalClass))
-							element.removeClass(additionalClass);
+							element.RemoveClass(additionalClass);
 						if (!string.IsNullOrEmpty(value))
-							element.addClass(value);
+							element.AddClass(value);
 					}
 				#endif
 				additionalClass = value;
@@ -96,7 +97,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public Label() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 
@@ -116,25 +116,25 @@ namespace Saltarelle.UI {
 
 #if CLIENT
 		[AlternateSignature]
-		public extern Label();
+		public Label() {}
 		public Label(object config) {
 			if (!Script.IsUndefined(config)) {
-				InitConfig(Dictionary.GetDictionary(config));
+				InitConfig(JsDictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
-		protected virtual void InitConfig(Dictionary config) {
+		protected virtual void InitConfig(JsDictionary config) {
 			id = (string)config["id"];
 			additionalClass = (string)config["additionalClass"];
 			Attach();
 		}
 
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		public void Attach() {
-			if (Utils.IsNull(id) || isAttached)
+			if (id == null || isAttached)
 				throw new Exception("Must set ID and can only attach once");
 			isAttached = true;
 		}

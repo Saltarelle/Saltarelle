@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{41ED1FAC-B0D3-4320-83E2-21A3545B3344}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Saltarelle</RootNamespace>
+    <AssemblyName>SaltarelleParser.Client</AssemblyName>
+    <NoStdLib>True</NoStdLib>
+    <CopyReferences>True</CopyReferences>
+    <TemplateFile>Properties\Script.jst</TemplateFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;CLIENT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0028, 1591</NoWarn>
+    <DocumentationFile>bin\SaltarelleParser.Client.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CLIENT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0028, 1591</NoWarn>
+    <DocumentationFile>bin\SaltarelleParser.Client.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\Saltarelle.snk">
+      <Link>Saltarelle.snk</Link>
+    </None>
+    <Content Include="Properties\Script.jst" />
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\DocumentProcessor.Shared.cs">
+      <Link>DocumentProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\fragments\CodeExpressionFragment.Shared.cs">
+      <Link>Fragments\CodeExpressionFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\fragments\CodeFragment.Shared.cs">
+      <Link>Fragments\CodeFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\fragments\IdFragment.Shared.cs">
+      <Link>Fragments\IdFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\fragments\IFragment.Shared.cs">
+      <Link>Fragments\IFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\fragments\InstantiatedControlFragment.Shared.cs">
+      <Link>Fragments\InstantiatedControlFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\fragments\LiteralFragment.Shared.cs">
+      <Link>Fragments\LiteralFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\fragments\PositionFragment.Shared.cs">
+      <Link>Fragments\PositionFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\IRenderFunction.Shared.cs">
+      <Link>IRenderFunction.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\members\FieldMember.Shared.cs">
+      <Link>Members\FieldMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\members\IMember.Shared.cs">
+      <Link>Members\IMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\members\InstantiatedControlMember.Shared.cs">
+      <Link>Members\InstantiatedControlMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\members\NamedElementMember.Shared.cs">
+      <Link>Members\NamedElementMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Members\PropertyMember.Shared.cs">
+      <Link>Members\PropertyMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\members\RenderFunctionMember.Shared.cs">
+      <Link>Members\RenderFunctionMember.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\ControlFlowTagProcessor.Shared.cs">
+      <Link>NodeProcessors\ControlFlowTagProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\ControlInstantiationNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\ControlInstantiationNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\DirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\DirectiveNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\EmbeddedCodeNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\EmbeddedCodeNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\FieldNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\FieldNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\FunctionDefinitionAndCallNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\FunctionDefinitionAndCallNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\GenericElementProcessor.Shared.cs">
+      <Link>NodeProcessors\GenericElementProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\ImplementsOrInheritsNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\ImplementsOrInheritsNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\INodeProcessor.Shared.cs">
+      <Link>NodeProcessors\INodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\nodeprocessors\LeafNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\LeafNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\UsingDirectiveNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs">
+      <Link>NodeProcessors\ViewDirectiveNodeProcessor.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\ParserUtils.Shared.cs">
+      <Link>ParserUtils.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\SaltarelleParser.Shared.cs">
+      <Link>SaltarelleParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\Template.Shared.cs">
+      <Link>Template.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\BoolMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\BoolMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\CodeMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\CodeMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\IntMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\IntMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\ITypedMarkupParserImpl.Shared.cs">
+      <Link>TypedMarkupParsers\ITypedMarkupParserImpl.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\PositionMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\PositionMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\StringMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\StringMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\TypedMarkupData.Shared.cs">
+      <Link>TypedMarkupParsers\TypedMarkupData.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarelleparser.shared\typedmarkupparsers\TypedMarkupParser.Shared.cs">
+      <Link>TypedMarkupParsers\TypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\CodeUntypedMarkupParser.Shared.cs">
+      <Link>UntypedMarkupParsers\CodeUntypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\IUntypedMarkupParserImpl.Shared.cs">
+      <Link>UntypedMarkupParsers\IUntypedMarkupParserImpl.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\LiteralUntypedMarkupParser.Shared.cs">
+      <Link>UntypedMarkupParsers\LiteralUntypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <None Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\UntypedMarkupData.Shared.cs">
+      <Link>UntypedMarkupParsers\UntypedMarkupData.Shared.cs</Link>
+    </None>
+    <Compile Include="..\SaltarelleParser.Shared\UntypedMarkupParsers\UntypedMarkupParser.Shared.cs">
+      <Link>UntypedMarkupParsers\UntypedMarkupParser.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleParserVersion.cs">
+      <Link>Properties\SaltarelleParserVersion.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SaltarelleLib\SaltarelleLib.Client\SaltarelleLib.Client.csproj">
+      <Project>{B122334A-1FF6-4060-861B-20BE836169C3}</Project>
+      <Name>SaltarelleLib.Client</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.1.2.0\tools\Assemblies\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.jQuery, Version=1.2.0.0, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Saltarelle.jQuery.1.2.0\lib\Script.jQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.Web, Version=1.2.0.0, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Saltarelle.Web.1.2.0\lib\Script.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.1.2.0\tools\Saltarelle.Compiler.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
+  </Target>
+</Project>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb.Plugins {
 	internal class CopyrightMember : IMember {
@@ -35,11 +36,11 @@ namespace DemoWeb.Plugins {
 			}
 		}
 		
-		public string[] Dependencies {
+		public IList<string> Dependencies {
 			get { return new string[0]; }
 		}
 		
-		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl control) {
+		public void Instantiate(ITemplate tpl, IInstantiatedTemplateControl control, IContainer container) {
 		}
 	}
 }

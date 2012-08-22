@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson1Control : IControl {
+	public partial class Lesson1Control : IControl, INotifyCreated {
+		partial void Constructed();
+
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 
 		private Position position = PositionHelper.NotPositioned;
@@ -16,7 +19,7 @@ namespace DemoWeb {
 		public string Id {
 			get { return id; }
 			set {
-				foreach (KeyValuePair<string, IControl> kvp in controls)
+				foreach (var kvp in controls)
 					kvp.Value.Id = value + "_" + kvp.Key;
 				this.id = value;
 			}
@@ -29,6 +32,13 @@ namespace DemoWeb {
 				__cfg["TheText"] = this.TheText.ConfigObject;
 				return __cfg;
 			}
+		}
+
+		private IContainer _container;
+		[ClientInject]
+		public IContainer Container {
+			get { return _container; }
+			set { _container = value; }
 		}
 
 		private Saltarelle.UI.TextInput TheText {
@@ -61,10 +71,13 @@ namespace DemoWeb {
 			}
 		}
 
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
 		public Lesson1Control() {
-			IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());
+		}
+
+		public void DependenciesAvailable() {
 			{
-			Saltarelle.UI.TextInput c = new Saltarelle.UI.TextInput();
+			Saltarelle.UI.TextInput c = (Saltarelle.UI.TextInput)Container.CreateObject(typeof(Saltarelle.UI.TextInput));
 			this.controls["TheText"] = c;
 			}
 			Constructed();
@@ -74,12 +87,19 @@ namespace DemoWeb {
 #endif
 #if CLIENT
 using System;
-using System.DHTML;
+using System.Collections;
+using System.Collections.Generic;
+using System.Html;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson1Control : IControl {
-		private Dictionary controls = new Dictionary();
+	public partial class Lesson1Control : IControl, INotifyCreated {
+		partial void Constructed();
+		partial void Attached();
+
+		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
+		private JsDictionary __cfg;
 
 		private Position position;
 		public Position Position {
@@ -92,14 +112,14 @@ namespace DemoWeb {
 		}
 
 		private bool isAttached = false;
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private string id;
 		public string Id {
 			get { return id; }
 			set {
-				foreach (DictionaryEntry kvp in controls)
-					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
+				foreach (var kvp in controls)
+					kvp.Value.Id = value + "_" + kvp.Key;
 				this.AddMessageButton.ID = value + "_AddMessageButton";
 				this.CurrentMessageDiv.ID = value + "_CurrentMessageDiv";
 				this.MessageLogDiv.ID = value + "_MessageLogDiv";
@@ -109,13 +129,19 @@ namespace DemoWeb {
 			}
 		}
 
+		private IContainer _container;
+		public IContainer Container {
+			get { return _container; }
+			set { _container = value; }
+		}
+
 		private Saltarelle.UI.TextInput TheText {
 			get { return (Saltarelle.UI.TextInput)controls["TheText"]; }
 		}
 
-		private DOMElement AddMessageButton { get { return (DOMElement)Document.GetElementById(id + "_AddMessageButton"); } }
+		private Element AddMessageButton { get { return (Element)Document.GetElementById(id + "_AddMessageButton"); } }
 
-		private DOMElement CurrentMessageDiv { get { return (DOMElement)Document.GetElementById(id + "_CurrentMessageDiv"); } }
+		private Element CurrentMessageDiv { get { return (Element)Document.GetElementById(id + "_CurrentMessageDiv"); } }
 
 		private DivElement MessageLogDiv { get { return (DivElement)Document.GetElementById(id + "_MessageLogDiv"); } }
 
@@ -124,11 +150,15 @@ namespace DemoWeb {
 			Attached();
 		}
 
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
 		public Lesson1Control(object config) {
-			if (!Script.IsUndefined(config)) {
-				Dictionary __cfg = Dictionary.GetDictionary(config);
+			__cfg = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);
+		}
+
+		public void DependenciesAvailable() {
+			if (!Utils.IsNull(__cfg)) {
 				this.id = (string)__cfg["id"];
-				this.controls["TheText"] = new Saltarelle.UI.TextInput(__cfg["TheText"]);
+				this.controls["TheText"] = (Saltarelle.UI.TextInput)Container.CreateObjectWithConstructorArg(typeof(Saltarelle.UI.TextInput), __cfg["TheText"]);
 				Constructed();
 				AttachSelf();
 			}

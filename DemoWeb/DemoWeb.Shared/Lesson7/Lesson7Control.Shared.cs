@@ -1,52 +1,72 @@
 using System;
+using System.Text.RegularExpressions;
 using Saltarelle;
+using Saltarelle.Ioc;
+
+#if CLIENT
+using System.Html;
+using jQueryApi;
+#endif
 
 namespace DemoWeb {
 	public partial class Lesson7Control : IControl {
 #if SERVER
-		private void Constructed() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(typeof(SaltarelleParser));
-			GlobalServices.LoadService<ILesson7Service>();
+		partial void Constructed() {
 		}
 #endif
 
+		#if SERVER
+		[ClientInject]
+		#endif
+		public ILesson7Service Service { get; set; }
+
+		#if SERVER
+		[ClientInject]
+		#endif
+		public IContainer Container { get; set; }
+
+		#if SERVER
+		[ClientInject]
+		#endif
+		public IScriptManagerService ScriptManager { get; set; }
+
 #if CLIENT
-		private void Constructed() {
+		partial void Constructed() {
 		}
 
-		private void Attached() {
-			JQueryProxy.jQuery(InsertDynamicControlButton).click(InsertDynamicControlButton_Click);
-			JQueryProxy.jQuery(AjaxButton).click(AjaxButton_Click);
+		partial void Attached() {
+			jQuery.FromElement(InsertDynamicControlButton).Click(InsertDynamicControlButton_Click);
+			jQuery.FromElement(AjaxButton).Click(AjaxButton_Click);
 		}
 		
-		private void InsertDynamicControlButton_Click(JQueryEvent evt) {
-			SaltarelleParser p = new SaltarelleParser(null, null, null);
+		private void InsertDynamicControlButton_Click(jQueryEvent evt) {
+			var p = new SaltarelleParser(null, null, null);
 			ITemplate tpl;
 			try {
 				tpl = p.ParseTemplate(Utils.ParseXml(DynamicMarkupInput.Value));
 			}
 			catch (Exception ex) {
-				Script.Alert(ex.Message);
+				Window.Alert(ex.Message);
 				return;
 			}
-			IClientCreateControl ctl = tpl.Instantiate();
-			((IControl)ctl).Id = ((IScriptManagerService)GlobalServices.GetService(typeof(IScriptManagerService))).GetUniqueId();
+			IClientCreateControl ctl = (IClientCreateControl)tpl.Instantiate(Container);
+			ctl.Id = ScriptManager.GetUniqueId();
 			Utils.RenderControl(ctl, DynamicControlContainer);
 		}
 		
-		private void AjaxButton_Click(JQueryEvent evt) {
+		private void AjaxButton_Click(jQueryEvent evt) {
 			string numRowsStr = NumRowsInput.Value.Trim();
-			if (new RegularExpression("^\\d\\d?$").Exec(numRowsStr) == null) {
-				Script.Alert("You must enter a number of rows (1 - 99).");
+			if (new Regex("^\\d\\d?$").Exec(numRowsStr) == null) {
+				Window.Alert("You must enter a number of rows (1 - 99).");
 				return;
 			}
 			
-			((ILesson7Service)GlobalServices.GetService(typeof(ILesson7Service))).AsyncCreateGrid(Utils.ParseInt(numRowsStr),
-				delegate(ControlDocumentFragment frag) {
-					DocumentFragmentHelper.Inject(frag, ((IScriptManagerService)GlobalServices.Provider.GetService(typeof(IScriptManagerService))).GetUniqueId(), AjaxControlContainer);
+			Service.AsyncCreateGrid(Utils.ParseInt(numRowsStr),
+				frag => {
+					DocumentFragmentHelper.Inject(frag, ScriptManager.GetUniqueId(), Container, AjaxControlContainer);
 				},
-				delegate {
-					Script.Alert("The call failed.");
+				() => {
+					Window.Alert("The call failed.");
 				}
 			);
 		}

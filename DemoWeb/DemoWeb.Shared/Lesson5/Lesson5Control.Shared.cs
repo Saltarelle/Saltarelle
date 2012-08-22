@@ -5,14 +5,14 @@ using Saltarelle.UI;
 namespace DemoWeb {
 	public partial class Lesson5Control : IControl {
 #if SERVER
-		private void Constructed() {
+		partial void Constructed() {
 		}
 #endif
 #if CLIENT
-		private void Constructed() {
+		partial void Constructed() {
 		}
 		
-		private void Attached() {
+		partial void Attached() {
 		}
 #endif
 	}

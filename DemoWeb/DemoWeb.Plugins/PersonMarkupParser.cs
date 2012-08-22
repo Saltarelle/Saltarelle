@@ -27,7 +27,7 @@ namespace DemoWeb.Plugins {
 			return new StringPersonPair("new Person(@\"" + s2.Replace("\"", "\"\"") + "\", @\"" + s1.Replace("\"", "\"\"") + "\")", new Person(s2, s1));
 		}
 	
-		public TypedMarkupData Parse(string registeredPrefix, bool isArray, string value) {
+		public TypedMarkupData Parse(string registeredPrefix, bool isArray, string value, ITemplate tpl) {
 			if (isArray) {
 				StringBuilder sb = new StringBuilder();
 				sb.Append("new Person[] {");

@@ -1,11 +1,14 @@
 using System;
+using System.Collections;
+using System.Runtime.CompilerServices;
 using Saltarelle;
 #if SERVER
 using System.Collections.Generic;
 #endif
 #if CLIENT
+using jQueryApi;
 using InvalidOperationException = System.Exception;
-using System.DHTML;
+using System.Html;
 #endif
 
 namespace Saltarelle.UI {
@@ -52,7 +55,7 @@ namespace Saltarelle.UI {
 		public int Width {
 			get {
 				#if CLIENT
-					return isAttached ? (int)Math.Round(JQueryProxy.jQuery(GetElement()).width()) : width;
+					return isAttached ? (int)Math.Round(jQuery.FromElement(GetElement()).GetWidth()) : width;
 				#else
 					return width;
 				#endif
@@ -61,7 +64,7 @@ namespace Saltarelle.UI {
 				width = value;
 				#if CLIENT
 					if (isAttached)
-						JQueryProxy.jQuery(GetElement()).width(value > 0 ? Utils.ToStringInvariantInt(value) : "");
+						jQuery.FromElement(GetElement()).Width(value > 0 ? Utils.ToStringInvariantInt(value) : "");
 				#endif
 			}
 		}
@@ -71,11 +74,11 @@ namespace Saltarelle.UI {
 			set {
 				#if CLIENT
 					if (isAttached) {
-						jQuery element = JQueryProxy.jQuery(GetElement());
+						var element = jQuery.FromElement(GetElement());
 						if (!string.IsNullOrEmpty(cssClass))
-							element.removeClass(cssClass);
+							element.RemoveClass(cssClass);
 						if (!string.IsNullOrEmpty(value))
-							element.addClass(value);
+							element.AddClass(value);
 					}
 				#endif
 				cssClass = value;
@@ -115,7 +118,6 @@ namespace Saltarelle.UI {
 
 #if SERVER
 		public TextInput() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterClientType(GetType());
 			InitDefault();
 		}
 
@@ -135,35 +137,35 @@ namespace Saltarelle.UI {
 
 #if CLIENT
 		[AlternateSignature]
-		public extern TextInput();
+		public TextInput() {}
 		
 		public TextInput(object config) {
 			if (!Script.IsUndefined(config)) {
-				InitConfig(Dictionary.GetDictionary(config));
+				InitConfig(JsDictionary.GetDictionary(config));
 			}
 			else
 				InitDefault();
 		}
 
-		protected virtual void InitConfig(Dictionary config) {
+		protected virtual void InitConfig(JsDictionary config) {
 			id = (string)config["id"];
 			cssClass = (string)config["cssClass"];
 			Attach();
 		}
 
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		public void Attach() {
 			isAttached = true;
-			JQueryProxy.jQuery(GetElement()).change(element_Change);
+			jQuery.FromElement(GetElement()).Change(element_Change);
 		}
 		
-		private void element_Change(JQueryEvent e) {
+		private void element_Change(jQueryEvent e) {
 			OnValueChanged(EventArgs.Empty);
 		}
 		
 		protected virtual void OnValueChanged(EventArgs e) {
-			if (!Utils.IsNull(ValueChanged))
+			if (ValueChanged != null)
 				ValueChanged(this, e);
 		}
 #endif

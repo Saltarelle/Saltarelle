@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson7Control : IControl {
+	public partial class Lesson7Control : IControl, INotifyCreated {
+		partial void Constructed();
+
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 
 		private Position position = PositionHelper.NotPositioned;
@@ -16,7 +19,7 @@ namespace DemoWeb {
 		public string Id {
 			get { return id; }
 			set {
-				foreach (KeyValuePair<string, IControl> kvp in controls)
+				foreach (var kvp in controls)
 					kvp.Value.Id = value + "_" + kvp.Key;
 				this.id = value;
 			}
@@ -60,8 +63,11 @@ namespace DemoWeb {
 			}
 		}
 
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
 		public Lesson7Control() {
-			IScriptManagerServiceExtensions.RegisterClientType(GlobalServices.GetService<IScriptManagerService>(), GetType());
+		}
+
+		public void DependenciesAvailable() {
 			Constructed();
 		}
 	}
@@ -69,12 +75,19 @@ namespace DemoWeb {
 #endif
 #if CLIENT
 using System;
-using System.DHTML;
+using System.Collections;
+using System.Collections.Generic;
+using System.Html;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson7Control : IControl {
-		private Dictionary controls = new Dictionary();
+	public partial class Lesson7Control : IControl, INotifyCreated {
+		partial void Constructed();
+		partial void Attached();
+
+		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
+		private JsDictionary __cfg;
 
 		private Position position;
 		public Position Position {
@@ -87,14 +100,14 @@ namespace DemoWeb {
 		}
 
 		private bool isAttached = false;
-		public DOMElement GetElement() { return isAttached ? Document.GetElementById(id) : null; }
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private string id;
 		public string Id {
 			get { return id; }
 			set {
-				foreach (DictionaryEntry kvp in controls)
-					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
+				foreach (var kvp in controls)
+					kvp.Value.Id = value + "_" + kvp.Key;
 				this.DynamicMarkupInput.ID = value + "_DynamicMarkupInput";
 				this.InsertDynamicControlButton.ID = value + "_InsertDynamicControlButton";
 				this.DynamicControlContainer.ID = value + "_DynamicControlContainer";
@@ -109,13 +122,13 @@ namespace DemoWeb {
 
 		private TextAreaElement DynamicMarkupInput { get { return (TextAreaElement)Document.GetElementById(id + "_DynamicMarkupInput"); } }
 
-		private DOMElement InsertDynamicControlButton { get { return (DOMElement)Document.GetElementById(id + "_InsertDynamicControlButton"); } }
+		private Element InsertDynamicControlButton { get { return (Element)Document.GetElementById(id + "_InsertDynamicControlButton"); } }
 
 		private DivElement DynamicControlContainer { get { return (DivElement)Document.GetElementById(id + "_DynamicControlContainer"); } }
 
 		private TextElement NumRowsInput { get { return (TextElement)Document.GetElementById(id + "_NumRowsInput"); } }
 
-		private DOMElement AjaxButton { get { return (DOMElement)Document.GetElementById(id + "_AjaxButton"); } }
+		private Element AjaxButton { get { return (Element)Document.GetElementById(id + "_AjaxButton"); } }
 
 		private DivElement AjaxControlContainer { get { return (DivElement)Document.GetElementById(id + "_AjaxControlContainer"); } }
 
@@ -124,9 +137,13 @@ namespace DemoWeb {
 			Attached();
 		}
 
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
 		public Lesson7Control(object config) {
-			if (!Script.IsUndefined(config)) {
-				Dictionary __cfg = Dictionary.GetDictionary(config);
+			__cfg = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);
+		}
+
+		public void DependenciesAvailable() {
+			if (!Utils.IsNull(__cfg)) {
 				this.id = (string)__cfg["id"];
 				Constructed();
 				AttachSelf();

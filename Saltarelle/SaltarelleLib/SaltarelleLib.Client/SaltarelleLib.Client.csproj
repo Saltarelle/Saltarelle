@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B122334A-1FF6-4060-861B-20BE836169C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Saltarelle</RootNamespace>
+    <AssemblyName>SaltarelleLib.Client</AssemblyName>
+    <NoStdLib>True</NoStdLib>
+    <CopyReferences>True</CopyReferences>
+    <TemplateFile>Properties\Script.jst</TemplateFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Saltarelle.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;CLIENT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0028, 1591</NoWarn>
+    <DocumentationFile>bin\SaltarelleLib.Client.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CLIENT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0028, 1591</NoWarn>
+    <DocumentationFile>bin\SaltarelleLib.Client.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\Saltarelle.snk">
+      <Link>Saltarelle.snk</Link>
+    </None>
+    <Content Include="Properties\Script.jst" />
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\ControlDocumentFragment.Shared.cs">
+      <Link>ControlDocumentFragment.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\ControlInterfaces.Shared.cs">
+      <Link>ControlInterfaces.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\IInstantiable.Shared.cs">
+      <Link>IInstantiable.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\INotifyCreated.cs">
+      <Link>Ioc\INotifyCreated.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\InstantiatedTemplateControl.Shared.cs">
+      <Link>InstantiatedTemplateControl.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\saltarellelib.shared\ioc\IContainer.Shared.cs">
+      <Link>Ioc\IContainer.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\IScriptManagerService.cs">
+      <Link>IScriptManagerService.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\Position.Shared.cs">
+      <Link>Position.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\Resizing.Shared.cs">
+      <Link>Resizing.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\ScriptManagerConfig.Shared.cs">
+      <Link>ScriptManagerConfig.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLib.Shared\Utils.Shared.cs">
+      <Link>Utils.Shared.cs</Link>
+    </Compile>
+    <Compile Include="..\SaltarelleLibVersion.cs">
+      <Link>Properties\SaltarelleLibVersion.cs</Link>
+    </Compile>
+    <Compile Include="DefaultScriptManagerService.cs" />
+    <Compile Include="GlobalServices.Client.cs" />
+    <Compile Include="Ioc\DefaultContainer.Client.cs" />
+    <Compile Include="jQueryExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.Client.cs" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>$(SolutionDir)packages\Saltarelle.Runtime.1.2.0\tools\Assemblies\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.jQuery, Version=1.2.0.0, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Saltarelle.jQuery.1.2.0\lib\Script.jQuery.dll</HintPath>
+    </Reference>
+    <Reference Include="Script.Web, Version=1.2.0.0, Culture=neutral, PublicKeyToken=8fc0e3af5abcb6c4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Saltarelle.Web.1.2.0\lib\Script.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(SolutionDir)packages\Saltarelle.Compiler.1.2.0\tools\Saltarelle.Compiler.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(TargetDir)$(ProjectName).js" DestinationFiles="$(ProjectDir)..\Script.js" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ProjectDir)..\Client.dll" />
+  </Target>
+</Project>

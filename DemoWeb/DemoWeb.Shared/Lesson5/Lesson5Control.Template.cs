@@ -1,11 +1,15 @@
+#pragma warning disable 1591
 #if SERVER
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson5Control : IControl {
+	public partial class Lesson5Control : IControl, INotifyCreated {
+		partial void Constructed();
+
 		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
 
 		private Position position = PositionHelper.NotPositioned;
@@ -15,18 +19,31 @@ namespace DemoWeb {
 		public string Id {
 			get { return id; }
 			set {
-				this.id = value;
-				foreach (KeyValuePair<string, IControl> kvp in controls)
+				foreach (var kvp in controls)
 					kvp.Value.Id = value + "_" + kvp.Key;
+				this.id = value;
 			}
 		}
 
-		private Dictionary<string, object> GetConfig() {
-			Dictionary<string, object> __cfg = new Dictionary<string, object>();
-			return __cfg;
+		public object ConfigObject {
+			get {
+				Dictionary<string, object> __cfg = new Dictionary<string, object>();
+				__cfg["id"] = id;
+				__cfg["Nested"] = this.Nested.ConfigObject;
+				return __cfg;
+			}
 		}
 
-		private readonly DemoWeb.Lesson5InnerControl Nested;
+		private IContainer _container;
+		[ClientInject]
+		public IContainer Container {
+			get { return _container; }
+			set { _container = value; }
+		}
+
+		private DemoWeb.Lesson5InnerControl Nested {
+			get { return (DemoWeb.Lesson5InnerControl)controls["Nested"]; }
+		}
 
 		private string GetHtml() {
 			StringBuilder sb = new StringBuilder();
@@ -34,9 +51,7 @@ namespace DemoWeb {
 			sb.Append(Id);
 			sb.Append(@""" style=""");
 			sb.Append(PositionHelper.CreateStyle(Position, -1, -1));
-			sb.Append(@"""");
-			sb.Append(" __cfg=\"" + Utils.HtmlEncode(Utils.Json(GetConfig())) + "\"");
-			sb.Append(@"> ");
+			sb.Append(@"""> ");
 			sb.Append(((IControl)Nested).Html);
 			sb.Append(@" </div>");
 			return sb.ToString();
@@ -50,11 +65,16 @@ namespace DemoWeb {
 			}
 		}
 
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
 		public Lesson5Control() {
-			GlobalServices.GetService<IScriptManagerService>().RegisterType(GetType());
-			this.controls["Nested"] = this.Nested = new DemoWeb.Lesson5InnerControl();
-			this.Nested.Person = new Person(@"Erik", @"Källén");
+		}
 
+		public void DependenciesAvailable() {
+			{
+			DemoWeb.Lesson5InnerControl c = (DemoWeb.Lesson5InnerControl)Container.CreateObject(typeof(DemoWeb.Lesson5InnerControl));
+			c.Person = new Person(@"Erik", @"Källén");
+			this.controls["Nested"] = c;
+			}
 			Constructed();
 		}
 	}
@@ -62,47 +82,69 @@ namespace DemoWeb {
 #endif
 #if CLIENT
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Html;
 using Saltarelle;
+using Saltarelle.Ioc;
 
 namespace DemoWeb {
-	public partial class Lesson5Control : IControl {
-		private Dictionary controls = new Dictionary();
+	public partial class Lesson5Control : IControl, INotifyCreated {
+		partial void Constructed();
+		partial void Attached();
+
+		private Dictionary<string, IControl> controls = new Dictionary<string, IControl>();
+		private JsDictionary __cfg;
 
 		private Position position;
 		public Position Position {
-			get { return element != null ? PositionHelper.GetPosition(element) : position; }
+			get { return isAttached ? PositionHelper.GetPosition(GetElement()) : position; }
 			set {
 				position = value;
-				if (element != null)
-					PositionHelper.ApplyPosition(element, value);
+				if (isAttached)
+					PositionHelper.ApplyPosition(GetElement(), value);
 			}
 		}
 
-		private jQuery element;
-		public jQuery Element { get { return element; } }
+		private bool isAttached = false;
+		public Element GetElement() { return isAttached ? Document.GetElementById(id) : null; }
 
 		private string id;
 		public string Id {
 			get { return id; }
 			set {
+				foreach (var kvp in controls)
+					kvp.Value.Id = value + "_" + kvp.Key;
+				if (isAttached)
+					GetElement().ID = value;
 				this.id = value;
-				foreach (DictionaryEntry kvp in controls)
-					((IControl)kvp.Value).Id = value + "_" + kvp.Key;
 			}
 		}
 
-		private readonly DemoWeb.Lesson5InnerControl Nested;
+		private IContainer _container;
+		public IContainer Container {
+			get { return _container; }
+			set { _container = value; }
+		}
+
+		private DemoWeb.Lesson5InnerControl Nested {
+			get { return (DemoWeb.Lesson5InnerControl)controls["Nested"]; }
+		}
 
 		private void AttachSelf() {
-			this.element = JQueryProxy.jQuery("#" + id);
+			this.isAttached = true;
 			Attached();
 		}
 
-		public Lesson5Control(string id) {
-			if (!Script.IsUndefined(id)) {
-				this.id = id;
-				Dictionary __cfg = (Dictionary)Utils.EvalJson((string)JQueryProxy.jQuery("#" + id).attr("__cfg"));
-				this.controls["Nested"] = this.Nested = new DemoWeb.Lesson5InnerControl(id + "_Nested");
+		[Obsolete(@"Do not construct this type directly. Always use IContainer.Resolve*()")]
+		public Lesson5Control(object config) {
+			__cfg = (!Script.IsUndefined(config) ? JsDictionary.GetDictionary(config) : null);
+		}
+
+		public void DependenciesAvailable() {
+			if (!Utils.IsNull(__cfg)) {
+				this.id = (string)__cfg["id"];
+				this.controls["Nested"] = (DemoWeb.Lesson5InnerControl)Container.CreateObjectWithConstructorArg(typeof(DemoWeb.Lesson5InnerControl), __cfg["Nested"]);
 				Constructed();
 				AttachSelf();
 			}

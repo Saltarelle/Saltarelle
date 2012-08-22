@@ -1,0 +1,27 @@
+#ignore thumbnails created by windows
+Thumbs.db
+#Ignore files build by Visual Studio
+*.user
+*.ncb
+*.suo
+*.bak
+*.log
+[Bb]in
+[Dd]ebug*/
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+Client.dll
+Script.js
+Script.min.js
+build_out
+Saltarelle/SaltarelleLib/SaltarelleLib.Server/Configuration/SaltarelleConfiguration.cs
+Saltarelle/VSIntegrationInstaller/Version.wxi
+Saltarelle/Executables/ExecutablesVersion.cs
+Saltarelle/Saltarelle.CastleWindsor/Properties/SaltarelleCastleWindsorVersion.cs
+Saltarelle/Saltarelle.Mvc/Properties/SaltarelleMvcVersion.cs
+Saltarelle/Saltarelle.UI/SaltarelleUIVersion.cs
+Saltarelle/SaltarelleLib/SaltarelleLibVersion.cs
+Saltarelle/SaltarelleParser/SaltarelleParserVersion.cs
+Saltarelle/Saltarelle.Mvc/Resources/Scripts/mscorlib*.js
